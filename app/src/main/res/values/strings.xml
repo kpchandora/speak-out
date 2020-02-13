@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">SpeakOut</string>
-
+    <string name="google_sign_in_key" translatable="false">206284362307-fs8bc6dt68l77fivu5f30it2hgfoaopa.apps.googleusercontent.com</string>
+    <string name="username_hint">Username</string>
+    <string name="done">Done</string>
 
 </resources>

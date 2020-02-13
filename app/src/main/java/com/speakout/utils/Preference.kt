@@ -52,4 +52,19 @@ class Preference {
         editor?.remove(key)?.apply()
     }
 
+
+    fun clearUserDetails() {
+        editor?.apply {
+            StringUtils.UserDetails?.apply {
+                remove(username)
+                remove(email)
+                remove(name)
+                remove(phoneNumber)
+                remove(lastLogin)
+                remove(isLoggedIn)
+                remove(photoUrl)
+            }
+        }?.apply()
+    }
+
 }

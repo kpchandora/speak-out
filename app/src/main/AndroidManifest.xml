@@ -14,6 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".auth.UserNameActivity"></activity>
+        <activity android:name=".auth.SignInActivity" />
         <activity
             android:name=".ui.SplashScreen"
             android:theme="@style/SplashTheme">

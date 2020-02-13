@@ -1,6 +1,8 @@
 package com.speakout.utils
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import com.speakout.SpeakOutApp
 
 object FirebaseUtils {
 
@@ -8,6 +10,17 @@ object FirebaseUtils {
 
     fun userId() = currentUser()?.uid
 
-    fun signOut() = FirebaseAuth.getInstance().signOut()
+    fun signOut() {
+        Preference().clearUserDetails()
+        FirebaseAuth.getInstance().signOut()
+    }
+
+    fun getReference() = FirebaseDatabase.getInstance().reference
+
+    enum class Data {
+        PRESET,
+        ABSENT,
+        CANCELLED
+    }
 
 }

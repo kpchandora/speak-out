@@ -14,7 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".auth.UserNameActivity"></activity>
+        <activity
+            android:name=".ui.MainActivity"
+            android:label="@string/title_activity_main"></activity>
+        <activity android:name=".auth.UserNameActivity" />
         <activity android:name=".auth.SignInActivity" />
         <activity
             android:name=".ui.SplashScreen"
@@ -25,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.MainActivity1" />
     </application>
 
 </manifest>

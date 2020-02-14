@@ -16,7 +16,7 @@ class UserViewModel : ViewModel() {
     private val mutableProgress = MutableLiveData<Boolean>()
 
     val usernameObserver: LiveData<FirebaseUtils.Data> = Transformations.switchMap(username) {
-        AuthService.isUsernamePresent(key = it, ref = StringUtils.DatabaseRefs.usernamesRef)
+        AuthService.isUsernamePresent(key = it)
     }
 
     val updateDetailsObserver = Transformations.switchMap(updateUserDetails) {

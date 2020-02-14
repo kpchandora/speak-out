@@ -68,9 +68,11 @@ object AuthService {
         return data
     }
 
-    fun isUsernamePresent(key: String, ref: String): LiveData<FirebaseUtils.Data> {
+    fun isUsernamePresent(key: String): LiveData<FirebaseUtils.Data> {
         val data = MutableLiveData<FirebaseUtils.Data>()
-        FirebaseUtils.getReference().child(ref).orderByKey().equalTo(key)
+        FirebaseUtils.getReference().child(StringUtils.DatabaseRefs.userDetailsRef)
+            .orderByChild("username")
+            .equalTo(key)
             .addListenerForSingleValueEvent(
                 object : ValueEventListener {
                     override fun onCancelled(p0: DatabaseError) {

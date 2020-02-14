@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.speakout.R
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.activity_user_name.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 class UserNameActivity : AppCompatActivity() {
 
     private lateinit var mUserViewModel: UserViewModel
     private var username = ""
+    private val shouldSignOut = AtomicBoolean(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +25,7 @@ class UserNameActivity : AppCompatActivity() {
             it?.apply {
                 when (this) {
                     FirebaseUtils.Data.PRESET -> {
+                        shouldSignOut.set(true)
                         Toast.makeText(
                             this@UserNameActivity,
                             "Username already taken",
@@ -34,6 +37,7 @@ class UserNameActivity : AppCompatActivity() {
                         mUserViewModel.updateUserDetails(UserDetails.usernameMap(username))
                     }
                     FirebaseUtils.Data.CANCELLED -> {
+                        shouldSignOut.set(true)
                         Toast.makeText(this@UserNameActivity, "Cancelled", Toast.LENGTH_SHORT)
                             .show()
                     }
@@ -41,18 +45,20 @@ class UserNameActivity : AppCompatActivity() {
             }
         })
 
-        mUserViewModel.saveUserDetailsObserver.observe(this, Observer {
-            if (it) {
-                Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
-            }
-        })
+//        mUserViewModel.saveUserDetailsObserver.observe(this, Observer {
+//            if (it) {
+//                Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
+//            } else {
+//                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
         mUserViewModel.updateDetailsObserver.observe(this, Observer {
             if (it) {
+                shouldSignOut.set(false)
                 Toast.makeText(this, "Saved Successfully", Toast.LENGTH_SHORT).show()
             } else {
+                shouldSignOut.set(true)
                 Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
             }
         })

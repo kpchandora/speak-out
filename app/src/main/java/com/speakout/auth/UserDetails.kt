@@ -22,14 +22,14 @@ data class UserDetails(
     @PropertyName("lastSignInTimestamp")
     val lastSignInTimestamp: Long? = null,
 
-    @PropertyName("user_name")
+    @PropertyName("username")
     val username: String? = null
 ) {
 
     companion object {
         @Exclude
         fun usernameMap(username: String) = mapOf(
-            "user_name" to username
+            "username" to username
         )
 
         @Exclude

@@ -3,7 +3,6 @@ package com.speakout.auth
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ProgressBar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.*
@@ -18,6 +17,7 @@ import com.speakout.extensions.openActivity
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.visible
 import com.speakout.ui.MainActivity
+import com.speakout.ui.MainActivity1
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
@@ -53,7 +53,7 @@ class SignInActivity : AppCompatActivity() {
         mUserViewModel.getUserDataObserver.observe(this, Observer {
             it?.apply {
                 if (username?.isNotEmpty() == true) {
-                    openActivity(MainActivity::class.java)
+                    openActivity(MainActivity1::class.java)
                 } else {
                     openActivity(UserNameActivity::class.java)
                 }
@@ -74,6 +74,7 @@ class SignInActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
 
         signInButton.setOnClickListener {
+            showProgress()
             startActivityForResult(
                 googleSignInClient.signInIntent,
                 RC_SIGN_IN
@@ -110,12 +111,12 @@ class SignInActivity : AppCompatActivity() {
                 firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
                 e.printStackTrace()
+                hideProgress()
             }
         }
     }
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        showProgress()
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task: Task<AuthResult> ->

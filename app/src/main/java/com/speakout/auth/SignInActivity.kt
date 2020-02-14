@@ -17,7 +17,6 @@ import com.speakout.extensions.openActivity
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.visible
 import com.speakout.ui.MainActivity
-import com.speakout.ui.MainActivity1
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
@@ -53,7 +52,7 @@ class SignInActivity : AppCompatActivity() {
         mUserViewModel.getUserDataObserver.observe(this, Observer {
             it?.apply {
                 if (username?.isNotEmpty() == true) {
-                    openActivity(MainActivity1::class.java)
+                    openActivity(MainActivity::class.java)
                 } else {
                     openActivity(UserNameActivity::class.java)
                 }

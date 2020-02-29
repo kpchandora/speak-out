@@ -14,9 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.create.CreateNewPostActivity"></activity>
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/title_activity_main"/>
+            android:label="@string/title_activity_main" />
         <activity android:name=".auth.UserNameActivity" />
         <activity android:name=".auth.SignInActivity" />
         <activity

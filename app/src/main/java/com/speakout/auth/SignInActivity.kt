@@ -83,13 +83,13 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun showProgress() {
-        visible(sign_in_progress)
-        gone(signInButton)
+        sign_in_progress.visible()
+        signInButton.gone()
     }
 
     private fun hideProgress() {
-        gone(sign_in_progress)
-        visible(signInButton)
+        sign_in_progress.gone()
+        signInButton.visible()
     }
 
     override fun onStart() {

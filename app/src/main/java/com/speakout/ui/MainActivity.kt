@@ -8,6 +8,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.speakout.R
+import com.speakout.extensions.openActivity
+import com.speakout.ui.create.CreateNewPostActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,11 +25,19 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_search,
-                R.id.navigation_dashboard,
-                R.id.navigation_notifications
+                R.id.navigation_new_post,
+                R.id.navigation_notifications,
+                R.id.navigation_dashboard
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        navView.setOnNavigationItemSelectedListener {
+            if (it.itemId == R.id.navigation_new_post) {
+                openActivity(CreateNewPostActivity::class.java)
+                return@setOnNavigationItemSelectedListener false
+            }
+            true
+        }
     }
 }

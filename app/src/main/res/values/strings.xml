@@ -8,5 +8,11 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_search">Search</string>
+    <string name="title_new_post">New Post</string>
+
+    <!--Create post strings-->
+    <string name="sample_post_text">This is a sample posThis is a sample posThis is a sample posThis is a sample posThis is a sample post text to check how does this large text looks when it is shown in layout. It should be more than 150 characters so that we can make sure that even large text also looks fine.</string>
+    <string name="sample_hindi_text">आग इतनी भीषण है कि मौके पर तुरंत 12 दमकल गाड़ियों को रवाना किया गया है. इसके अलावा 500 से ज्यादा दमकलकर्मियों को आग बुझाने के काम में लगाया गया है.</string>
+    <string name="enter_content_hint">Speak your heart out…</string>
 
 </resources>

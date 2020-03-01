@@ -15,4 +15,5 @@
     <string name="sample_hindi_text">आग इतनी भीषण है कि मौके पर तुरंत 12 दमकल गाड़ियों को रवाना किया गया है. इसके अलावा 500 से ज्यादा दमकलकर्मियों को आग बुझाने के काम में लगाया गया है.</string>
     <string name="enter_content_hint">Speak your heart out…</string>
 
+    <string name="empty_error">Field can\'t be empty</string>
 </resources>

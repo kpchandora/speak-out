@@ -14,7 +14,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.create.CreateNewPostActivity"></activity>
+        <activity android:name=".ui.BottomDialogActivity"
+            android:theme="@style/Theme.UserDialog"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity android:name=".ui.create.CreateNewPostActivity" />
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main" />

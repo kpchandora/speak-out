@@ -14,9 +14,21 @@ object StringUtils {
         const val photoUrl = "photo_url"
     }
 
-    object DatabaseRefs{
+    object DatabaseRefs {
         const val userDetailsRef = "user_details"
         const val usernamesRef = "user_names"
+    }
+
+    object IntentStrings {
+
+        object CreatePost {
+            const val REQUEST_CODE = 101
+        }
+
+        object BottomDialogActivity {
+            const val REQUEST_CODE = 150
+        }
+
     }
 
 }

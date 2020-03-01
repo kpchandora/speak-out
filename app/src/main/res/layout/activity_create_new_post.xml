@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.create.CreateNewPostActivity">
 
 
     <FrameLayout
+        android:id="@+id/create_post_container_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        android:background="@color/grey_400">
 
         <ImageView
             android:id="@+id/create_post_bg_iv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
+            android:adjustViewBounds="true"
             android:src="@drawable/post_image" />
 
 
@@ -39,4 +42,14 @@
     </FrameLayout>
 
 
-</LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="12dp"
+        android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_24dp"
+        android:text="@string/next"
+        android:textAllCaps="false" />
+
+
+</FrameLayout>

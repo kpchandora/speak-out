@@ -5,6 +5,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.speakout.R
+import com.speakout.extensions.addViewObserver
+import com.speakout.extensions.getScreenSize
 import com.speakout.ui.BottomDialogActivity
 import com.speakout.utils.StringUtils
 import kotlinx.android.synthetic.main.activity_create_new_post.*
@@ -14,6 +16,7 @@ class CreateNewPostActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_new_post)
+
 
         create_post_content_tv.setOnClickListener {
             startActivityForResult(

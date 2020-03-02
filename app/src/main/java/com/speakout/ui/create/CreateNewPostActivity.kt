@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.speakout.R
+import com.speakout.extensions.addFragment
 import com.speakout.extensions.addViewObserver
 import com.speakout.extensions.getScreenSize
 import com.speakout.ui.BottomDialogActivity
@@ -25,6 +26,15 @@ class CreateNewPostActivity : AppCompatActivity() {
                 ), StringUtils.IntentStrings.CreatePost.REQUEST_CODE
             )
         }
+
+        create_post_next_btn.setOnClickListener {
+            addFragment(
+                container = R.id.create_post_container_main,
+                backStackTag = CreatePostTagsFragment.TAG,
+                fragment = CreatePostTagsFragment.newInstance()
+            )
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/indigo_50"
     tools:context=".ui.create.CreateNewPostActivity">
 
 
@@ -43,6 +44,7 @@
 
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/create_post_next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -51,5 +53,10 @@
         android:text="@string/next"
         android:textAllCaps="false" />
 
+    <FrameLayout
+        android:id="@+id/create_post_container_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="2dp" />
 
 </FrameLayout>

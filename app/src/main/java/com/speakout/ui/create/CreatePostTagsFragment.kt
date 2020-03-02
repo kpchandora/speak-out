@@ -15,7 +15,10 @@ import com.speakout.R
 class CreatePostTagsFragment : Fragment() {
 
     companion object {
-        fun newInstance(bundle: Bundle?) = CreatePostTagsFragment().apply {
+
+        const val TAG = "CreatePostTagsFragment"
+
+        fun newInstance(bundle: Bundle? = null) = CreatePostTagsFragment().apply {
             arguments = bundle
         }
     }

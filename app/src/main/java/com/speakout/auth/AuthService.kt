@@ -24,7 +24,6 @@ object AuthService {
                     data.value = false
                 }
         }
-
         return data
     }
 

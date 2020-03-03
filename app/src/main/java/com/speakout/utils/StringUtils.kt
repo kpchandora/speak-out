@@ -17,6 +17,7 @@ object StringUtils {
     object DatabaseRefs {
         const val userDetailsRef = "user_details"
         const val usernamesRef = "user_names"
+        const val postsRef = "posts"
     }
 
     object IntentStrings {

@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.speakout.BuildConfig
 import com.speakout.R
+import com.speakout.extensions.Message
 import com.speakout.extensions.addFragment
 import com.speakout.extensions.addViewObserver
 import com.speakout.extensions.getScreenSize

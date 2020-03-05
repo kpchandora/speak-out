@@ -7,6 +7,8 @@ import android.view.Gravity
 import com.speakout.R
 import com.speakout.extensions.addViewObserver
 import com.speakout.extensions.getScreenSize
+import com.speakout.extensions.hideKeyboard
+import com.speakout.extensions.showKeyboard
 import kotlinx.android.synthetic.main.activity_bottom_dialog.*
 
 class BottomDialogActivity : Activity() {
@@ -39,6 +41,7 @@ class BottomDialogActivity : Activity() {
         }
 
         bottom_dialog_done_btn.setOnClickListener {
+            hideKeyboard()
             val text = bottom_dialog_et.text.toString().trim()
             if (text.isEmpty()) {
                 bottom_dialog_et.error = getString(R.string.empty_error)
@@ -47,6 +50,8 @@ class BottomDialogActivity : Activity() {
                 finish()
             }
         }
+
+        showKeyboard()
 
     }
 }

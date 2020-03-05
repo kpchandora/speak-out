@@ -18,5 +18,8 @@
     <string name="hashtag_hint">Type hashtag here…</string>
 
     <string name="empty_error">Field can\'t be empty</string>
+    <string name="loading_hint">Loading…</string>
+    <string name="hash_text">＃</string>
+    <string name="tick_text">✓</string>
 
 </resources>

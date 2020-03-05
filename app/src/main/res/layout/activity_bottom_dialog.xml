@@ -44,7 +44,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:textColor="@color/black"
-                android:textCursorDrawable="@drawable/et_cursor_dr" />
+                android:textCursorDrawable="@drawable/dr_et_cursor" />
         </FrameLayout>
 
 

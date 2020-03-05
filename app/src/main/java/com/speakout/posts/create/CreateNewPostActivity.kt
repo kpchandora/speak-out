@@ -2,7 +2,6 @@ package com.speakout.posts.create
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -10,6 +9,7 @@ import androidx.lifecycle.Observer
 import com.speakout.R
 import com.speakout.extensions.addFragment
 import com.speakout.extensions.showShortToast
+import com.speakout.posts.tags.PostTagsFragment
 import com.speakout.ui.BottomDialogActivity
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.ImageUtils
@@ -42,8 +42,8 @@ class CreateNewPostActivity : AppCompatActivity() {
         create_post_next_btn.setOnClickListener {
             addFragment(
                 container = R.id.create_post_container_main,
-                backStackTag = CreatePostTagsFragment.TAG,
-                fragment = CreatePostTagsFragment.newInstance()
+                backStackTag = PostTagsFragment.TAG,
+                fragment = PostTagsFragment.newInstance()
             )
         }
 

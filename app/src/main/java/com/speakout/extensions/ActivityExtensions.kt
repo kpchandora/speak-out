@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.DisplayMetrics
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -36,5 +38,21 @@ fun AppCompatActivity.addFragment(
         it.add(container, fragment)
         it.addToBackStack(backStackTag)
         it.commit()
+    }
+}
+
+fun Activity.showKeyboard(editText: EditText? = null) {
+    (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.also {
+        editText?.let { et ->
+            it.showSoftInput(et, InputMethodManager.SHOW_FORCED)
+        } ?: it.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+    }
+}
+
+fun Activity.hideKeyboard(editText: EditText? = null) {
+    (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.also {
+        editText?.let { et ->
+            it.hideSoftInputFromWindow(et.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
+        } ?: it.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
     }
 }

@@ -9,7 +9,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.speakout.R
 import com.speakout.extensions.openActivity
-import com.speakout.ui.create.CreateNewPostActivity
+import com.speakout.posts.create.CreateNewPostActivity
 
 class MainActivity : AppCompatActivity() {
 

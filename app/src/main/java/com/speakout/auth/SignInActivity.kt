@@ -124,6 +124,7 @@ class SignInActivity : AppCompatActivity() {
                         if (task.result!!.additionalUserInfo?.isNewUser == true) {
                             mUserViewModel.saveUserDetails(
                                 UserDetails(
+                                    userId = uid,
                                     name = displayName,
                                     photoUrl = photoUrl?.toString(),
                                     phoneNumber = phoneNumber,

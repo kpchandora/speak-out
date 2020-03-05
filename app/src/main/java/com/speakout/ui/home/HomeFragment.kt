@@ -9,6 +9,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.speakout.R
+import com.speakout.utils.FirebaseUtils
+import kotlinx.android.synthetic.main.fragment_home.*
+import java.util.*
+import kotlin.random.Random
 
 class HomeFragment : Fragment() {
 
@@ -27,7 +31,26 @@ class HomeFragment : Fragment() {
             textView.text = it
         })
 
-
         return root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+//        text_home.setOnClickListener {
+//            val list = mutableListOf<String>()
+//            for (i in 0..(Random.nextInt(1, 2))) {
+//                list.add(UUID.randomUUID().toString())
+//            }
+//            list.forEach {
+//                var ref = FirebaseUtils.getReference().child("list").push()
+//
+//                for (i in 0..28) {
+//                    ref = ref.child("$i")
+//                }
+//
+//                ref.push().setValue(it)
+//            }
+//        }
+    }
+
 }

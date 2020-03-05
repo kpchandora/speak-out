@@ -2,8 +2,12 @@ package com.speakout.auth
 
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.PropertyName
+import com.speakout.people.People
 
 data class UserDetails(
+
+    val userId: String,
+
     @PropertyName("name")
     val name: String? = null,
 
@@ -28,7 +32,7 @@ data class UserDetails(
 
     companion object {
         @Exclude
-        fun usernameMap(username: String) = mapOf(
+        fun updateUsername(username: String) = mapOf(
             "username" to username
         )
 

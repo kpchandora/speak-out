@@ -34,7 +34,7 @@ class UserNameActivity : AppCompatActivity() {
                     }
                     FirebaseUtils.Data.ABSENT -> {
                         Toast.makeText(this@UserNameActivity, "Absent", Toast.LENGTH_SHORT).show()
-                        mUserViewModel.updateUserDetails(UserDetails.usernameMap(username))
+                        mUserViewModel.updateUserDetails(UserDetails.updateUsername(username))
                     }
                     FirebaseUtils.Data.CANCELLED -> {
                         shouldSignOut.set(true)

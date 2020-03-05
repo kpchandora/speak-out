@@ -18,6 +18,7 @@ object StringUtils {
         const val userDetailsRef = "user_details"
         const val usernamesRef = "user_names"
         const val postsRef = "posts"
+        const val tags = "tags"
     }
 
     object IntentStrings {

@@ -20,8 +20,6 @@ object AuthService {
             FirebaseUtils.getReference().child(ref)
                 .child(it).setValue(userDetails).addOnCompleteListener { task ->
                     data.value = task.isSuccessful
-                }.addOnFailureListener {
-                    data.value = false
                 }
         }
         return data

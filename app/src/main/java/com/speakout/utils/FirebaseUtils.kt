@@ -22,6 +22,8 @@ object FirebaseUtils {
 
     fun getReference() = FirebaseDatabase.getInstance().reference
 
+    fun getTagsRef() = getReference().child("tags")
+
     enum class Data {
         PRESET,
         ABSENT,

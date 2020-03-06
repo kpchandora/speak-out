@@ -8,12 +8,32 @@
     tools:context=".posts.tags.PostTagsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tags_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="8dp"
         android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/recyclerView2"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="12"
+        tools:layout_editor_absoluteX="8dp"
+        tools:listitem="@layout/item_tag_layout"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView2"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_margin="8dp"
+        android:orientation="horizontal"
+        android:scrollbars="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toTopOf="@+id/searchView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/tag_done_fab"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:itemCount="5"
+        tools:listitem="@layout/item_selected_tags_layout"
+        tools:visibility="visible" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"

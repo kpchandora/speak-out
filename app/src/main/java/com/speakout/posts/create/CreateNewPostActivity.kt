@@ -39,6 +39,7 @@ class CreateNewPostActivity : AppCompatActivity() {
             )
         }
 
+
         create_post_next_btn.setOnClickListener {
             addFragment(
                 container = R.id.create_post_container_main,
@@ -63,7 +64,7 @@ class CreateNewPostActivity : AppCompatActivity() {
                         createPostData.postId = postId
                         mCreatePostViewModel.uploadImage(Pair(bitmap, postId))
                     } ?: showShortToast("Failed to upload post")
-                }) {t->
+                }) { t ->
                     showShortToast("Failed to upload post: $t")
                 }
 

@@ -1,6 +1,6 @@
 package com.speakout.utils
 
-object StringUtils {
+object NameUtils {
 
     object UserDetails {
         const val name = "name"

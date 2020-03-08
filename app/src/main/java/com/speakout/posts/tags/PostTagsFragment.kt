@@ -76,18 +76,18 @@ class PostTagsFragment : Fragment() {
             mAdapter.isLoading.set(false)
         })
 
-        TagsService.getTagsFirestore("")
+//        TagsService.getTagsFirestore("")
 
         tag_done_fab.setOnClickListener {
-//            mCreatePostViewModel.tags.value = mSelectedTags.keys.toList()
-            val i = Random.nextInt(1000, 10000)
-            TagsService.checkTagPresent(
-                Tag(
-                    id = System.nanoTime(),
-                    tag = Test.getAlphaNumericString(8).toLowerCase(),
-                    used = i.toLong()
-                )
-            )
+            mCreatePostViewModel.tags.value = mSelectedTags.keys.toList()
+//            val i = Random.nextInt(1000, 10000)
+//            TagsService.checkTagPresent(
+//                Tag(
+//                    id = System.nanoTime(),
+//                    tag = Test.getAlphaNumericString(8).toLowerCase(),
+//                    used = i.toLong()
+//                )
+//            )
         }
 
         Handler().postDelayed({
@@ -97,7 +97,7 @@ class PostTagsFragment : Fragment() {
 
         tag_search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
+                return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {

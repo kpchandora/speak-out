@@ -6,14 +6,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.speakout.utils.FirebaseUtils
-import com.speakout.utils.StringUtils
+import com.speakout.utils.NameUtils
 import java.lang.Exception
 
 object AuthService {
 
     fun saveUserData(
         userDetails: UserDetails,
-        ref: String = StringUtils.DatabaseRefs.userDetailsRef
+        ref: String = NameUtils.DatabaseRefs.userDetailsRef
     ): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
         FirebaseUtils.userId()?.let {
@@ -27,7 +27,7 @@ object AuthService {
 
     fun getUserData(uid: String): LiveData<UserDetails?> {
         val data = MutableLiveData<UserDetails?>()
-        FirebaseUtils.getReference().child(StringUtils.DatabaseRefs.userDetailsRef).child(uid)
+        FirebaseUtils.getReference().child(NameUtils.DatabaseRefs.userDetailsRef).child(uid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
                     data.value = null
@@ -53,7 +53,7 @@ object AuthService {
     ): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
         FirebaseUtils.userId()?.let {
-            FirebaseUtils.getReference().child(StringUtils.DatabaseRefs.userDetailsRef).child(it)
+            FirebaseUtils.getReference().child(NameUtils.DatabaseRefs.userDetailsRef).child(it)
                 .updateChildren(map)
                 .addOnCompleteListener { task ->
                     data.value = task.isSuccessful
@@ -67,7 +67,7 @@ object AuthService {
 
     fun isUsernamePresent(key: String): LiveData<FirebaseUtils.Data> {
         val data = MutableLiveData<FirebaseUtils.Data>()
-        FirebaseUtils.getReference().child(StringUtils.DatabaseRefs.userDetailsRef)
+        FirebaseUtils.getReference().child(NameUtils.DatabaseRefs.userDetailsRef)
             .orderByChild("username")
             .equalTo(key)
             .addListenerForSingleValueEvent(

@@ -4,7 +4,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import com.speakout.SpeakOutApp
 
 object FirebaseUtils {
 
@@ -13,9 +12,11 @@ object FirebaseUtils {
         fun getRef() = FirebaseFirestore.getInstance()
 
         fun getUsersRef() =
-            getRef().collection(StringUtils.DatabaseRefs.userDetailsRef)
+            getRef().collection(NameUtils.DatabaseRefs.userDetailsRef)
 
-        fun getTagsRef() = getRef().collection(StringUtils.DatabaseRefs.tags)
+        fun getTagsRef() = getRef().collection(NameUtils.DatabaseRefs.tags)
+
+        fun getPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
 
     }
 

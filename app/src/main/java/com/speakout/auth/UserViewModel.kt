@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.speakout.utils.FirebaseUtils
-import com.speakout.utils.StringUtils
 
 class UserViewModel : ViewModel() {
 

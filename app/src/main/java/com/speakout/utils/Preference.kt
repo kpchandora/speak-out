@@ -55,7 +55,7 @@ class Preference {
 
     fun clearUserDetails() {
         editor?.apply {
-            StringUtils.UserDetails?.apply {
+            NameUtils.UserDetails?.apply {
                 remove(username)
                 remove(email)
                 remove(name)

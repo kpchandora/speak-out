@@ -13,7 +13,7 @@ import com.speakout.posts.tags.PostTagsFragment
 import com.speakout.ui.BottomDialogActivity
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.ImageUtils
-import com.speakout.utils.StringUtils
+import com.speakout.utils.NameUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_create_new_post.*
@@ -35,7 +35,7 @@ class CreateNewPostActivity : AppCompatActivity() {
             startActivityForResult(
                 Intent(this, BottomDialogActivity::class.java).putExtra(
                     BottomDialogActivity.CONTENT, create_post_content_tv.text
-                ), StringUtils.IntentStrings.CreatePost.REQUEST_CODE
+                ), NameUtils.IntentStrings.CreatePost.REQUEST_CODE
             )
         }
 
@@ -97,7 +97,7 @@ class CreateNewPostActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == StringUtils.IntentStrings.CreatePost.REQUEST_CODE) {
+        if (requestCode == NameUtils.IntentStrings.CreatePost.REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 data?.extras?.let {
                     it.getString(BottomDialogActivity.CONTENT)?.let { content ->

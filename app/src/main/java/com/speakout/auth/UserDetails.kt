@@ -6,7 +6,7 @@ import com.speakout.people.People
 
 data class UserDetails(
 
-    val userId: String,
+    val userId: String = "",
 
     @PropertyName("name")
     val name: String? = null,

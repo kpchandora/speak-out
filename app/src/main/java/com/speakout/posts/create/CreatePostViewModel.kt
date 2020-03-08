@@ -17,7 +17,7 @@ class CreatePostViewModel : ViewModel() {
     }
 
     val postObserver: LiveData<Boolean> = Transformations.switchMap(post) {
-        CreatePostService.createPostFirestore(postData = it)
+        CreatePostService.createPost(postData = it)
     }
 
     fun uploadImage(pair: Pair<Bitmap, String>) {

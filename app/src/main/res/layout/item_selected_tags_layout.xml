@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="50dp"
+    android:layout_height="60dp"
     android:orientation="vertical">
 
     <com.google.android.material.chip.Chip
@@ -11,10 +11,14 @@
         style="@style/Widget.MaterialComponents.Chip.Entry"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        app:checkedIconEnabled="false"
         android:layout_marginStart="2dp"
         android:layout_marginEnd="2dp"
+        android:minWidth="80dp"
+        app:chipCornerRadius="8dp"
+        app:closeIconTint="@color/white"
         android:textColor="@color/white"
-        app:chipBackgroundColor="@color/blue_600"
+        app:chipBackgroundColor="@color/indigo_500"
         tools:text="@tools:sample/first_names" />
 
 </LinearLayout>

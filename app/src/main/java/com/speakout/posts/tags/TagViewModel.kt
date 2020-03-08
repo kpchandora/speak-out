@@ -10,7 +10,7 @@ class TagViewModel : ViewModel() {
 
     private val _tags = MutableLiveData<String>()
     val tags: LiveData<List<Tag>> = Transformations.switchMap(_tags) {
-        TagsService.getTags()
+        TagsService.getTags(it)
     }
 
     fun searchTags(query: String) {

@@ -6,13 +6,17 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
+import com.speakout.extensions.gone
+import com.speakout.extensions.visible
 import kotlinx.android.synthetic.main.item_tag_layout.view.*
+import java.util.concurrent.atomic.AtomicBoolean
 
 class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.TagsHolder>() {
 
     private val mTagsList = ArrayList<Tag>()
     private val mSelectedTags = hashSetOf<String>()
     private var mListener: OnTagClickListener? = null
+    val isLoading = AtomicBoolean(false)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TagsHolder {
         val view =
@@ -30,9 +34,20 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
         holder.apply {
             bind(mTagsList[position])
             view.item_tags_main_layout.setOnClickListener {
-                toggleSelection(mTagsList[position].tag)
-                mListener?.onTagClick(mTagsList[position])
-                notifyItemChanged(position)
+                toggleSelection(mTagsList[adapterPosition].tag)
+                notifyItemChanged(adapterPosition)
+                mListener?.onTagClick(mTagsList[adapterPosition])
+            }
+        }
+    }
+
+    fun removeTag(tag: Tag) {
+        mSelectedTags.remove(tag.tag)
+        if (!isLoading.get()) {
+            mTagsList.forEachIndexed { index: Int, t: Tag ->
+                if (tag.id == t.id) {
+                    notifyItemChanged(index)
+                }
             }
         }
     }
@@ -51,9 +66,12 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
         fun bind(tag: Tag) {
             view.item_tag_name_tv.text = tag.tag
 
-//            view.item_tag_icon_tv.text =
-//                if (isSelected(tag.tag)) view.context.getString(R.string.tick_text)
-//                else view.context.getString(R.string.hash_text)
+            if ((tag.used ?: 0) > 0) {
+                view.item_tag_posts_count_tv.visible()
+                view.item_tag_posts_count_tv.text = "${(tag.used ?: 0)} posts"
+            } else {
+                view.item_tag_posts_count_tv.gone()
+            }
 
             view.background = if (isSelected(tag.tag))
                 ContextCompat.getDrawable(

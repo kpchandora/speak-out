@@ -44,6 +44,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.2.1'
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
+    implementation 'com.google.firebase:firebase-firestore:21.4.1'
 
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

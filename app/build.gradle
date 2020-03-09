@@ -105,5 +105,8 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.17'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.7.1'
 
+    // Circular image view
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
 }
 apply plugin: 'com.google.gms.google-services'

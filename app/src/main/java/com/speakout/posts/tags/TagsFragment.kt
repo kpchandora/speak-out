@@ -3,10 +3,12 @@ package com.speakout.posts.tags
 
 import android.os.Bundle
 import android.os.Handler
+import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -40,6 +42,7 @@ class TagsFragment : Fragment() {
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
     private val addTagQueue = LinkedList<Tag>()
     private val tagsViewModel: TagViewModel by viewModels()
+    private val tagRegex = "^([a-z0-9]+\\b)(?!;)\$".toRegex()
 
 
     override fun onCreateView(
@@ -72,7 +75,6 @@ class TagsFragment : Fragment() {
 
         observeViewModels()
 
-
         tag_done_fab.setOnClickListener {
             mCreatePostViewModel.tags.value = mSelectedTags.keys.toList()
         }
@@ -82,14 +84,30 @@ class TagsFragment : Fragment() {
             tagsViewModel.searchTags("")
         }, 500)
 
+        val searchEditText =
+            tag_search_view.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
+
+
         tag_search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                mAdapter.isLoading.set(true)
-                tagsViewModel.searchTags(newText ?: "")
+                newText?.let {
+                    if (tagRegex.matches(it)) {
+                        searchEditText.error = null
+                        mAdapter.isLoading.set(true)
+                        tagsViewModel.searchTags(newText.toLowerCase(Locale.getDefault()))
+                    } else {
+                        if (it.isEmpty()) {
+                            tagsViewModel.searchTags("")
+                            searchEditText.error = null
+                        } else {
+                            searchEditText.error = "Invalid tag name"
+                        }
+                    }
+                }
                 return true
             }
 
@@ -101,16 +119,15 @@ class TagsFragment : Fragment() {
         tagsViewModel.tags.observe(viewLifecycleOwner, Observer {
             fragment_post_tags_progress.gone()
 
-            if (tag_search_view.query?.isNotEmpty() == true && it.isEmpty()) {
-                mAdapter.setData(
-                    listOf(
-                        Tag(
-                            tag = tag_search_view.query.toString(),
-                            id = System.nanoTime(),
-                            used = null
+            val query = tag_search_view.query
+            if (query?.isNotEmpty() == true && it.isEmpty()) {
+                if (tagRegex.matches(query)) {
+                    mAdapter.setData(
+                        listOf(
+                            Tag(tag = query.toString(), id = System.nanoTime(), used = null)
                         )
                     )
-                )
+                }
             } else {
                 mAdapter.setData(it)
             }

@@ -18,20 +18,18 @@ import com.speakout.extensions.gone
 import com.speakout.extensions.visible
 import com.speakout.posts.create.CreatePostViewModel
 import kotlinx.android.synthetic.main.fragment_post_tags.*
-import java.nio.charset.Charset
-import kotlin.random.Random
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class PostTagsFragment : Fragment() {
+class TagsFragment : Fragment() {
 
     companion object {
 
-        const val TAG = "PostTagsFragment"
-        const val POST_DATA_KEY = "post_data_key"
+        const val TAG = "TagsFragment"
 
-        fun newInstance(bundle: Bundle? = null) = PostTagsFragment().apply {
+        fun newInstance(bundle: Bundle? = null) = TagsFragment().apply {
             arguments = bundle
         }
     }
@@ -40,6 +38,9 @@ class PostTagsFragment : Fragment() {
     private val mSelectedTags = hashMapOf<String, Tag>()
     private val mAdapter = TagsRecyclerViewAdapter()
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
+    private val addTagQueue = LinkedList<Tag>()
+    private val tagsViewModel: TagViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,25 +70,11 @@ class PostTagsFragment : Fragment() {
             adapter = mSelectedTagsAdapter
         }
 
-        val tagsViewModel: TagViewModel by viewModels()
-        tagsViewModel.tags.observe(viewLifecycleOwner, Observer {
-            fragment_post_tags_progress.gone()
-            mAdapter.setData(it)
-            mAdapter.isLoading.set(false)
-        })
+        observeViewModels()
 
-//        TagsService.getTagsFirestore("")
 
         tag_done_fab.setOnClickListener {
             mCreatePostViewModel.tags.value = mSelectedTags.keys.toList()
-//            val i = Random.nextInt(1000, 10000)
-//            TagsService.checkTagPresent(
-//                Tag(
-//                    id = System.nanoTime(),
-//                    tag = Test.getAlphaNumericString(8).toLowerCase(),
-//                    used = i.toLong()
-//                )
-//            )
         }
 
         Handler().postDelayed({
@@ -101,10 +88,42 @@ class PostTagsFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                mAdapter.isLoading.set(true)
                 tagsViewModel.searchTags(newText ?: "")
                 return true
             }
 
+        })
+
+    }
+
+    private fun observeViewModels() {
+        tagsViewModel.tags.observe(viewLifecycleOwner, Observer {
+            fragment_post_tags_progress.gone()
+
+            if (tag_search_view.query?.isNotEmpty() == true && it.isEmpty()) {
+                mAdapter.setData(
+                    listOf(
+                        Tag(
+                            tag = tag_search_view.query.toString(),
+                            id = System.nanoTime(),
+                            used = null
+                        )
+                    )
+                )
+            } else {
+                mAdapter.setData(it)
+            }
+            mAdapter.isLoading.set(false)
+        })
+
+        tagsViewModel.addTag.observe(viewLifecycleOwner, Observer {
+            if (addTagQueue.isNotEmpty()) {
+                addTagQueue.poll()?.let {
+                    it.uploading = null
+                    mAdapter.tagAdded(tag = it)
+                }
+            }
         })
 
     }
@@ -126,6 +145,14 @@ class PostTagsFragment : Fragment() {
                 selected_tags_rv.scrollToPosition(0)
             }
         }
+
+        override fun onAddNewTag(tag: Tag) {
+            super.onAddNewTag(tag)
+            val newTag = tag.copy(used = 0)
+            addTagQueue.add(newTag)
+            tagsViewModel.addTag(newTag)
+        }
+
     }
 
     private val selectedTagsListener = object : OnTagClickListener {

@@ -10,9 +10,12 @@ import java.lang.Exception
 
 object TagsService {
 
-    fun checkTagPresent(tag: Tag): LiveData<Boolean> {
+    fun addTag(tag: Tag): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
         FirebaseUtils.FirestoreUtils.getTagsRef().document(tag.id.toString()).set(tag)
+            .addOnCompleteListener {
+                data.value = it.isSuccessful
+            }
         return data
     }
 

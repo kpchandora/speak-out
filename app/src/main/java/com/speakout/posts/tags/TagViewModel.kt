@@ -13,6 +13,15 @@ class TagViewModel : ViewModel() {
         TagsService.getTags(it)
     }
 
+    private val _addTag = MutableLiveData<Tag>()
+    val addTag = Transformations.switchMap(_addTag) {
+        TagsService.addTag(tag = it)
+    }
+
+    fun addTag(tag: Tag) {
+        _addTag.value = tag
+    }
+
     fun searchTags(query: String) {
         _tags.value = query
     }

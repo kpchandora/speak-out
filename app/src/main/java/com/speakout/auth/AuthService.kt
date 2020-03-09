@@ -12,21 +12,8 @@ import java.lang.Exception
 
 object AuthService {
 
-    fun saveUserData(
-        userDetails: UserDetails,
-        ref: String = NameUtils.DatabaseRefs.userDetailsRef
-    ): LiveData<Boolean> {
-        val data = MutableLiveData<Boolean>()
-        FirebaseUtils.userId()?.let {
-            FirebaseUtils.getReference().child(ref)
-                .child(it).setValue(userDetails).addOnCompleteListener { task ->
-                    data.value = task.isSuccessful
-                }
-        }
-        return data
-    }
 
-    fun saveUserDataFirestore(userDetails: UserDetails): LiveData<Boolean> {
+    fun saveUserData(userDetails: UserDetails): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
         FirebaseUtils.userId()?.let {
             FirebaseUtils.FirestoreUtils.getUsersRef().document(it)
@@ -37,7 +24,7 @@ object AuthService {
         return data
     }
 
-    fun getUserDataFirestore(uid: String): LiveData<UserDetails?> {
+    fun getUserData(uid: String): LiveData<UserDetails?> {
         val data = MutableLiveData<UserDetails?>()
         FirebaseUtils.FirestoreUtils.getUsersRef().document(uid)
             .get().addOnCompleteListener {
@@ -55,30 +42,7 @@ object AuthService {
         return data
     }
 
-    fun getUserData(uid: String): LiveData<UserDetails?> {
-        val data = MutableLiveData<UserDetails?>()
-        FirebaseUtils.getReference().child(NameUtils.DatabaseRefs.userDetailsRef).child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                    data.value = null
-                }
-
-                override fun onDataChange(p0: DataSnapshot) {
-                    if (p0.exists()) {
-                        try {
-                            data.value = p0.getValue(UserDetails::class.java)
-                        } catch (e: Exception) {
-                            data.value = null
-                        }
-                    } else {
-                        data.value = null
-                    }
-                }
-            })
-        return data
-    }
-
-    fun updateUserDataFirestore(map: Map<String, Any>): LiveData<Boolean> {
+    fun updateUserData(map: Map<String, Any>): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
         FirebaseUtils.userId()?.let {
             FirebaseUtils.FirestoreUtils.getUsersRef().document(it)
@@ -89,20 +53,8 @@ object AuthService {
         return data
     }
 
-    fun updateUserData(map: Map<String, Any>): LiveData<Boolean> {
-        val data = MutableLiveData<Boolean>()
-        FirebaseUtils.userId()?.let {
-            FirebaseUtils.getReference().child(NameUtils.DatabaseRefs.userDetailsRef).child(it)
-                .updateChildren(map)
-                .addOnCompleteListener { task ->
-                    data.value = task.isSuccessful
-                }
-        }
 
-        return data
-    }
-
-    fun isUsernamePresentFirestore(key: String): LiveData<FirebaseUtils.Data> {
+    fun isUsernamePresent(key: String): LiveData<FirebaseUtils.Data> {
         val data = MutableLiveData<FirebaseUtils.Data>()
         FirebaseUtils.FirestoreUtils.getUsersRef()
             .whereEqualTo("username", key)
@@ -127,25 +79,4 @@ object AuthService {
         return data
     }
 
-    fun isUsernamePresent(key: String): LiveData<FirebaseUtils.Data> {
-        val data = MutableLiveData<FirebaseUtils.Data>()
-        FirebaseUtils.getReference().child(NameUtils.DatabaseRefs.userDetailsRef)
-            .orderByChild("username")
-            .equalTo(key)
-            .addListenerForSingleValueEvent(
-                object : ValueEventListener {
-                    override fun onCancelled(p0: DatabaseError) {
-                        data.value = FirebaseUtils.Data.CANCELLED
-                    }
-
-                    override fun onDataChange(p0: DataSnapshot) {
-                        data.value = if (p0.exists())
-                            FirebaseUtils.Data.PRESET
-                        else
-                            FirebaseUtils.Data.ABSENT
-                    }
-                })
-
-        return data
-    }
 }

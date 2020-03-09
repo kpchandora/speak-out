@@ -14,19 +14,19 @@ class UserViewModel : ViewModel() {
     private val getUserData = MutableLiveData<String>()
 
     val usernameObserver: LiveData<FirebaseUtils.Data> = Transformations.switchMap(username) {
-        AuthService.isUsernamePresentFirestore(key = it)
+        AuthService.isUsernamePresent(key = it)
     }
 
     val updateDetailsObserver: LiveData<Boolean> = Transformations.switchMap(updateUserDetails) {
-        AuthService.updateUserDataFirestore(it)
+        AuthService.updateUserData(it)
     }
 
     val saveUserDetailsObserver: LiveData<Boolean> = Transformations.switchMap(saveUserDetails) {
-        AuthService.saveUserDataFirestore(it)
+        AuthService.saveUserData(it)
     }
 
     val getUserDataObserver: LiveData<UserDetails?> = Transformations.switchMap(getUserData) {
-        AuthService.getUserDataFirestore(it)
+        AuthService.getUserData(it)
     }
 
     fun saveUserDetails(userDetails: UserDetails) {

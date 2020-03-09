@@ -34,9 +34,25 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
         holder.apply {
             bind(mTagsList[position])
             view.item_tags_main_layout.setOnClickListener {
-                toggleSelection(mTagsList[adapterPosition].tag)
-                notifyItemChanged(adapterPosition)
-                mListener?.onTagClick(mTagsList[adapterPosition])
+                val item = mTagsList[adapterPosition]
+                if (item.used ?: -1 > -1) { //used is not null
+                    toggleSelection(item.tag)
+                    notifyItemChanged(adapterPosition)
+                    mListener?.onTagClick(item)
+                } else { //used is null
+                    item.uploading = true
+                    notifyItemChanged(adapterPosition)
+                    mListener?.onAddNewTag(item)
+                }
+            }
+        }
+    }
+
+    fun tagAdded(tag: Tag) {
+        mTagsList.forEachIndexed { index: Int, t: Tag ->
+            if (tag.id == t.id) {
+                t.used = 0
+                notifyItemChanged(index)
             }
         }
     }
@@ -66,11 +82,24 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
         fun bind(tag: Tag) {
             view.item_tag_name_tv.text = tag.tag
 
-            if ((tag.used ?: 0) > 0) {
-                view.item_tag_posts_count_tv.visible()
-                view.item_tag_posts_count_tv.text = "${(tag.used ?: 0)} posts"
-            } else {
+            tag.used?.let {
+                view.item_tag_add_layout.gone()
+                if (it > 0) {
+                    view.item_tag_posts_count_tv.visible()
+                    view.item_tag_posts_count_tv.text = "$it posts"
+                } else {
+                    view.item_tag_posts_count_tv.gone()
+                }
+            } ?: kotlin.run {
+                view.item_tag_add_layout.visible()
                 view.item_tag_posts_count_tv.gone()
+                if (tag.uploading == true) {
+                    view.item_add_tag_progress.visible()
+                    view.item_add_tag_btn.gone()
+                } else {
+                    view.item_add_tag_progress.gone()
+                    view.item_add_tag_btn.visible()
+                }
             }
 
             view.background = if (isSelected(tag.tag))

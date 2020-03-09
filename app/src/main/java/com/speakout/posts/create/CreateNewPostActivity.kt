@@ -2,14 +2,14 @@ package com.speakout.posts.create
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.speakout.R
 import com.speakout.extensions.addFragment
 import com.speakout.extensions.showShortToast
-import com.speakout.posts.tags.PostTagsFragment
+import com.speakout.posts.tags.TagsFragment
+import com.speakout.ui.BaseActivity
 import com.speakout.ui.BottomDialogActivity
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.ImageUtils
@@ -21,7 +21,7 @@ import timber.log.Timber
 import java.text.DateFormat
 import java.util.*
 
-class CreateNewPostActivity : AppCompatActivity() {
+class CreateNewPostActivity : BaseActivity() {
 
     private val createPostData = CreatePostData()
     private val mCreatePostViewModel: CreatePostViewModel by viewModels()
@@ -43,8 +43,8 @@ class CreateNewPostActivity : AppCompatActivity() {
         create_post_next_btn.setOnClickListener {
             addFragment(
                 container = R.id.create_post_container_main,
-                backStackTag = PostTagsFragment.TAG,
-                fragment = PostTagsFragment.newInstance()
+                backStackTag = TagsFragment.TAG,
+                fragment = TagsFragment.newInstance()
             )
         }
 
@@ -55,6 +55,7 @@ class CreateNewPostActivity : AppCompatActivity() {
     private fun observeLiveData() {
         mCreatePostViewModel.tags.observe(this, Observer {
             createPostData.tags = it
+            showProgress()
             ImageUtils.convertToBitmap(create_post_container_layout)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -63,8 +64,12 @@ class CreateNewPostActivity : AppCompatActivity() {
                         val postId = UUID.randomUUID().toString()
                         createPostData.postId = postId
                         mCreatePostViewModel.uploadImage(Pair(bitmap, postId))
-                    } ?: showShortToast("Failed to upload post")
+                    } ?: kotlin.run {
+                        hideProgress()
+                        showShortToast("Failed to upload post")
+                    }
                 }) { t ->
+                    hideProgress()
                     showShortToast("Failed to upload post: $t")
                 }
 
@@ -82,7 +87,10 @@ class CreateNewPostActivity : AppCompatActivity() {
 
                 mCreatePostViewModel.uploadPost(createPostData)
 
-            } ?: showShortToast("Failed to upload post")
+            } ?: kotlin.run {
+                hideProgress()
+                showShortToast("Failed to upload post")
+            }
         })
 
         mCreatePostViewModel.postObserver.observe(this, Observer {
@@ -90,6 +98,7 @@ class CreateNewPostActivity : AppCompatActivity() {
                 showShortToast("Post uploaded successfully")
                 finish()
             } else {
+                hideProgress()
                 showShortToast("Failed to upload post")
             }
         })

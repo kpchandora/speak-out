@@ -22,4 +22,6 @@
     <string name="hash_text">＃</string>
     <string name="tick_text">✓</string>
 
+    <string name="something_went_wrong">Something went wrong. Please try again</string>
+
 </resources>

@@ -1,79 +1,85 @@
 package com.speakout.auth
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.speakout.R
+import com.speakout.extensions.*
+import com.speakout.ui.BaseActivity
+import com.speakout.ui.MainActivity
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.activity_user_name.*
-import java.util.concurrent.atomic.AtomicBoolean
 
-class UserNameActivity : AppCompatActivity() {
+class UserNameActivity : BaseActivity() {
 
     private lateinit var mUserViewModel: UserViewModel
     private var username = ""
-    private val shouldSignOut = AtomicBoolean(true)
+    private val userNameRegex = "^[a-z0-9_]{1,25}\$".toRegex()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_name)
         mUserViewModel = ViewModelProvider.NewInstanceFactory().create(UserViewModel::class.java)
 
+        user_name_next_btn.isEnabled = false
+
         mUserViewModel.usernameObserver.observe(this, Observer {
             it?.apply {
                 when (this) {
                     FirebaseUtils.Data.PRESET -> {
-                        shouldSignOut.set(true)
-                        Toast.makeText(
-                            this@UserNameActivity,
-                            "Username already taken",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        username_til.error = "Username is already taken"
                     }
                     FirebaseUtils.Data.ABSENT -> {
-                        Toast.makeText(this@UserNameActivity, "Absent", Toast.LENGTH_SHORT).show()
-                        mUserViewModel.updateUserDetails(UserDetails.updateUsername(username))
+                        user_unique_name_et.setDrawableEnd(R.drawable.ic_check)
+                        user_name_next_btn.isEnabled = true
+                        username_til.error = null
                     }
                     FirebaseUtils.Data.CANCELLED -> {
-                        shouldSignOut.set(true)
-                        Toast.makeText(this@UserNameActivity, "Cancelled", Toast.LENGTH_SHORT)
-                            .show()
+                        showShortToast(getString(R.string.something_went_wrong))
                     }
                 }
             }
         })
 
-//        mUserViewModel.saveUserDetailsObserver.observe(this, Observer {
-//            if (it) {
-//                Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
-//            } else {
-//                Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-
         mUserViewModel.updateDetailsObserver.observe(this, Observer {
+            hideProgress()
             if (it) {
-                shouldSignOut.set(false)
-                Toast.makeText(this, "Saved Successfully", Toast.LENGTH_SHORT).show()
+                openActivity(MainActivity::class.java)
+                finish()
             } else {
-                shouldSignOut.set(true)
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show()
+                showShortToast(getString(R.string.something_went_wrong))
             }
         })
 
-        user_name_done_btn.setOnClickListener {
-            user_unique_name_et.text.toString().trim().let {
-                if (it.isNotEmpty()) {
-                    username = it
-                    mUserViewModel.isUsernamePresent(it)
+        user_unique_name_et.doOnTextChanged { text: CharSequence?, start: Int,
+                                              count: Int, after: Int ->
+
+            user_unique_name_et.removeDrawableEnd()
+//            user_unique_name_et.setText(text?.toString()?.toLowerCase(Locale.getDefault()) ?: "")
+
+            text?.let {
+                user_name_next_btn.isEnabled = false
+                if (userNameRegex.matches(text)) {
+                    if (text.length < 3) {
+                        username_til.error = "Username is too small"
+                    } else {
+                        username_til.error = null
+                        username = text.toString()
+                        mUserViewModel.isUsernamePresent(username)
+                    }
                 } else {
-                    user_unique_name_et.error = "Field can't be empty"
+                    username_til.error = "Please enter a valid username"
                 }
             }
 
         }
+
+        user_name_next_btn.setOnClickListener {
+            showProgress()
+            mUserViewModel.updateUserDetails(UserDetails.updateUsername(username))
+        }
+
     }
 
     override fun onDestroy() {

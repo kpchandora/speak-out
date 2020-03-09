@@ -41,6 +41,8 @@ class HomeFragment : Fragment() {
 //        val db = FirebaseFirestore.getInstance()
         text_home.setOnClickListener {
 
+            FirebaseUtils.signOut()
+
 //            val user = hashMapOf(
 //                "first" to "Ada",
 //                "last" to "Lovelace",

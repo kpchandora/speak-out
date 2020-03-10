@@ -6,24 +6,32 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.speakout.posts.create.PostData
 import com.speakout.utils.FirebaseUtils
 
 object HomeService {
 
-    fun listenDemo(): LiveData<String> {
-        val data = MutableLiveData<String>()
-        FirebaseUtils.getReference().child("demo").addValueEventListener(object :
-            ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
-                data.value = p0.message
+    fun getPosts(): LiveData<List<PostData>> {
+        val data = MutableLiveData<List<PostData>>()
+        FirebaseUtils.FirestoreUtils.getPostsRef().get()
+            .addOnSuccessListener {
+                if (it.isEmpty) {
+                    data.value = emptyList()
+                } else {
+                    val list = mutableListOf<PostData>()
+                    it.forEach { document ->
+                        try {
+                            list.add(document.toObject(PostData::class.java))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    data.value = list
+                }
+            }.addOnFailureListener {
+                data.value = emptyList()
             }
 
-            override fun onDataChange(p0: DataSnapshot) {
-                (p0.value as? String)?.let {
-                    data.value = it
-                } ?: kotlin.run { data.value = "Error" }
-            }
-        })
         return data
     }
 

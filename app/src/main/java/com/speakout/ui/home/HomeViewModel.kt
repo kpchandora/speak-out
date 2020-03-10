@@ -4,15 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.speakout.posts.create.PostData
 
 class HomeViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    private val _posts = MutableLiveData<String>()
+    val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
+        HomeService.getPosts()
     }
-    val text: LiveData<String> = _text
 
-    private val demoText = MutableLiveData<String>()
-    val demoTextObserver: LiveData<String> = HomeService.listenDemo()
+    fun getPosts(id: String) {
+        _posts.value = id
+    }
 
 }

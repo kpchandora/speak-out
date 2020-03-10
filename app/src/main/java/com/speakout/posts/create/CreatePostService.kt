@@ -9,7 +9,7 @@ import java.io.ByteArrayOutputStream
 
 object CreatePostService {
 
-    fun createPost(postData: CreatePostData): LiveData<Boolean> {
+    fun createPost(postData: PostData): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
         FirebaseUtils.FirestoreUtils.getPostsRef().document(postData.postId).set(postData)
             .addOnCompleteListener {

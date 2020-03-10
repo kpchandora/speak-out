@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 
 class CreatePostViewModel : ViewModel() {
 
-    private val post = MutableLiveData<CreatePostData>()
+    private val post = MutableLiveData<PostData>()
     private val uploadImage = MutableLiveData<Pair<Bitmap, String>>()
     val tags = MutableLiveData<List<String>>()
 
@@ -24,7 +24,7 @@ class CreatePostViewModel : ViewModel() {
         uploadImage.value = pair
     }
 
-    fun uploadPost(postData: CreatePostData) {
+    fun uploadPost(postData: PostData) {
         post.value = postData
     }
 

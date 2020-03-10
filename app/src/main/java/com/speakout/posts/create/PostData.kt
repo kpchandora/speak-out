@@ -3,7 +3,7 @@ package com.speakout.posts.create
 import android.os.Parcel
 import android.os.Parcelable
 
-data class CreatePostData(
+data class PostData(
     var postId: String = "",
     var userId: String = "",
     var content: String = "",
@@ -33,12 +33,12 @@ data class CreatePostData(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<CreatePostData> {
-        override fun createFromParcel(parcel: Parcel): CreatePostData {
-            return CreatePostData(parcel)
+    companion object CREATOR : Parcelable.Creator<PostData> {
+        override fun createFromParcel(parcel: Parcel): PostData {
+            return PostData(parcel)
         }
 
-        override fun newArray(size: Int): Array<CreatePostData?> {
+        override fun newArray(size: Int): Array<PostData?> {
             return arrayOfNulls(size)
         }
     }

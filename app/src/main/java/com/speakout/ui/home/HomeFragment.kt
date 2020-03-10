@@ -21,7 +21,8 @@ import kotlin.random.Random
 
 class HomeFragment : Fragment() {
 
-    private val homeViewModel: HomeViewModel by activityViewModels()
+    private val mHomeViewModel: HomeViewModel by activityViewModels()
+    private val mPostsAdapter = HomePostRecyclerViewAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,10 +35,22 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fragment_home_rv.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
+            adapter = mPostsAdapter
         }
+
+        observeViewModels()
+        mHomeViewModel.getPosts("")
+
+    }
+
+    private fun observeViewModels() {
+        mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            mPostsAdapter.updatePosts(it)
+        })
     }
 
 }

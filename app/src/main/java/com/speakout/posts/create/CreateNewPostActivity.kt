@@ -23,7 +23,7 @@ import java.util.*
 
 class CreateNewPostActivity : BaseActivity() {
 
-    private val createPostData = CreatePostData()
+    private val createPostData = PostData()
     private val mCreatePostViewModel: CreatePostViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {

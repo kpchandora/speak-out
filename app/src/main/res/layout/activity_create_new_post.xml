@@ -19,7 +19,7 @@
         <ImageView
             android:id="@+id/create_post_bg_iv"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="350dp"
             android:adjustViewBounds="true"
             android:src="@drawable/post_image" />
 

@@ -7,6 +7,8 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.speakout.R
 import com.speakout.extensions.addFragment
+import com.speakout.extensions.addViewObserver
+import com.speakout.extensions.getScreenSize
 import com.speakout.extensions.showShortToast
 import com.speakout.posts.tags.TagsFragment
 import com.speakout.ui.BaseActivity
@@ -31,6 +33,13 @@ class CreateNewPostActivity : BaseActivity() {
         setContentView(R.layout.activity_create_new_post)
 
 
+
+        create_post_bg_iv.addViewObserver {
+            getScreenSize().let {
+                create_post_bg_iv.layoutParams.height = it.widthPixels
+                create_post_bg_iv.requestLayout()
+            }
+        }
         create_post_bg_iv.setOnClickListener {
             startActivityForResult(
                 Intent(this, BottomDialogActivity::class.java).putExtra(

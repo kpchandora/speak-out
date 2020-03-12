@@ -65,6 +65,7 @@ fun ImageView.loadImage(url: String?, placeholder: Int) {
     if (url.isNullOrEmpty()) {
         Glide.with(this)
             .load(placeholder)
+            .dontAnimate()
             .into(this)
     } else {
         Glide.with(this)

@@ -32,8 +32,6 @@ class CreateNewPostActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_new_post)
 
-
-
         create_post_bg_iv.addViewObserver {
             getScreenSize().let {
                 create_post_bg_iv.layoutParams.height = it.widthPixels

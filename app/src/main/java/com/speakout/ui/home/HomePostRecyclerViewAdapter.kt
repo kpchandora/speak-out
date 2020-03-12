@@ -4,8 +4,6 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieComposition
-import com.airbnb.lottie.LottieDrawable
 import com.speakout.R
 import com.speakout.extensions.getScreenSize
 import com.speakout.posts.create.PostData

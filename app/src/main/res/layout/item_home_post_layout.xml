@@ -74,8 +74,8 @@
                 android:layout_margin="8dp"
                 android:background="@drawable/dr_like_bg"
                 android:button="@null"
-                android:stateListAnimator="@animator/like_animation"
-                android:checked="false" />
+                android:checked="false"
+                android:stateListAnimator="@animator/like_animation" />
 
 
         </FrameLayout>

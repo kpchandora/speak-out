@@ -3,6 +3,7 @@ package com.speakout.utils
 object NameUtils {
 
     object UserDetails {
+        const val userId = "user_id"
         const val name = "name"
         const val email = "email"
         const val username = "username"

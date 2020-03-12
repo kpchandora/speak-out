@@ -2,6 +2,8 @@ package com.speakout.utils
 
 import android.content.Context
 import com.speakout.SpeakOutApp
+import com.speakout.auth.UserDetails
+import com.speakout.extensions.isNotNullOrEmpty
 
 class Preference {
 
@@ -52,10 +54,50 @@ class Preference {
         editor?.remove(key)?.apply()
     }
 
+    fun saveUserDetails(userDetails: UserDetails) {
+        userDetails.apply {
+            if (userId.isNotEmpty()) {
+                putString(NameUtils.UserDetails.userId, userId)
+            }
+
+            if (email.isNotNullOrEmpty()) {
+                putString(NameUtils.UserDetails.email, email!!)
+            }
+
+            if (username.isNotNullOrEmpty()) {
+                putString(NameUtils.UserDetails.username, username!!)
+            }
+
+            if (photoUrl.isNotNullOrEmpty()) {
+                putString(NameUtils.UserDetails.photoUrl, photoUrl!!)
+            }
+
+            if (phoneNumber.isNotNullOrEmpty()) {
+                putString(NameUtils.UserDetails.phoneNumber, phoneNumber!!)
+            }
+        }
+    }
+
+    fun getUserUniqueName(): String? {
+        return getString(NameUtils.UserDetails.username, "")
+    }
+
+    fun getPhotoUrl(): String? {
+        return getString(NameUtils.UserDetails.photoUrl, "")
+    }
+
+    fun getUserDisplayName(): String? {
+        return getString(NameUtils.UserDetails.name, "")
+    }
+
+    fun getUserId(): String? {
+        return getString(NameUtils.UserDetails.userId, "")
+    }
 
     fun clearUserDetails() {
         editor?.apply {
             NameUtils.UserDetails?.apply {
+                remove(userId)
                 remove(username)
                 remove(email)
                 remove(name)

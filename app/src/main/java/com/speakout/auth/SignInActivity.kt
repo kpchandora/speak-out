@@ -3,6 +3,7 @@ package com.speakout.auth
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.*
@@ -12,12 +13,10 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.speakout.R
-import com.speakout.extensions.gone
-import com.speakout.extensions.openActivity
-import com.speakout.extensions.showShortToast
-import com.speakout.extensions.visible
+import com.speakout.extensions.*
 import com.speakout.ui.MainActivity
 import com.speakout.utils.FirebaseUtils
+import com.speakout.utils.Preference
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
@@ -29,20 +28,20 @@ class SignInActivity : AppCompatActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
-    private lateinit var mUserViewModel: UserViewModel
+    private val mUserViewModel: UserViewModel by viewModels()
+    private lateinit var mPreference: Preference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-
-
-        mUserViewModel = ViewModelProvider.NewInstanceFactory().create(UserViewModel::class.java)
+        mPreference = Preference()
         mUserViewModel.saveUserDetailsObserver.observe(this, Observer {
             if (it) {
                 openActivity(UserNameActivity::class.java)
                 hideProgress()
                 finish()
             } else {
+                mPreference.clearUserDetails()
                 showShortToast("Failed")
                 hideProgress()
                 FirebaseUtils.signOut()
@@ -51,7 +50,8 @@ class SignInActivity : AppCompatActivity() {
 
         mUserViewModel.getUserDataObserver.observe(this, Observer {
             it?.apply {
-                if (username?.isNotEmpty() == true) {
+                mPreference.saveUserDetails(this)
+                if (username.isNotNullOrEmpty()) {
                     openActivity(MainActivity::class.java)
                 } else {
                     openActivity(UserNameActivity::class.java)
@@ -122,17 +122,17 @@ class SignInActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     task.result?.user?.apply {
                         if (task.result!!.additionalUserInfo?.isNewUser == true) {
-                            mUserViewModel.saveUserDetails(
-                                UserDetails(
-                                    userId = uid,
-                                    name = displayName,
-                                    photoUrl = photoUrl?.toString(),
-                                    phoneNumber = phoneNumber,
-                                    email = email,
-                                    creationTimeStamp = metadata?.creationTimestamp,
-                                    lastSignInTimestamp = metadata?.lastSignInTimestamp
-                                )
+                            val model = UserDetails(
+                                userId = uid,
+                                name = displayName,
+                                photoUrl = photoUrl?.toString(),
+                                phoneNumber = phoneNumber,
+                                email = email,
+                                creationTimeStamp = metadata?.creationTimestamp,
+                                lastSignInTimestamp = metadata?.lastSignInTimestamp
                             )
+                            mPreference.saveUserDetails(model)
+                            mUserViewModel.saveUserDetails(model)
                         } else {
                             mUserViewModel.getUserData(uid = uid)
                         }

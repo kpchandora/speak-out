@@ -18,12 +18,12 @@
     <string name="enter_content_hint">Speak your heart out…</string>
     <string name="hashtag_hint">Type hashtag here…</string>
 
-    <string name="empty_error">Field can\'t be empty</string>
+    <string name="error_empty">Field can\'t be empty</string>
     <string name="loading_hint">Loading…</string>
     <string name="hash_text">＃</string>
     <string name="tick_text">✓</string>
 
-    <string name="something_went_wrong">Something went wrong. Please try again</string>
-    <string name="image_load_fail">Failed to load. Tap to retry</string>
+    <string name="error_something_went_wrong">Something went wrong. Please try again</string>
+    <string name="error_image_load_fail">Failed to load. Tap to retry</string>
 
 </resources>

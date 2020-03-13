@@ -5,13 +5,12 @@ import com.speakout.SpeakOutApp
 import com.speakout.auth.UserDetails
 import com.speakout.extensions.isNotNullOrEmpty
 
-class AppPreference {
+object AppPreference {
 
     private val sharedPreferences by lazy {
         SpeakOutApp.appContext?.getSharedPreferences(
             "speak_out_pref", Context.MODE_PRIVATE
         )
-
     }
 
     private val editor by lazy {
@@ -78,20 +77,20 @@ class AppPreference {
         }
     }
 
-    fun getUserUniqueName(): String? {
-        return getString(NameUtils.UserDetails.username, "")
+    fun getUserUniqueName(): String {
+        return getString(NameUtils.UserDetails.username, "") ?: ""
     }
 
-    fun getPhotoUrl(): String? {
-        return getString(NameUtils.UserDetails.photoUrl, "")
+    fun getPhotoUrl(): String {
+        return getString(NameUtils.UserDetails.photoUrl, "") ?: ""
     }
 
-    fun getUserDisplayName(): String? {
-        return getString(NameUtils.UserDetails.name, "")
+    fun getUserDisplayName(): String {
+        return getString(NameUtils.UserDetails.name, "") ?: ""
     }
 
-    fun getUserId(): String? {
-        return getString(NameUtils.UserDetails.userId, "")
+    fun getUserId(): String {
+        return getString(NameUtils.UserDetails.userId, "") ?: ""
     }
 
     fun clearUserDetails() {

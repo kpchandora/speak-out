@@ -44,7 +44,7 @@ class BottomDialogActivity : Activity() {
             hideKeyboard()
             val text = bottom_dialog_et.text.toString().trim()
             if (text.isEmpty()) {
-                bottom_dialog_et.error = getString(R.string.empty_error)
+                bottom_dialog_et.error = getString(R.string.error_empty)
             } else {
                 setResult(RESULT_OK, Intent().putExtra(CONTENT, text))
                 finish()

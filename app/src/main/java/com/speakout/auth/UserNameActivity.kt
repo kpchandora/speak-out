@@ -37,7 +37,7 @@ class UserNameActivity : BaseActivity() {
                         username_til.error = null
                     }
                     FirebaseUtils.Data.CANCELLED -> {
-                        showShortToast(getString(R.string.something_went_wrong))
+                        showShortToast(getString(R.string.error_something_went_wrong))
                     }
                 }
             }
@@ -46,11 +46,11 @@ class UserNameActivity : BaseActivity() {
         mUserViewModel.updateDetailsObserver.observe(this, Observer {
             hideProgress()
             if (it) {
-                AppPreference().saveUserDetails(UserDetails(username = username))
+                AppPreference.saveUserDetails(UserDetails(username = username))
                 openActivity(MainActivity::class.java)
                 finish()
             } else {
-                showShortToast(getString(R.string.something_went_wrong))
+                showShortToast(getString(R.string.error_something_went_wrong))
             }
         })
 

@@ -11,22 +11,20 @@ object CreatePostService {
 
     fun createPost(postData: PostData): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
-        FirebaseUtils.FirestoreUtils.getPostsRef().document(postData.postId).set(postData)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    FirebaseUtils.FirestoreUtils.getUsersRef()
-                        .document(postData.userId)
-                        .collection(NameUtils.DatabaseRefs.postsRef)
-                        .document(postData.postId)
-                        .set(mapOf(postData.postId to postData.postId))
-                        .addOnCompleteListener {
-                            data.value = it.isSuccessful
-                        }
 
-                } else {
-                    data.value = false
-                }
-            }
+        val db = FirebaseUtils.FirestoreUtils.getRef()
+        val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
+        val updateUsersDataRef =
+            db.collection(NameUtils.DatabaseRefs.userDetailsRef).document(postData.userId)
+                .collection(NameUtils.DatabaseRefs.postsRef)
+                .document(postData.postId)
+
+        db.runBatch {
+            postRef.set(postData)
+            updateUsersDataRef.set(mapOf(postData.postId to postData.postId))
+        }.addOnCompleteListener {
+            data.value = it.isSuccessful
+        }
 
         return data
     }

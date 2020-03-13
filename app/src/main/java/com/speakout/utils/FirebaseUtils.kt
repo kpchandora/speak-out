@@ -18,7 +18,7 @@ object FirebaseUtils {
 
         fun getPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
 
-        fun getLikesRef(postId: String) = getRef().document("post_likes/$postId/users/")
+        fun getPostLikesRef(postId: String, userId: String) = getRef().document("post_likes/$postId/users/$userId")
 
     }
 
@@ -27,7 +27,7 @@ object FirebaseUtils {
     fun userId() = currentUser()?.uid
 
     fun signOut() {
-        AppPreference().clearUserDetails()
+        AppPreference.clearUserDetails()
         FirebaseAuth.getInstance().signOut()
     }
 

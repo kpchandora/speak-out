@@ -58,7 +58,8 @@
             android:id="@+id/item_home_post_image_iv"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            android:adjustViewBounds="true" />
+            android:adjustViewBounds="true"
+            tools:src="@drawable/post_image" />
 
 
         <TextView
@@ -69,7 +70,8 @@
             android:drawableStart="@drawable/ic_problem"
             android:drawablePadding="12dp"
             android:gravity="center"
-            android:text="@string/image_load_fail" />
+            android:text="@string/error_image_load_fail"
+            android:visibility="gone" />
 
     </FrameLayout>
 
@@ -93,9 +95,7 @@
                 android:checked="false"
                 android:stateListAnimator="@animator/like_animation" />
 
-
         </FrameLayout>
-
 
         <TextView
             android:id="@+id/item_home_post_like_count_tv"

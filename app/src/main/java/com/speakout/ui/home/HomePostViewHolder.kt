@@ -1,6 +1,5 @@
 package com.speakout.ui.home
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -16,10 +15,11 @@ import com.speakout.extensions.loadImage
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_home_post_layout.view.*
-import timber.log.Timber
-import kotlin.random.Random
 
 class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+
+    var mEventListener: PostClickEventListener? = null
+    var userId = ""
 
     fun bind(post: PostData) {
         view.apply {
@@ -28,7 +28,7 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 placeholder = R.drawable.ic_profile_placeholder,
                 makeRound = true
             )
-            item_home_post_like_count_tv.text = post.likesCount.toString()
+            item_home_post_like_count_tv.text = post.likes.size.toString()
             item_home_post_name_tv.text = post.username
 
 
@@ -36,10 +36,19 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
             loadPost(post.postImageUrl)
 
+            item_home_post_like_cb.isChecked = post.likes.contains(userId)
+
+            item_home_post_like_cb.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) {
+                    mEventListener?.onLike(adapterPosition, post)
+                } else {
+
+                }
+            }
+
             item_home_post_load_fail_tv.setOnClickListener {
                 loadPost(post.postImageUrl)
             }
-
         }
     }
 

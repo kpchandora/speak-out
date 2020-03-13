@@ -13,8 +13,17 @@ class HomeViewModel : ViewModel() {
         HomeService.getPosts()
     }
 
+    private val _likePost = MutableLiveData<PostData>()
+    val likePost: LiveData<PostData?> = Transformations.switchMap(_likePost) {
+        HomeService.likePost(it)
+    }
+
     fun getPosts(id: String) {
         _posts.value = id
+    }
+
+    fun likePost(postData: PostData) {
+        _likePost.value = postData
     }
 
 }

@@ -13,7 +13,6 @@ import com.speakout.extensions.showShortToast
 import com.speakout.posts.tags.TagsFragment
 import com.speakout.ui.BaseActivity
 import com.speakout.ui.BottomDialogActivity
-import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.ImageUtils
 import com.speakout.utils.NameUtils
 import com.speakout.utils.AppPreference
@@ -85,16 +84,17 @@ class CreateNewPostActivity : BaseActivity() {
 
         mCreatePostViewModel.uploadImageObserver.observe(this, Observer {
             it?.let { url ->
-                val pref = AppPreference()
+                val pref = AppPreference
 
                 Timber.d("Image Url: $url")
                 createPostData.apply {
                     postImageUrl = url
                     content = create_post_content_tv.text.toString()
                     timeStamp = DateFormat.getDateTimeInstance().format(Date())
-                    userId = pref.getUserId() ?: ""
-                    userImageUrl = pref.getPhotoUrl() ?: ""
-                    username = pref.getUserUniqueName() ?: ""
+                    userId = pref.getUserId()
+                    userImageUrl = pref.getPhotoUrl()
+                    username = pref.getUserUniqueName()
+                    timeStampLong = System.nanoTime()
                 }
 
                 mCreatePostViewModel.uploadPost(createPostData)

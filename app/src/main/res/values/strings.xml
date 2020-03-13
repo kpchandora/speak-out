@@ -24,5 +24,6 @@
     <string name="tick_text">✓</string>
 
     <string name="something_went_wrong">Something went wrong. Please try again</string>
+    <string name="image_load_fail">Failed to load. Tap to retry</string>
 
 </resources>

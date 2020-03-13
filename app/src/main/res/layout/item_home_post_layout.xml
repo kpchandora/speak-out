@@ -50,12 +50,28 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/item_home_post_image_iv"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:adjustViewBounds="true"
-        tools:src="@drawable/post_image" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/item_home_post_image_iv"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:adjustViewBounds="true" />
+
+
+        <TextView
+            android:id="@+id/item_home_post_load_fail_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:drawableStart="@drawable/ic_problem"
+            android:drawablePadding="12dp"
+            android:gravity="center"
+            android:text="@string/image_load_fail" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

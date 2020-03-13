@@ -18,6 +18,8 @@ object FirebaseUtils {
 
         fun getPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
 
+        fun getLikesRef(postId: String) = getRef().document("post_likes/$postId/users/")
+
     }
 
     fun currentUser() = FirebaseAuth.getInstance().currentUser

@@ -3,6 +3,7 @@ package com.speakout.extensions
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -13,6 +14,8 @@ import androidx.annotation.IntegerRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.request.RequestOptions
 import com.speakout.R
 
 fun Context.showShortToast(message: String) {
@@ -61,17 +64,22 @@ fun Activity.hideKeyboard(editText: EditText? = null) {
     }
 }
 
-fun ImageView.loadImage(url: String?, placeholder: Int) {
-    if (url.isNullOrEmpty()) {
-        Glide.with(this)
-            .load(placeholder)
-            .dontAnimate()
-            .into(this)
+fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = false) {
+
+    var glide = if (url.isNotNullOrEmpty()) {
+        Glide.with(this).load(url)
     } else {
-        Glide.with(this)
-            .load(url)
-            .placeholder(placeholder)
-            .error(placeholder)
-            .into(this)
+        Glide.with(this).load(placeholder)
     }
+
+    if (makeRound) {
+        glide = glide.apply(RequestOptions.circleCropTransform())
+    }
+    glide
+        .thumbnail(.1f)
+        .placeholder(placeholder)
+        .error(placeholder)
+        .into(this)
+
 }
+

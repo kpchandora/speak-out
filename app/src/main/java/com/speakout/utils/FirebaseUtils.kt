@@ -25,7 +25,7 @@ object FirebaseUtils {
     fun userId() = currentUser()?.uid
 
     fun signOut() {
-        Preference().clearUserDetails()
+        AppPreference().clearUserDetails()
         FirebaseAuth.getInstance().signOut()
     }
 

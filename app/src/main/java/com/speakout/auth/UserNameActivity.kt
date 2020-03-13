@@ -9,7 +9,7 @@ import com.speakout.extensions.*
 import com.speakout.ui.BaseActivity
 import com.speakout.ui.MainActivity
 import com.speakout.utils.FirebaseUtils
-import com.speakout.utils.Preference
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.activity_user_name.*
 
 class UserNameActivity : BaseActivity() {
@@ -46,7 +46,7 @@ class UserNameActivity : BaseActivity() {
         mUserViewModel.updateDetailsObserver.observe(this, Observer {
             hideProgress()
             if (it) {
-                Preference().saveUserDetails(UserDetails(username = username))
+                AppPreference().saveUserDetails(UserDetails(username = username))
                 openActivity(MainActivity::class.java)
                 finish()
             } else {

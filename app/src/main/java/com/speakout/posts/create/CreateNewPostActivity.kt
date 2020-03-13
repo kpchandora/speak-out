@@ -16,6 +16,7 @@ import com.speakout.ui.BottomDialogActivity
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.ImageUtils
 import com.speakout.utils.NameUtils
+import com.speakout.utils.AppPreference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_create_new_post.*
@@ -84,12 +85,16 @@ class CreateNewPostActivity : BaseActivity() {
 
         mCreatePostViewModel.uploadImageObserver.observe(this, Observer {
             it?.let { url ->
+                val pref = AppPreference()
+
                 Timber.d("Image Url: $url")
                 createPostData.apply {
                     postImageUrl = url
                     content = create_post_content_tv.text.toString()
                     timeStamp = DateFormat.getDateTimeInstance().format(Date())
-                    userId = FirebaseUtils.userId() ?: ""
+                    userId = pref.getUserId() ?: ""
+                    userImageUrl = pref.getPhotoUrl() ?: ""
+                    username = pref.getUserUniqueName() ?: ""
                 }
 
                 mCreatePostViewModel.uploadPost(createPostData)

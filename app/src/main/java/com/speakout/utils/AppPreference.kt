@@ -5,7 +5,7 @@ import com.speakout.SpeakOutApp
 import com.speakout.auth.UserDetails
 import com.speakout.extensions.isNotNullOrEmpty
 
-class Preference {
+class AppPreference {
 
     private val sharedPreferences by lazy {
         SpeakOutApp.appContext?.getSharedPreferences(

@@ -15,8 +15,12 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(post: PostData) {
         view.apply {
-            item_home_post_profile_iv.loadImage(null, R.drawable.ic_profile_placeholder)
+            item_home_post_profile_iv.loadImage(
+                post.userImageUrl,
+                R.drawable.ic_profile_placeholder
+            )
             item_home_post_like_count_tv.text = Random.nextInt(100, 500).toString()
+            item_home_post_name_tv.text = post.username
 
 
             Glide.with(view)
@@ -25,7 +29,6 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 .into(item_home_post_image_iv)
 
             item_home_post_time_tv.text = post.timeStamp
-            item_home_post_name_tv.text = post.postId.substring(0, 10)
 
         }
     }

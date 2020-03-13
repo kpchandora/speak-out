@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -16,7 +15,7 @@ import com.speakout.R
 import com.speakout.extensions.*
 import com.speakout.ui.MainActivity
 import com.speakout.utils.FirebaseUtils
-import com.speakout.utils.Preference
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
@@ -29,12 +28,12 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
     private val mUserViewModel: UserViewModel by viewModels()
-    private lateinit var mPreference: Preference
+    private lateinit var mPreference: AppPreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-        mPreference = Preference()
+        mPreference = AppPreference()
         mUserViewModel.saveUserDetailsObserver.observe(this, Observer {
             if (it) {
                 openActivity(UserNameActivity::class.java)

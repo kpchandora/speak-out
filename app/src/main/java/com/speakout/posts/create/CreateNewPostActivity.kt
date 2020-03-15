@@ -108,6 +108,7 @@ class CreateNewPostActivity : BaseActivity() {
         mCreatePostViewModel.postObserver.observe(this, Observer {
             if (it) {
                 showShortToast("Post uploaded successfully")
+                hideProgress()
                 finish()
             } else {
                 hideProgress()

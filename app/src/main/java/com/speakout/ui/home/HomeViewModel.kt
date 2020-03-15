@@ -18,12 +18,21 @@ class HomeViewModel : ViewModel() {
         HomeService.likePost(it)
     }
 
+    private val _dislike = MutableLiveData<PostData>()
+    val dislike: LiveData<PostData?> = Transformations.switchMap(_dislike) {
+        HomeService.dislikePost(postData = it)
+    }
+
     fun getPosts(id: String) {
         _posts.value = id
     }
 
     fun likePost(postData: PostData) {
         _likePost.value = postData
+    }
+
+    fun dislike(postData: PostData) {
+        _dislike.value = postData
     }
 
 }

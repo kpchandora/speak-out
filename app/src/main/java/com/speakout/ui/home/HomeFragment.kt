@@ -8,9 +8,17 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.Timestamp
+import com.google.firebase.database.ServerValue
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ServerTimestamp
 import com.speakout.R
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.fragment_home.*
+import timber.log.Timber
+import java.lang.Exception
+import java.util.*
 
 class HomeFragment : Fragment() {
 
@@ -58,6 +66,10 @@ class HomeFragment : Fragment() {
             }
         })
 
+        mHomeViewModel.dislike.observe(viewLifecycleOwner, Observer {
+
+        })
+
     }
 
     private val mPostEventsListener = object : PostClickEventListener {
@@ -66,7 +78,7 @@ class HomeFragment : Fragment() {
         }
 
         override fun onDislike(position: Int, postData: PostData) {
-
+            mHomeViewModel.dislike(postData)
         }
     }
 

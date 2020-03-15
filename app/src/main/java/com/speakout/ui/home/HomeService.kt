@@ -24,7 +24,9 @@ object HomeService {
                     val list = mutableListOf<PostData>()
                     it.forEach { document ->
                         try {
-                            list.add(document.toObject(PostData::class.java))
+                            val d = document.toObject(PostData::class.java)
+                            d.likesSet = d.likes.toSet()
+                            list.add(d)
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -60,6 +62,30 @@ object HomeService {
                     photoUrl = AppPreference.getPhotoUrl()
                 )
             )
+            return@runTransaction newPost
+        }.addOnCompleteListener {
+            data.value = it.result
+        }
+
+        return data
+    }
+
+    fun dislikePost(postData: PostData): LiveData<PostData?> {
+        val data = MutableLiveData<PostData>()
+
+        val db = FirebaseUtils.FirestoreUtils.getRef()
+        val postLikesRef =
+            db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
+        val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
+
+        db.runTransaction {
+            val newPost =
+                it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
+
+            Timber.d("Data: $newPost")
+
+            it.update(postRef, "likes", FieldValue.arrayRemove(AppPreference.getUserId()))
+            it.delete(postLikesRef)
             return@runTransaction newPost
         }.addOnCompleteListener {
             data.value = it.result

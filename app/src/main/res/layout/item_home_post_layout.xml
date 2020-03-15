@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/item_home_post_profile_iv"
             android:layout_width="50dp"
             android:layout_height="match_parent"

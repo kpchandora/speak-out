@@ -15,6 +15,7 @@ import com.speakout.extensions.loadImage
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_home_post_layout.view.*
+import timber.log.Timber
 
 class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
@@ -38,11 +39,13 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
             item_home_post_like_cb.isChecked = post.likes.contains(userId)
 
-            item_home_post_like_cb.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked) {
+            Timber.d("Set contains: ${post.likesSet}")
+
+            item_home_post_like_cb.setOnClickListener {
+                if (item_home_post_like_cb.isChecked) {
                     mEventListener?.onLike(adapterPosition, post)
                 } else {
-
+                    mEventListener?.onDislike(adapterPosition, post)
                 }
             }
 

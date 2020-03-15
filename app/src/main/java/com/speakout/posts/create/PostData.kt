@@ -2,6 +2,7 @@ package com.speakout.posts.create
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.firebase.firestore.Exclude
 
 data class PostData(
     var postId: String = "",
@@ -54,4 +55,9 @@ data class PostData(
             return arrayOfNulls(size)
         }
     }
+
+    @set:Exclude
+    @get:Exclude
+    var likesSet = emptySet<String>()
+
 }

@@ -29,29 +29,40 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 placeholder = R.drawable.ic_profile_placeholder,
                 makeRound = true
             )
-            item_home_post_like_count_tv.text = post.likes.size.toString()
+
             item_home_post_name_tv.text = post.username
 
+            setLikes(post)
 
             item_home_post_time_tv.text = post.timeStamp
 
             loadPost(post.postImageUrl)
 
-            item_home_post_like_cb.isChecked = post.likes.contains(userId)
-
-            Timber.d("Set contains: ${post.likesSet}")
+            item_home_post_like_cb.isChecked = post.likesSet.contains(userId)
 
             item_home_post_like_cb.setOnClickListener {
                 if (item_home_post_like_cb.isChecked) {
+                    post.likesSet.add(userId)
                     mEventListener?.onLike(adapterPosition, post)
                 } else {
+                    post.likesSet.remove(userId)
                     mEventListener?.onDislike(adapterPosition, post)
                 }
+                setLikes(post)
             }
 
             item_home_post_load_fail_tv.setOnClickListener {
                 loadPost(post.postImageUrl)
             }
+        }
+    }
+
+    private fun setLikes(post: PostData) {
+        if (post.likesSet.isEmpty()) {
+            view.item_home_post_like_count_tv.gone()
+        } else {
+            view.item_home_post_like_count_tv.visible()
+            view.item_home_post_like_count_tv.text = post.likesSet.size.toString()
         }
     }
 

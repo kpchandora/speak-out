@@ -58,6 +58,6 @@ data class PostData(
 
     @set:Exclude
     @get:Exclude
-    var likesSet = emptySet<String>()
+    var likesSet = hashSetOf<String>()
 
 }

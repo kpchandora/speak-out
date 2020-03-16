@@ -1,9 +1,6 @@
 package com.speakout.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.speakout.posts.create.PostData
 
 class HomeViewModel : ViewModel() {
@@ -14,13 +11,13 @@ class HomeViewModel : ViewModel() {
     }
 
     private val _likePost = MutableLiveData<PostData>()
-    val likePost: LiveData<PostData?> = Transformations.switchMap(_likePost) {
+    val likePost: LiveData<Pair<Boolean, PostData>> = Transformations.switchMap(_likePost) {
         HomeService.likePost(it)
     }
 
-    private val _dislike = MutableLiveData<PostData>()
-    val dislike: LiveData<PostData?> = Transformations.switchMap(_dislike) {
-        HomeService.dislikePost(postData = it)
+    private val _unlikePost = MutableLiveData<PostData>()
+    val unlikePost: LiveData<Pair<Boolean, PostData>> = Transformations.switchMap(_unlikePost) {
+        HomeService.unlikePost(postData = it)
     }
 
     fun getPosts(id: String) {
@@ -31,8 +28,8 @@ class HomeViewModel : ViewModel() {
         _likePost.value = postData
     }
 
-    fun dislike(postData: PostData) {
-        _dislike.value = postData
+    fun unlikePost(postData: PostData) {
+        _unlikePost.value = postData
     }
 
 }

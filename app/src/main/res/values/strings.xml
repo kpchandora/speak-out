@@ -26,4 +26,8 @@
     <string name="error_something_went_wrong">Something went wrong. Please try again</string>
     <string name="error_image_load_fail">Failed to load. Tap to retry</string>
 
+    <!--Profile strings-->
+    <string name="follow">Follow</string>
+    <string name="following">Following</string>
+
 </resources>

@@ -29,5 +29,16 @@
     <!--Profile strings-->
     <string name="follow">Follow</string>
     <string name="following">Following</string>
-
+    <plurals name="number_of_posts">
+        <item quantity="one">Post</item>
+        <item quantity="other">Posts</item>
+    </plurals>
+    <plurals name="number_of_followers">
+        <item quantity="one">Follower</item>
+        <item quantity="other">Followers</item>
+    </plurals>
+    <plurals name="number_of_followings">
+        <item quantity="one">Following</item>
+        <item quantity="other">Followings</item>
+    </plurals>
 </resources>

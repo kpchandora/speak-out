@@ -27,17 +27,19 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_search,
                 R.id.navigation_new_post,
                 R.id.navigation_notifications,
-                R.id.navigation_dashboard
+                R.id.navigation_profile
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-//        navView.setOnNavigationItemSelectedListener {
-//            if (it.itemId == R.id.navigation_new_post) {
-//                openActivity(CreateNewPostActivity::class.java)
-//                return@setOnNavigationItemSelectedListener false
-//            }
-//            true
-//        }
+        navView.setOnNavigationItemSelectedListener {
+            if (it.itemId == R.id.navigation_new_post) {
+                openActivity(CreateNewPostActivity::class.java)
+                false
+            } else {
+                navController.navigate(it.itemId)
+                true
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/item_profile_post_iv"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:scaleType="fitXY"
         tools:src="@drawable/post_image" />
 

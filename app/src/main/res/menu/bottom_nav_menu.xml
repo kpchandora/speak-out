@@ -23,7 +23,7 @@
 
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_profile"
         android:title="@string/title_dashboard" />
 </menu>

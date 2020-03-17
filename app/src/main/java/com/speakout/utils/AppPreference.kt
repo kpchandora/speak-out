@@ -63,6 +63,10 @@ object AppPreference {
                 putString(NameUtils.UserDetails.email, email!!)
             }
 
+            if (name.isNotNullOrEmpty()) {
+                putString(NameUtils.UserDetails.name, name!!)
+            }
+
             if (username.isNotNullOrEmpty()) {
                 putString(NameUtils.UserDetails.username, username!!)
             }

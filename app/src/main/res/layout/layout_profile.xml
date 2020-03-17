@@ -7,7 +7,7 @@
 
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/layout_profile_iv"
         android:layout_width="0dp"
         android:layout_height="100dp"
         android:layout_marginTop="10dp"
@@ -27,7 +27,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2">
+        app:layout_constraintTop_toBottomOf="@+id/layout_profile_follow_unfollow_btn">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -37,6 +37,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/layout_profile_posts_count_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -45,6 +46,7 @@
                 tools:text="101" />
 
             <TextView
+                android:id="@+id/layout_profile_posts_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Posts" />
@@ -66,6 +68,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/layout_profile_followers_count_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -74,6 +77,7 @@
                 tools:text="314" />
 
             <TextView
+                android:id="@+id/layout_profile_followers_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Followers" />
@@ -95,6 +99,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/layout_profile_followings_count_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -103,6 +108,7 @@
                 tools:text="211" />
 
             <TextView
+                android:id="@+id/layout_profile_followings_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="Followings" />
@@ -111,7 +117,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/layout_profile_full_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -119,18 +125,18 @@
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/layout_profile_iv"
         tools:text="@tools:sample/full_names" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/layout_profile_follow_unfollow_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/follow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/layout_profile_full_name_tv" />
 
     <View
         android:id="@+id/view"
@@ -144,7 +150,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/profile_post_rv"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -152,6 +158,5 @@
         app:layout_constraintTop_toBottomOf="@+id/view"
         app:spanCount="3"
         tools:listitem="@layout/item_profile_post_layout" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

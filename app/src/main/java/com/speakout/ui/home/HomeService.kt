@@ -8,6 +8,7 @@ import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.NameUtils
+import io.reactivex.Single
 import timber.log.Timber
 
 object HomeService {
@@ -100,6 +101,31 @@ object HomeService {
         }
 
         return unlikeData
+    }
+
+    fun unlikePostSingle(postData: PostData): Single<Pair<Boolean, PostData>> {
+        return Single.create {
+            val db = FirebaseUtils.FirestoreUtils.getRef()
+            val postLikesRef =
+                db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
+            val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
+
+            db.runTransaction {
+                val newPost =
+                    it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
+
+                it.update(postRef, "likes", FieldValue.arrayRemove(AppPreference.getUserId()))
+                it.delete(postLikesRef)
+                return@runTransaction newPost
+            }.addOnCompleteListener { task ->
+                Timber.d("unlikePost: ${postData.content}")
+                if (task.isSuccessful && task.result != null) {
+                    it.onSuccess(Pair(true, task.result!!))
+                } else {
+                    it.onSuccess(Pair(false, postData))
+                }
+            }
+        }
     }
 
 }

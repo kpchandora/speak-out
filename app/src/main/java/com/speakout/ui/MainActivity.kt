@@ -32,12 +32,12 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        navView.setOnNavigationItemSelectedListener {
-            if (it.itemId == R.id.navigation_new_post) {
-                openActivity(CreateNewPostActivity::class.java)
-                return@setOnNavigationItemSelectedListener false
-            }
-            true
-        }
+//        navView.setOnNavigationItemSelectedListener {
+//            if (it.itemId == R.id.navigation_new_post) {
+//                openActivity(CreateNewPostActivity::class.java)
+//                return@setOnNavigationItemSelectedListener false
+//            }
+//            true
+//        }
     }
 }

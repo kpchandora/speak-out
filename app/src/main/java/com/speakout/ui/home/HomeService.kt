@@ -40,70 +40,39 @@ object HomeService {
         return data
     }
 
-    private val likeData = MutableLiveData<Pair<Boolean, PostData>>()
+    fun likePost(postData: PostData): Single<Pair<Boolean, PostData>> {
+        return Single.create {
+            val db = FirebaseUtils.FirestoreUtils.getRef()
+            val postLikesRef =
+                db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
+            val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
 
+            db.runTransaction {
+                val newPost =
+                    it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
 
-    fun likePost(postData: PostData): LiveData<Pair<Boolean, PostData>> {
-
-        val db = FirebaseUtils.FirestoreUtils.getRef()
-        val postLikesRef =
-            db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
-        val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
-
-        db.runTransaction {
-            val newPost =
-                it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
-
-            it.update(postRef, "likes", FieldValue.arrayUnion(AppPreference.getUserId()))
-            it.set(
-                postLikesRef,
-                PostLikes(
-                    username = AppPreference.getUserUniqueName(),
-                    photoUrl = AppPreference.getPhotoUrl()
+                it.update(postRef, "likes", FieldValue.arrayUnion(AppPreference.getUserId()))
+                it.set(
+                    postLikesRef,
+                    PostLikes(
+                        username = AppPreference.getUserUniqueName(),
+                        photoUrl = AppPreference.getPhotoUrl()
+                    )
                 )
-            )
-            return@runTransaction newPost
-        }.addOnCompleteListener {
-            Timber.d("likePost: ${postData.content}")
-            if (it.isSuccessful && it.result != null) {
-                likeData.value = Pair(true, it.result!!)
-            } else {
-                likeData.value = Pair(false, postData)
+                return@runTransaction newPost
+            }.addOnCompleteListener { task ->
+                Timber.d("likePost: ${postData.content}")
+                if (task.isSuccessful && task.result != null) {
+                    it.onSuccess(Pair(true, task.result!!))
+                } else {
+                    it.onSuccess(Pair(false, postData))
+                }
             }
-        }
 
-        return likeData
+        }
     }
 
-    private val unlikeData = MutableLiveData<Pair<Boolean, PostData>>()
-
-    fun unlikePost(postData: PostData): LiveData<Pair<Boolean, PostData>> {
-
-        val db = FirebaseUtils.FirestoreUtils.getRef()
-        val postLikesRef =
-            db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
-        val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
-
-        db.runTransaction {
-            val newPost =
-                it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
-
-            it.update(postRef, "likes", FieldValue.arrayRemove(AppPreference.getUserId()))
-            it.delete(postLikesRef)
-            return@runTransaction newPost
-        }.addOnCompleteListener {
-            Timber.d("unlikePost: ${postData.content}")
-            if (it.isSuccessful && it.result != null) {
-                unlikeData.value = Pair(true, it.result!!)
-            } else {
-                unlikeData.value = Pair(false, postData)
-            }
-        }
-
-        return unlikeData
-    }
-
-    fun unlikePostSingle(postData: PostData): Single<Pair<Boolean, PostData>> {
+    fun unlikePost(postData: PostData): Single<Pair<Boolean, PostData>> {
         return Single.create {
             val db = FirebaseUtils.FirestoreUtils.getRef()
             val postLikesRef =

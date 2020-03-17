@@ -2,7 +2,6 @@ package com.speakout.auth
 
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.PropertyName
-import com.speakout.people.People
 
 data class UserDetails(
 

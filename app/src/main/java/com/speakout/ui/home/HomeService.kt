@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
+import com.speakout.auth.UserMiniDetails
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
@@ -54,9 +55,11 @@ object HomeService {
                 it.update(postRef, "likes", FieldValue.arrayUnion(AppPreference.getUserId()))
                 it.set(
                     postLikesRef,
-                    PostLikes(
+                    UserMiniDetails(
+                        name = AppPreference.getUserDisplayName(),
                         username = AppPreference.getUserUniqueName(),
-                        photoUrl = AppPreference.getPhotoUrl()
+                        photoUrl = AppPreference.getPhotoUrl(),
+                        userId = AppPreference.getUserId()
                     )
                 )
                 return@runTransaction newPost

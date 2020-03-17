@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
+import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.loadImage
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.utils.AppPreference
@@ -46,12 +47,20 @@ class ProfileFragment : Fragment() {
             initOther()
         }
 
+        profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
+            Timber.d("Follow User: $it")
+        })
+
+        layout_profile_follow_unfollow_btn.setOnClickListener {
+            profileViewModel.followUser(UserMiniDetails(userId = "DPi4YJlKRdasfa4gaj6BndFesSg1"))
+        }
+
         profile_post_rv.apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, 3)
             adapter = mPostsAdapter
         }
-        
+
         home.getPosts("")
         home.posts.observe(viewLifecycleOwner, Observer {
             mPostsAdapter.updateData(it)
@@ -63,7 +72,7 @@ class ProfileFragment : Fragment() {
             it?.apply {
                 populateData(this)
                 if (lastUpdated ?: -1 > AppPreference.getLastUpdatedTime()) {
-                    AppPreference.updateDataChangeTimeStamp(lastSignInTimestamp ?: -1)
+                    AppPreference.updateDataChangeTimeStamp(lastUpdated ?: -1)
                     AppPreference.saveUserDetails(this)
                 }
             } ?: kotlin.run {
@@ -81,6 +90,7 @@ class ProfileFragment : Fragment() {
 
 
     private fun initOther() {
+        profileViewModel.getUser(mUserId)
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
             userDetails?.let {
                 populateData(it)

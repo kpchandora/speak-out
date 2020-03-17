@@ -21,6 +21,8 @@ object NameUtils {
         const val usernamesRef = "user_names"
         const val postsRef = "posts"
         const val tags = "tags"
+        const val followers = "followers"
+        const val followings = "followings"
     }
 
     object IntentStrings {

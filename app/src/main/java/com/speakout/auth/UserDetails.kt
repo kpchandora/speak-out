@@ -27,7 +27,15 @@ data class UserDetails(
     val lastSignInTimestamp: Long? = null,
 
     @PropertyName("username")
-    val username: String? = null
+    val username: String? = null,
+
+    val lastUpdated: Long? = 0,
+
+    val postsCount: Long = 0,
+
+    val followersCount: Long = 0,
+
+    val followingsCount: Long = 0
 ) {
 
     companion object {

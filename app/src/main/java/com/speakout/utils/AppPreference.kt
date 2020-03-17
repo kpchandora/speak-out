@@ -89,6 +89,14 @@ object AppPreference {
         return getString(NameUtils.UserDetails.photoUrl, "") ?: ""
     }
 
+    fun updateDataChangeTimeStamp(timeInLong: Long) {
+        putLong(NameUtils.UserDetails.lastUserDetailsUpdate, timeInLong)
+    }
+
+    fun getLastUpdatedTime(): Long {
+        return getLong(NameUtils.UserDetails.lastUserDetailsUpdate)
+    }
+
     fun getUserDisplayName(): String {
         return getString(NameUtils.UserDetails.name, "") ?: ""
     }

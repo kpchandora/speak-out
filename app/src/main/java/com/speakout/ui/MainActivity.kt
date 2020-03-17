@@ -3,6 +3,7 @@ package com.speakout.ui
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -10,6 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.speakout.R
 import com.speakout.extensions.openActivity
 import com.speakout.posts.create.CreateNewPostActivity
+import com.speakout.utils.AppPreference
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,13 +35,22 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setOnNavigationItemSelectedListener {
-            if (it.itemId == R.id.navigation_new_post) {
-                openActivity(CreateNewPostActivity::class.java)
-                false
-            } else {
-                navController.navigate(it.itemId)
-                true
+            when (it.itemId) {
+                R.id.navigation_new_post -> {
+                    openActivity(CreateNewPostActivity::class.java)
+                    return@setOnNavigationItemSelectedListener false
+                }
+                R.id.navigation_profile -> {
+                    navController.navigate(
+                        it.itemId,
+                        bundleOf("user_id" to AppPreference.getUserId())
+                    )
+                }
+                else -> {
+                    navController.navigate(it.itemId)
+                }
             }
+            true
         }
     }
 }

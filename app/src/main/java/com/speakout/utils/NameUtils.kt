@@ -13,6 +13,7 @@ object NameUtils {
         const val providerType = "provider_type"
         const val isEmailVerified = "is_email_verified"
         const val photoUrl = "photo_url"
+        const val lastUserDetailsUpdate = "last_updated_time"
     }
 
     object DatabaseRefs {

@@ -29,12 +29,12 @@ class UserNameActivity : BaseActivity() {
             it?.apply {
                 when (this) {
                     FirebaseUtils.Data.PRESET -> {
-                        username_til.error = "Username is already taken"
+                        profile_edit_username_til.error = "Username is already taken"
                     }
                     FirebaseUtils.Data.ABSENT -> {
-                        user_unique_name_et.setDrawableEnd(R.drawable.ic_check)
+                        profile_edit_username_et.setDrawableEnd(R.drawable.ic_check)
                         user_name_next_btn.isEnabled = true
-                        username_til.error = null
+                        profile_edit_username_til.error = null
                     }
                     FirebaseUtils.Data.CANCELLED -> {
                         showShortToast(getString(R.string.error_something_went_wrong))
@@ -54,24 +54,24 @@ class UserNameActivity : BaseActivity() {
             }
         })
 
-        user_unique_name_et.doOnTextChanged { text: CharSequence?, start: Int,
-                                              count: Int, after: Int ->
+        profile_edit_username_et.doOnTextChanged { text: CharSequence?, start: Int,
+                                                   count: Int, after: Int ->
 
-            user_unique_name_et.removeDrawableEnd()
+            profile_edit_username_et.removeDrawableEnd()
 //            user_unique_name_et.setText(text?.toString()?.toLowerCase(Locale.getDefault()) ?: "")
 
             text?.let {
                 user_name_next_btn.isEnabled = false
                 if (userNameRegex.matches(text)) {
                     if (text.length < 3) {
-                        username_til.error = "Username is too small"
+                        profile_edit_username_til.error = "Username is too small"
                     } else {
-                        username_til.error = null
+                        profile_edit_username_til.error = null
                         username = text.toString()
                         mUserViewModel.isUsernamePresent(username)
                     }
                 } else {
-                    username_til.error = "Please enter a valid username"
+                    profile_edit_username_til.error = "Please enter a valid username"
                 }
             }
 

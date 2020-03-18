@@ -7,9 +7,9 @@
 
 
     <ImageView
-        android:id="@+id/layout_profile_iv"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
+        android:id="@+id/profile_edit_iv"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
         android:layout_marginTop="10dp"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +27,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_profile_follow_unfollow_btn">
+        app:layout_constraintTop_toBottomOf="@+id/profile_edit_update_btn">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -125,15 +125,16 @@
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_profile_iv"
+        app:layout_constraintTop_toBottomOf="@+id/profile_edit_iv"
         tools:text="@tools:sample/full_names" />
 
     <Button
-        android:id="@+id/layout_profile_follow_unfollow_btn"
+        android:id="@+id/profile_edit_update_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:text="@string/follow"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layout_profile_full_name_tv" />

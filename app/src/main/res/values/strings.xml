@@ -41,4 +41,8 @@
         <item quantity="one">Following</item>
         <item quantity="other">Followings</item>
     </plurals>
+    <string name="edit">Edit</string>
+    <string name="update">Update</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="full_name">Full Name</string>
 </resources>

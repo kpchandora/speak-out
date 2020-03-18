@@ -12,6 +12,4 @@ object Utils {
             context?.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         return connectivityManager?.activeNetworkInfo != null
     }
-
-
 }

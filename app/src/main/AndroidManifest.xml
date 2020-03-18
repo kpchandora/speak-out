@@ -15,15 +15,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.BottomDialogActivity"
+        <activity android:name=".ui.profile.ProfileEditActivity"></activity>
+        <activity
+            android:name=".ui.BottomDialogActivity"
             android:theme="@style/Theme.UserDialog"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name="com.speakout.posts.create.CreateNewPostActivity" />
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".posts.create.CreateNewPostActivity" />
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main" />
-        <activity android:name=".auth.UserNameActivity"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".auth.UserNameActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".auth.SignInActivity" />
         <activity
             android:name=".ui.SplashScreen"

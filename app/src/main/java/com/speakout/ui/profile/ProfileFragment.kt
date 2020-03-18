@@ -1,9 +1,11 @@
 package com.speakout.ui.profile
 
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -11,12 +13,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
+import com.speakout.extensions.getScreenSize
 import com.speakout.extensions.loadImage
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
-import kotlin.random.Random
 
 class ProfileFragment : Fragment() {
 
@@ -25,6 +27,7 @@ class ProfileFragment : Fragment() {
     private val mPostsAdapter = ProfilePostsAdapter()
     private var mUserId = ""
     private var isSelf = false
+    private lateinit var screenSize: DisplayMetrics
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +44,8 @@ class ProfileFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        screenSize = activity!!.getScreenSize()
+
         if (isSelf) {
             initSelf()
         } else {
@@ -51,7 +56,7 @@ class ProfileFragment : Fragment() {
             Timber.d("Follow User: $it")
         })
 
-        layout_profile_follow_unfollow_btn.setOnClickListener {
+        profile_edit_update_btn.setOnClickListener {
             profileViewModel.followUser(UserMiniDetails(userId = "DPi4YJlKRdasfa4gaj6BndFesSg1"))
         }
 
@@ -68,6 +73,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initSelf() {
+        profile_edit_update_btn.apply {
+            layoutParams.width = screenSize.widthPixels / 2
+            setBackgroundColor(ContextCompat.getColor(context!!, R.color.white))
+            setTextColor(ContextCompat.getColor(context!!, R.color.black))
+            text = resources.getString(R.string.edit)
+            setOnClickListener {
+
+            }
+        }
         profileViewModel.profileObserver.observe(viewLifecycleOwner, Observer {
             it?.apply {
                 populateData(this)
@@ -90,6 +104,11 @@ class ProfileFragment : Fragment() {
 
 
     private fun initOther() {
+        profile_edit_update_btn.apply {
+            layoutParams.width = screenSize.widthPixels / 2
+            setBackgroundColor(ContextCompat.getColor(context!!, R.color.indigo_500))
+            setTextColor(ContextCompat.getColor(context!!, R.color.white))
+        }
         profileViewModel.getUser(mUserId)
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
             userDetails?.let {
@@ -99,7 +118,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun populateData(userDetails: UserDetails) {
-        layout_profile_iv.loadImage(
+        profile_edit_iv.layoutParams.width = screenSize.widthPixels / 3
+        profile_edit_iv.loadImage(
             userDetails.photoUrl,
             R.drawable.ic_profile_placeholder,
             true

@@ -13,7 +13,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/username_til"
+            android:id="@+id/profile_edit_username_til"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/user_unique_name_et"
+                android:id="@+id/profile_edit_username_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

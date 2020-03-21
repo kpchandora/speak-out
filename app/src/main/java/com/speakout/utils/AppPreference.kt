@@ -71,13 +71,11 @@ object AppPreference {
                 putString(NameUtils.UserDetails.username, username!!)
             }
 
-            if (photoUrl.isNotNullOrEmpty()) {
-                putString(NameUtils.UserDetails.photoUrl, photoUrl!!)
-            }
+            if (photoUrl != null)
+                putString(NameUtils.UserDetails.photoUrl, photoUrl)
 
-            if (phoneNumber.isNotNullOrEmpty()) {
-                putString(NameUtils.UserDetails.phoneNumber, phoneNumber!!)
-            }
+            if (phoneNumber != null)
+                putString(NameUtils.UserDetails.phoneNumber, phoneNumber)
         }
     }
 

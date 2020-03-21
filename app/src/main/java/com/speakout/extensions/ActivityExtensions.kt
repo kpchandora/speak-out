@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -22,9 +23,25 @@ fun Context.showShortToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }
 
-fun <T> Context.openActivity(clazz: Class<T>): Intent {
-    return Intent(this, clazz).also {
-        startActivity(it)
+fun <T> Context.openActivity(clazz: Class<T>, extras: Bundle? = null): Intent {
+    return Intent(this, clazz).also { intent ->
+        extras?.let {
+            intent.putExtras(extras)
+        }
+        startActivity(intent)
+    }
+}
+
+fun <T> Activity.openActivityForResult(
+    clazz: Class<T>,
+    requestCode: Int,
+    extras: Bundle? = null
+): Intent {
+    return Intent(this, clazz).also { intent ->
+        extras?.let {
+            intent.putExtras(extras)
+        }
+        startActivityForResult(intent, requestCode)
     }
 }
 

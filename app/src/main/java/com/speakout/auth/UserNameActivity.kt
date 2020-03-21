@@ -1,5 +1,7 @@
 package com.speakout.auth
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
@@ -17,6 +19,7 @@ class UserNameActivity : BaseActivity() {
     private lateinit var mUserViewModel: UserViewModel
     private var username = ""
     private val userNameRegex = "^[a-z0-9_]{1,25}\$".toRegex()
+    private var shouldGiveResultBack = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +27,14 @@ class UserNameActivity : BaseActivity() {
         mUserViewModel = ViewModelProvider.NewInstanceFactory().create(UserViewModel::class.java)
 
         user_name_next_btn.isEnabled = false
+
+        intent.extras?.let {
+            username = it.getString("username", "")
+            profile_edit_username_et.setText(username)
+            profile_edit_username_et.setDrawableEnd(R.drawable.ic_check)
+            user_name_next_btn.text = getString(R.string.update)
+            shouldGiveResultBack = true
+        }
 
         mUserViewModel.usernameObserver.observe(this, Observer {
             it?.apply {
@@ -47,7 +58,11 @@ class UserNameActivity : BaseActivity() {
             hideProgress()
             if (it) {
                 AppPreference.saveUserDetails(UserDetails(username = username))
-                openActivity(MainActivity::class.java)
+                if (shouldGiveResultBack) {
+                    setResult(Activity.RESULT_OK, Intent().putExtra("username", username))
+                } else {
+                    openActivity(MainActivity::class.java)
+                }
                 finish()
             } else {
                 showShortToast(getString(R.string.error_something_went_wrong))
@@ -58,10 +73,9 @@ class UserNameActivity : BaseActivity() {
                                                    count: Int, after: Int ->
 
             profile_edit_username_et.removeDrawableEnd()
-//            user_unique_name_et.setText(text?.toString()?.toLowerCase(Locale.getDefault()) ?: "")
 
             text?.let {
-                user_name_next_btn.isEnabled = false
+                user_name_next_btn.disable()
                 if (userNameRegex.matches(text)) {
                     if (text.length < 3) {
                         profile_edit_username_til.error = "Username is too small"
@@ -85,7 +99,8 @@ class UserNameActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        FirebaseUtils.signOut()
+        if (!shouldGiveResultBack)
+            FirebaseUtils.signOut()
         super.onDestroy()
     }
 

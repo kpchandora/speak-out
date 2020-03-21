@@ -1,11 +1,13 @@
 package com.speakout.extensions
 
 import android.graphics.drawable.Drawable
+import android.text.Editable
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.EditText
 import androidx.core.content.ContextCompat
+import com.google.android.material.textfield.TextInputLayout
 
 fun View.visible() {
     this.visibility = View.VISIBLE
@@ -14,6 +16,14 @@ fun View.visible() {
 
 fun View.gone() {
     this.visibility = View.GONE
+}
+
+fun View.enable() {
+    isEnabled = true
+}
+
+fun View.disable() {
+    isEnabled = false
 }
 
 fun View.addViewObserver(function: () -> Unit) {
@@ -35,3 +45,13 @@ fun EditText.removeDrawableEnd() {
     setDrawableEnd(0)
 }
 
+fun TextInputLayout.checkAndShowError(text: Editable?, error: String): Boolean {
+    text?.let {
+        if (it.toString().trim().isNotEmpty()) {
+            this.error = null
+            return true
+        }
+    }
+    this.error = error
+    return false
+}

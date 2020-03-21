@@ -15,6 +15,7 @@ import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.getScreenSize
 import com.speakout.extensions.loadImage
+import com.speakout.extensions.openActivity
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.layout_profile.*
@@ -56,9 +57,9 @@ class ProfileFragment : Fragment() {
             Timber.d("Follow User: $it")
         })
 
-        profile_edit_update_btn.setOnClickListener {
-            profileViewModel.followUser(UserMiniDetails(userId = "DPi4YJlKRdasfa4gaj6BndFesSg1"))
-        }
+//        layout_profile_follow_unfollow_btn.setOnClickListener {
+//            profileViewModel.followUser(UserMiniDetails(userId = "DPi4YJlKRdasfa4gaj6BndFesSg1"))
+//        }
 
         profile_post_rv.apply {
             setHasFixedSize(true)
@@ -73,13 +74,13 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initSelf() {
-        profile_edit_update_btn.apply {
+        layout_profile_follow_unfollow_btn.apply {
             layoutParams.width = screenSize.widthPixels / 2
             setBackgroundColor(ContextCompat.getColor(context!!, R.color.white))
             setTextColor(ContextCompat.getColor(context!!, R.color.black))
             text = resources.getString(R.string.edit)
             setOnClickListener {
-
+                activity!!.openActivity(ProfileEditActivity::class.java)
             }
         }
         profileViewModel.profileObserver.observe(viewLifecycleOwner, Observer {
@@ -104,7 +105,7 @@ class ProfileFragment : Fragment() {
 
 
     private fun initOther() {
-        profile_edit_update_btn.apply {
+        layout_profile_follow_unfollow_btn.apply {
             layoutParams.width = screenSize.widthPixels / 2
             setBackgroundColor(ContextCompat.getColor(context!!, R.color.indigo_500))
             setTextColor(ContextCompat.getColor(context!!, R.color.white))
@@ -118,8 +119,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun populateData(userDetails: UserDetails) {
-        profile_edit_iv.layoutParams.width = screenSize.widthPixels / 3
-        profile_edit_iv.loadImage(
+        layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
+        layout_profile_iv.loadImage(
             userDetails.photoUrl,
             R.drawable.ic_profile_placeholder,
             true

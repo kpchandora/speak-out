@@ -39,24 +39,19 @@ data class UserDetails(
 
     companion object {
         @Exclude
-        fun updateUsername(username: String) = mapOf(
-            "username" to username
-        )
+        fun updateUsername(username: String) = Pair("username", username)
 
         @Exclude
-        fun updateName(name: String) = mapOf(
-            "name" to name
-        )
+        fun updateName(name: String) = Pair("name", name)
 
         @Exclude
-        fun updateNumber(number: String) = mapOf(
-            "phoneNumber" to number
-        )
+        fun updateNumber(number: String) = Pair("phoneNumber", number)
 
         @Exclude
-        fun updatePhoto(photoUrl: String) = mapOf(
-            "photoUrl" to photoUrl
-        )
+        fun updatePhoto(photoUrl: String) = Pair("photoUrl", photoUrl)
+
+        @Exclude
+        fun updateTimeStamp(time: Long) = Pair("lastUpdated", time)
     }
 
 }

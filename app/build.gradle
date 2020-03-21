@@ -118,5 +118,8 @@ dependencies {
     // Lottie
     implementation 'com.airbnb.android:lottie:2.5.0'
 
+    // RxImagePicker
+    implementation 'com.mlsdev.rximagepicker:library:2.2.1'
+
 }
 apply plugin: 'com.google.gms.google-services'

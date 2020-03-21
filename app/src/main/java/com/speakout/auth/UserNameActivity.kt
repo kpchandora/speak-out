@@ -79,7 +79,7 @@ class UserNameActivity : BaseActivity() {
 
         user_name_next_btn.setOnClickListener {
             showProgress()
-            mUserViewModel.updateUserDetails(UserDetails.updateUsername(username))
+            mUserViewModel.updateUserDetails(mapOf(UserDetails.updateUsername(username)))
         }
 
     }

@@ -81,6 +81,10 @@ object AppPreference {
         }
     }
 
+    fun getPhoneNumber(): String {
+        return getString(NameUtils.UserDetails.phoneNumber, "") ?: ""
+    }
+
     fun getUserUniqueName(): String {
         return getString(NameUtils.UserDetails.username, "") ?: ""
     }

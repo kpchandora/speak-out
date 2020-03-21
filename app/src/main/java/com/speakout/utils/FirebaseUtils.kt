@@ -18,7 +18,8 @@ object FirebaseUtils {
 
         fun getPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
 
-        fun getPostLikesRef(postId: String, userId: String) = getRef().document("post_likes/$postId/users/$userId")
+        fun getPostLikesRef(postId: String, userId: String) =
+            getRef().document("post_likes/$postId/users/$userId")
 
     }
 
@@ -33,7 +34,7 @@ object FirebaseUtils {
 
     fun getPostsStorageRef() = FirebaseStorage.getInstance().reference.child("posts")
 
-    fun getProfilePictureStorageRef() = FirebaseStorage.getInstance().reference.child("profile_pic")
+    fun getProfilePictureStorageRef() = FirebaseStorage.getInstance().reference.child("profile")
 
     fun getReference() = FirebaseDatabase.getInstance().reference
 

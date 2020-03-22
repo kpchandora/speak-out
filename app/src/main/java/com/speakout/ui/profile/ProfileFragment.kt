@@ -1,5 +1,7 @@
 package com.speakout.ui.profile
 
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -10,6 +12,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
@@ -120,11 +126,27 @@ class ProfileFragment : Fragment() {
 
     private fun populateData(userDetails: UserDetails) {
         layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
-        layout_profile_iv.loadImage(
-            userDetails.photoUrl,
-            R.drawable.ic_profile_placeholder,
-            true
-        )
+        layout_profile_bg_view.layoutParams.width = screenSize.widthPixels / 3
+//        layout_profile_iv.loadImage(
+//            userDetails.photoUrl,
+//            R.drawable.ic_profile_placeholder,
+//            true
+//        )
+
+        Glide.with(this).asBitmap().load(userDetails.photoUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onLoadCleared(placeholder: Drawable?) {
+
+                }
+
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    Timber.d("Image Bitmap: $resource")
+                    layout_profile_iv.setImageBitmap(resource)
+                }
+
+            })
+
 
         layout_profile_full_name_tv.text = userDetails.name
 

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.EditText
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputLayout
 
@@ -26,7 +27,7 @@ fun View.disable() {
     isEnabled = false
 }
 
-fun View.addViewObserver(function: () -> Unit) {
+inline fun View.addViewObserver(crossinline function: () -> Unit) {
     val view = this
     view.viewTreeObserver.addOnGlobalLayoutListener(object :
         ViewTreeObserver.OnGlobalLayoutListener {
@@ -55,3 +56,4 @@ fun TextInputLayout.checkAndShowError(text: Editable?, error: String): Boolean {
     this.error = error
     return false
 }
+

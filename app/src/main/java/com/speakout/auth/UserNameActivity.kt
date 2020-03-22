@@ -69,6 +69,7 @@ class UserNameActivity : BaseActivity() {
             }
         })
 
+        profile_edit_username_et.setSmallLetterFilter()
         profile_edit_username_et.doOnTextChanged { text: CharSequence?, start: Int,
                                                    count: Int, after: Int ->
 

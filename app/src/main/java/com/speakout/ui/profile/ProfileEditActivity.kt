@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import com.mlsdev.rximagepicker.RxImageConverters
 import com.mlsdev.rximagepicker.RxImagePicker
 import com.mlsdev.rximagepicker.Sources
@@ -106,6 +108,7 @@ class ProfileEditActivity : AppCompatActivity() {
         Timber.d("Height: ${screenSize.heightPixels}, Width: ${screenSize.widthPixels}")
         profile_edit_update_btn.layoutParams.width = screenSize.widthPixels / 4
         profile_edit_iv.layoutParams.width = screenSize.widthPixels / 3
+        profile_edit_bg_view.layoutParams.width = screenSize.widthPixels / 3
         updatePicture(AppPreference.getPhotoUrl())
         profile_edit_add_iv.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
@@ -176,5 +179,4 @@ class ProfileEditActivity : AppCompatActivity() {
         if (isUploading) return
         super.onBackPressed()
     }
-
 }

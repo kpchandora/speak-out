@@ -19,6 +19,7 @@ import com.speakout.R
 import com.speakout.extensions.gone
 import com.speakout.extensions.visible
 import com.speakout.posts.create.CreatePostViewModel
+import com.speakout.ui.profile.ProfileEditActivity
 import kotlinx.android.synthetic.main.fragment_post_tags.*
 import java.util.*
 
@@ -55,7 +56,6 @@ class TagsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         fragment_post_tags_progress.visible()
         mAdapter.setHasStableIds(true)
         mAdapter.setListener(tagsListener)

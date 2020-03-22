@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.Spanned
 import android.util.DisplayMetrics
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -18,6 +20,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
 import com.speakout.R
+import java.lang.Exception
 
 fun Context.showShortToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -97,6 +100,18 @@ fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = fal
         .placeholder(placeholder)
         .error(placeholder)
         .into(this)
+}
 
+fun EditText.setSmallLetterFilter() {
+    val filter = InputFilter { source, start, end, dest, dstart, dend ->
+        try {
+            source[0].let {
+                return@InputFilter it.toLowerCase().toString()
+            }
+        } catch (e: Exception) {
+        }
+        null
+    }
+    filters = arrayOf(filter)
 }
 

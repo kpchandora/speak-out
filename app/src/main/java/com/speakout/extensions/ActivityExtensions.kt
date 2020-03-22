@@ -102,7 +102,7 @@ fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = fal
         .into(this)
 }
 
-fun EditText.setSmallLetterFilter() {
+fun EditText.setSmallCaseFilter() {
     val filter = InputFilter { source, start, end, dest, dstart, dend ->
         try {
             source[0].let {

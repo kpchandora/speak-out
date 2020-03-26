@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.posts.create.PostData
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
@@ -35,6 +36,8 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = mPostsAdapter
         }
+
+        Timber.d("User Id ${AppPreference.getUserId()}")
 
         observeViewModels()
         mHomeViewModel.getPosts("")

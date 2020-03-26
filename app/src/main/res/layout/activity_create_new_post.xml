@@ -16,6 +16,7 @@
         android:layout_gravity="center"
         android:background="@color/grey_400">
 
+
         <ImageView
             android:id="@+id/create_post_bg_iv"
             android:layout_width="match_parent"

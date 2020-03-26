@@ -14,9 +14,10 @@ import timber.log.Timber
 
 object HomeService {
 
-    fun getPosts(): LiveData<List<PostData>> {
+    fun getPosts(userId: String): LiveData<List<PostData>> {
         val data = MutableLiveData<List<PostData>>()
         FirebaseUtils.FirestoreUtils.getPostsRef()
+            .whereEqualTo("userId", userId)
             .orderBy("timeStampLong", Query.Direction.DESCENDING).get()
             .addOnSuccessListener {
                 if (it.isEmpty) {

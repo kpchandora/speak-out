@@ -3,6 +3,7 @@ package com.speakout.ui.home
 import androidx.lifecycle.*
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
+import com.speakout.utils.AppPreference
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 
@@ -19,7 +20,7 @@ class HomeViewModel : ViewModel() {
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        HomeService.getPosts()
+        HomeService.getPosts(AppPreference.getUserId())
     }
 
     fun getPosts(id: String) {

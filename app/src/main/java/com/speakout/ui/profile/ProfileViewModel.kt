@@ -32,7 +32,7 @@ class ProfileViewModel : ViewModel() {
 
     private val _followUser = MutableLiveData<UserMiniDetails>()
     val followUser: LiveData<Boolean> = _followUser.switchMap {
-        FollowUnfollowService.unfollow(it)
+        FollowUnfollowService.unfollowUser(it)
     }
 
     private val _uploadProfilePicture = MutableLiveData<String?>()

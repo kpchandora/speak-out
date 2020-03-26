@@ -59,6 +59,10 @@ class ProfileFragment : Fragment() {
             initOther()
         }
 
+        layout_profile_iv.setOnClickListener {
+            profileViewModel.followUser(UserMiniDetails(userId = "1585223793608"))
+        }
+
         profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
             Timber.d("Follow User: $it")
         })

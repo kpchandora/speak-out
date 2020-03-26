@@ -12,18 +12,9 @@
     <FrameLayout
         android:id="@+id/create_post_container_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:layout_gravity="center"
-        android:background="@color/grey_400">
-
-
-        <ImageView
-            android:id="@+id/create_post_bg_iv"
-            android:layout_width="match_parent"
-            android:layout_height="350dp"
-            android:adjustViewBounds="true"
-            android:src="@drawable/post_image" />
-
+        android:background="@color/black">
 
         <TextView
             android:id="@+id/create_post_content_tv"
@@ -34,12 +25,23 @@
             android:layout_marginEnd="18dp"
             android:gravity="center"
             android:hint="@string/enter_content_hint"
-            android:maxLength="250"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
+            android:maxLength="300"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@android:color/white"
             android:textColorHint="@color/grey_600" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/bahram"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/yellow_500" />
+
 
     </FrameLayout>
 

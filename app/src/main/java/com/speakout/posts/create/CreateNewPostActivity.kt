@@ -32,13 +32,14 @@ class CreateNewPostActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_new_post)
 
-        create_post_bg_iv.addViewObserver {
+        create_post_container_layout.addViewObserver {
             getScreenSize().let {
-                create_post_bg_iv.layoutParams.height = it.widthPixels
-                create_post_bg_iv.requestLayout()
+                create_post_container_layout.layoutParams.height = it.widthPixels
+                create_post_container_layout.requestLayout()
             }
         }
-        create_post_bg_iv.setOnClickListener {
+        
+        create_post_container_layout.setOnClickListener {
             startActivityForResult(
                 Intent(this, BottomDialogActivity::class.java).putExtra(
                     BottomDialogActivity.CONTENT, create_post_content_tv.text

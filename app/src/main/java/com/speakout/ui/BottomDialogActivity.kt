@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import com.speakout.R
 import com.speakout.extensions.addViewObserver
 import com.speakout.extensions.getScreenSize
@@ -37,6 +40,7 @@ class BottomDialogActivity : Activity() {
         intent.extras?.let {
             it.getString(CONTENT)?.let { content ->
                 bottom_dialog_et.setText(content)
+                bottom_dialog_et.setSelection(content.length)
             }
         }
 

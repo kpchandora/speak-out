@@ -2,10 +2,15 @@ package com.speakout.ui
 
 import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -15,6 +20,8 @@ import com.speakout.posts.create.CreateNewPostActivity
 import com.speakout.utils.AppPreference
 
 class MainActivity : AppCompatActivity() {
+
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,5 +62,12 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        mainViewModel.navigateToProfileFragment.observe(this, Observer {
+            navController.navigate(
+                R.id.navigation_profile,
+                bundleOf("user_id" to it)
+            )
+        })
     }
 }

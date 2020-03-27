@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.posts.create.PostData
+import com.speakout.ui.MainViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
@@ -18,6 +19,7 @@ class HomeFragment : Fragment() {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = HomePostRecyclerViewAdapter()
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +42,7 @@ class HomeFragment : Fragment() {
         Timber.d("User Id ${AppPreference.getUserId()}")
 
         observeViewModels()
-        mHomeViewModel.getPosts("")
+        mHomeViewModel.getPosts("I6BSfzDRIAccVU4VzflwXTOJIDN2")
 
     }
 
@@ -79,6 +81,10 @@ class HomeFragment : Fragment() {
 
         override fun onDislike(position: Int, postData: PostData) {
             mHomeViewModel.unlikePost(postData)
+        }
+
+        override fun onProfileClick(postData: PostData) {
+            mainViewModel.navigateToProfileFragment(postData.userId)
         }
     }
 

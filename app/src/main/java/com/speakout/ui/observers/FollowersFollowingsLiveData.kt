@@ -1,25 +1,23 @@
-package com.speakout.ui
+package com.speakout.ui.observers
 
 import androidx.lifecycle.LiveData
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
-import com.speakout.auth.UserDetails
-import com.speakout.posts.create.PostData
-import com.speakout.utils.AppPreference
+import com.speakout.ui.profile.FollowersFollowingsData
 import com.speakout.utils.FirebaseUtils
-import timber.log.Timber
 import java.lang.Exception
 
-class UserLiveData : LiveData<UserDetails?>() {
+class FollowersFollowingsLiveData(private val userId: String) :
+    LiveData<FollowersFollowingsData?>() {
 
     private var listener: ListenerRegistration? = null
+
     override fun onActive() {
         super.onActive()
-        listener = FirebaseUtils.FirestoreUtils.getUsersRef().document(AppPreference.getUserId())
-            .addSnapshotListener { documentSnapshot: DocumentSnapshot?, firebaseFirestoreException ->
+        listener = FirebaseUtils.FirestoreUtils.getFollowersFollowingsRef(userId)
+            .addSnapshotListener { documentSnapshot, _ ->
                 if (documentSnapshot != null && documentSnapshot.exists()) {
                     try {
-                        postValue(documentSnapshot.toObject(UserDetails::class.java))
+                        postValue(documentSnapshot.toObject(FollowersFollowingsData::class.java))
                     } catch (e: Exception) {
                         postValue(null)
                     }
@@ -33,4 +31,5 @@ class UserLiveData : LiveData<UserDetails?>() {
         listener?.remove()
         super.onInactive()
     }
+
 }

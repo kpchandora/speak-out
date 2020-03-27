@@ -54,6 +54,10 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             item_home_post_load_fail_tv.setOnClickListener {
                 loadPost(post.postImageUrl)
             }
+
+            item_home_post_details_ll.setOnClickListener {
+                mEventListener?.onProfileClick(post)
+            }
         }
     }
 

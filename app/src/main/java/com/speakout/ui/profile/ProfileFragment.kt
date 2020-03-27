@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
@@ -20,7 +21,6 @@ import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.getScreenSize
-import com.speakout.extensions.loadImage
 import com.speakout.extensions.openActivity
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.utils.AppPreference
@@ -29,8 +29,7 @@ import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
-    private val profileViewModel: ProfileViewModel by activityViewModels()
-    private val home: HomeViewModel by activityViewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
     private val mPostsAdapter = ProfilePostsAdapter()
     private var mUserId = ""
     private var isSelf = false
@@ -77,13 +76,35 @@ class ProfileFragment : Fragment() {
             adapter = mPostsAdapter
         }
 
-        home.getPosts("")
-        home.posts.observe(viewLifecycleOwner, Observer {
+        profileViewModel.getPosts(mUserId)
+        profileViewModel.posts.observe(viewLifecycleOwner, Observer {
             mPostsAdapter.updateData(it)
         })
+
+        profileViewModel.followersFollowingsObserver.observe(viewLifecycleOwner, Observer {
+            layout_profile_followers_count_tv.text = it?.followersCount?.toString() ?: "0"
+            layout_profile_followers_tv.text =
+                resources.getQuantityString(
+                    R.plurals.number_of_followers,
+                    it?.followersCount?.toInt() ?: 0
+                )
+
+            layout_profile_followings_count_tv.text = it?.followingsCount?.toString() ?: "0"
+            layout_profile_followings_tv.text =
+                resources.getQuantityString(
+                    R.plurals.number_of_followings,
+                    it?.followingsCount?.toInt() ?: 0
+                )
+        })
+
+        profileViewModel.addFFObserver(mUserId)
+
     }
 
     private fun initSelf() {
+
+        profileViewModel.addProfileObserver()
+
         layout_profile_follow_unfollow_btn.apply {
             layoutParams.width = screenSize.widthPixels / 2
             setBackgroundColor(ContextCompat.getColor(context!!, R.color.white))
@@ -153,20 +174,6 @@ class ProfileFragment : Fragment() {
 
 
         layout_profile_full_name_tv.text = userDetails.name
-
-        layout_profile_followers_count_tv.text = userDetails.followersCount.toString()
-        layout_profile_followers_tv.text =
-            resources.getQuantityString(
-                R.plurals.number_of_followers,
-                userDetails.followersCount.toInt()
-            )
-
-        layout_profile_followings_count_tv.text = userDetails.followingsCount.toString()
-        layout_profile_followings_tv.text =
-            resources.getQuantityString(
-                R.plurals.number_of_followings,
-                userDetails.followingsCount.toInt()
-            )
 
         layout_profile_posts_count_tv.text = userDetails.postsCount.toString()
         layout_profile_posts_tv.text =

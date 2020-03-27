@@ -20,7 +20,7 @@ class HomeViewModel : ViewModel() {
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        HomeService.getPosts(AppPreference.getUserId())
+        HomeService.getPosts(it)
     }
 
     fun getPosts(id: String) {

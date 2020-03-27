@@ -21,6 +21,9 @@ object FirebaseUtils {
         fun getPostLikesRef(postId: String, userId: String) =
             getRef().document("post_likes/$postId/users/$userId")
 
+        fun getFollowersFollowingsRef(userId: String) =
+            getRef().document("followers_followings_count/${userId}")
+
     }
 
     fun currentUser() = FirebaseAuth.getInstance().currentUser

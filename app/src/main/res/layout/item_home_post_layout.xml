@@ -9,6 +9,7 @@
     android:paddingBottom="2dp">
 
     <LinearLayout
+        android:id="@+id/item_home_post_details_ll"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal">

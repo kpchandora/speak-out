@@ -127,7 +127,13 @@ class ProfileEditActivity : AppCompatActivity() {
                 profile_edit_bg_view.visible()
             },
             onFailed = {
-                profile_edit_bg_view.visible()
+                profile_edit_bg_view.gone()
+                profile_edit_iv.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_account_circle_grey
+                    )
+                )
             })
     }
 

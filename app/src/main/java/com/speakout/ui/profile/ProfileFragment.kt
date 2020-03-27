@@ -182,7 +182,13 @@ class ProfileFragment : Fragment() {
                 layout_profile_bg_view.visible()
             },
             onFailed = {
-                layout_profile_bg_view.visible()
+                layout_profile_bg_view.gone()
+                layout_profile_iv.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context!!,
+                        R.drawable.ic_account_circle_grey
+                    )
+                )
             })
 
 

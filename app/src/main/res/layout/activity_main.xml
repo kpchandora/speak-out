@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
+        android:foreground="?attr/selectableItemBackground"
         app:menu="@menu/bottom_nav_menu" />
 
 

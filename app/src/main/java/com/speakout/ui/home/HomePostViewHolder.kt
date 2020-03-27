@@ -31,10 +31,10 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                     item_home_post_profile_iv.setImageDrawable(
                         ContextCompat.getDrawable(
                             view.context,
-                            R.drawable.ic_profile_placeholder
+                            R.drawable.ic_account_circle_grey
                         )
                     )
-                    item_home_post_profile_bg_iv.visible()
+                    item_home_post_profile_bg_iv.gone()
                 })
 
             item_home_post_name_tv.text = post.username

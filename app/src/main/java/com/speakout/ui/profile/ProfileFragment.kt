@@ -57,10 +57,6 @@ class ProfileFragment : Fragment() {
             initOther()
         }
 
-        profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
-            Timber.d("Follow User: $it")
-        })
-
         profile_post_rv.apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, 3)
@@ -133,10 +129,13 @@ class ProfileFragment : Fragment() {
             setTextColor(ContextCompat.getColor(context!!, R.color.white))
 
             setOnClickListener {
-                if (text == getString(R.string.follow))
+                if (text == getString(R.string.follow)) {
+                    layout_profile_follow_unfollow_btn.text = getString(R.string.following)
                     profileViewModel.followUser(UserMiniDetails(userId = mUserId))
-                else if (text == getString(R.string.following))
-                    profileViewModel.followUser(UserMiniDetails(userId = mUserId))
+                } else if (text == getString(R.string.following)) {
+                    layout_profile_follow_unfollow_btn.text = getString(R.string.follow)
+                    profileViewModel.unFollowUser(UserMiniDetails(userId = mUserId))
+                }
             }
         }
 
@@ -146,6 +145,31 @@ class ProfileFragment : Fragment() {
                 populateData(it)
             }
         })
+
+        profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
+            if (!it) {
+                layout_profile_follow_unfollow_btn.text = getString(R.string.follow)
+                activity!!.showShortToast("Failed to follow user")
+            }
+        })
+
+        profileViewModel.unFollowUser.observe(viewLifecycleOwner, Observer {
+            if (!it) {
+                layout_profile_follow_unfollow_btn.text = getString(R.string.follow)
+                activity!!.showShortToast("Failed to remove user")
+            }
+        })
+
+        profileViewModel.isFollowing.observe(viewLifecycleOwner, Observer {
+            layout_profile_follow_unfollow_btn.text = if (it == true) {
+                getString(R.string.following)
+            } else {
+                getString(R.string.follow)
+            }
+        })
+
+        profileViewModel.isFollowing(mUserId)
+
     }
 
     private fun populateData(userDetails: UserDetails) {

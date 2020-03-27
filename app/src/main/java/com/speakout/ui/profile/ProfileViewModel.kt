@@ -27,10 +27,18 @@ class ProfileViewModel : ViewModel() {
         AuthService.getUserData(it)
     }
 
-    private val _followUser = MutableLiveData<UserMiniDetails>()
-    val followUser: LiveData<Boolean> = _followUser.switchMap {
-        ProfileService.unfollowUser(it)
+    private val _isFollowing = MutableLiveData<String>()
+    val isFollowing: LiveData<Boolean?> = _isFollowing.switchMap {
+        ProfileService.isFollowing(it)
     }
+
+    private val _followUser = MutableLiveData<Boolean>()
+    val followUser: LiveData<Boolean>
+        get() = _followUser
+
+    private val _unFollowUser = MutableLiveData<Boolean>()
+    val unFollowUser: LiveData<Boolean>
+        get() = _unFollowUser
 
     private val _uploadProfilePicture = MutableLiveData<String?>()
     val uploadProfilePicture: LiveData<String?>
@@ -57,6 +65,10 @@ class ProfileViewModel : ViewModel() {
 
     }
 
+    fun isFollowing(userId: String) {
+        _isFollowing.value = userId
+    }
+
     fun addFFObserver(userId: String) {
         followersFollowingsObserver.addSource(FollowersFollowingsLiveData(userId)) {
             followersFollowingsObserver.value = it
@@ -73,12 +85,24 @@ class ProfileViewModel : ViewModel() {
         _userDetails.value = uid
     }
 
-    fun unFollowUser(userMiniDetails: UserMiniDetails){
-
+    fun followUser(userMiniDetails: UserMiniDetails) {
+        compositeDisposable += ProfileService.follow(userMiniDetails)
+            .withDefaultSchedulers()
+            .subscribe({
+                _followUser.value = it
+            }, {
+                _followUser.value = false
+            })
     }
 
-    fun followUser(userMiniDetails: UserMiniDetails) {
-        _followUser.value = userMiniDetails
+    fun unFollowUser(userMiniDetails: UserMiniDetails) {
+        compositeDisposable += ProfileService.unFollowUser(userMiniDetails)
+            .withDefaultSchedulers()
+            .subscribe({
+                _unFollowUser.value = it
+            }, {
+                _unFollowUser.value = false
+            })
     }
 
 }

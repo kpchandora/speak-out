@@ -73,6 +73,10 @@ class ProfileViewModel : ViewModel() {
         _userDetails.value = uid
     }
 
+    fun unFollowUser(userMiniDetails: UserMiniDetails){
+
+    }
+
     fun followUser(userMiniDetails: UserMiniDetails) {
         _followUser.value = userMiniDetails
     }

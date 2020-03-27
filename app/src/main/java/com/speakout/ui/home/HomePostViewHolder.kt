@@ -3,15 +3,10 @@ package com.speakout.ui.home
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.speakout.R
 import com.speakout.extensions.gone
-import com.speakout.extensions.loadImage
 import com.speakout.extensions.loadImageWithCallback
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
@@ -25,11 +20,22 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(post: PostData) {
         view.apply {
-            item_home_post_profile_iv.loadImage(
-                url = post.userImageUrl,
-                placeholder = R.drawable.ic_profile_placeholder,
-                makeRound = true
-            )
+            item_home_post_profile_bg_iv.gone()
+
+            item_home_post_profile_iv.loadImageWithCallback(post.userImageUrl,
+                makeRound = true,
+                onSuccess = {
+                    item_home_post_profile_bg_iv.visible()
+                },
+                onFailed = {
+                    item_home_post_profile_iv.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            view.context,
+                            R.drawable.ic_profile_placeholder
+                        )
+                    )
+                    item_home_post_profile_bg_iv.visible()
+                })
 
             item_home_post_name_tv.text = post.username
 

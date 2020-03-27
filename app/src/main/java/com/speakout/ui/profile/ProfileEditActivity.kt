@@ -122,23 +122,12 @@ class ProfileEditActivity : AppCompatActivity() {
 
     private fun updatePicture(url: String) {
         profile_edit_bg_view.gone()
-        profile_edit_iv.loadImage(
-            url,
-            R.drawable.ic_profile_placeholder,
-            true
-        )
         profile_edit_iv.loadImageWithCallback(url, makeRound = true,
             onSuccess = {
                 profile_edit_bg_view.visible()
             },
             onFailed = {
                 profile_edit_bg_view.visible()
-                profile_edit_iv.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        this,
-                        R.drawable.ic_profile_placeholder
-                    )
-                )
             })
     }
 

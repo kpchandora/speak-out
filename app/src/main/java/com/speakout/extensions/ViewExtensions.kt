@@ -17,6 +17,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.textfield.TextInputLayout
+import timber.log.Timber
 import java.lang.Exception
 
 fun View.visible() {
@@ -68,7 +69,6 @@ fun TextInputLayout.checkAndShowError(text: Editable?, error: String): Boolean {
 
 
 fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = false) {
-
     var glide = if (url.isNotNullOrEmpty()) {
         Glide.with(this).load(url)
     } else {
@@ -83,6 +83,7 @@ fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = fal
         .placeholder(placeholder)
         .error(placeholder)
         .into(this)
+
 }
 
 inline fun ImageView.loadImageWithCallback(

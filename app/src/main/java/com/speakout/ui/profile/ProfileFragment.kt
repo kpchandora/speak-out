@@ -20,8 +20,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
-import com.speakout.extensions.getScreenSize
-import com.speakout.extensions.openActivity
+import com.speakout.extensions.*
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.layout_profile.*
@@ -58,17 +57,9 @@ class ProfileFragment : Fragment() {
             initOther()
         }
 
-        layout_profile_iv.setOnClickListener {
-            profileViewModel.followUser(UserMiniDetails(userId = "1585223793608"))
-        }
-
         profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
             Timber.d("Follow User: $it")
         })
-
-//        layout_profile_follow_unfollow_btn.setOnClickListener {
-//            profileViewModel.followUser(UserMiniDetails(userId = "DPi4YJlKRdasfa4gaj6BndFesSg1"))
-//        }
 
         profile_post_rv.apply {
             setHasFixedSize(true)
@@ -140,7 +131,15 @@ class ProfileFragment : Fragment() {
             layoutParams.width = screenSize.widthPixels / 2
             setBackgroundColor(ContextCompat.getColor(context!!, R.color.indigo_500))
             setTextColor(ContextCompat.getColor(context!!, R.color.white))
+
+            setOnClickListener {
+                if (text == getString(R.string.follow))
+                    profileViewModel.followUser(UserMiniDetails(userId = mUserId))
+                else if (text == getString(R.string.following))
+                    profileViewModel.followUser(UserMiniDetails(userId = mUserId))
+            }
         }
+
         profileViewModel.getUser(mUserId)
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
             userDetails?.let {
@@ -152,24 +151,14 @@ class ProfileFragment : Fragment() {
     private fun populateData(userDetails: UserDetails) {
         layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
         layout_profile_bg_view.layoutParams.width = screenSize.widthPixels / 3
-//        layout_profile_iv.loadImage(
-//            userDetails.photoUrl,
-//            R.drawable.ic_profile_placeholder,
-//            true
-//        )
 
-        Glide.with(this).asBitmap().load(userDetails.photoUrl)
-            .apply(RequestOptions.circleCropTransform())
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onLoadCleared(placeholder: Drawable?) {
-
-                }
-
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    Timber.d("Image Bitmap: $resource")
-                    layout_profile_iv.setImageBitmap(resource)
-                }
-
+        layout_profile_bg_view.gone()
+        layout_profile_iv.loadImageWithCallback(userDetails.photoUrl ?: "", makeRound = true,
+            onSuccess = {
+                layout_profile_bg_view.visible()
+            },
+            onFailed = {
+                layout_profile_bg_view.visible()
             })
 
 

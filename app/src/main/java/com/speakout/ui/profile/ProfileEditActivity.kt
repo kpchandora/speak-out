@@ -11,6 +11,7 @@ import android.os.Environment
 import android.text.Editable
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
@@ -23,6 +24,7 @@ import com.speakout.auth.UserNameActivity
 import com.speakout.auth.UserViewModel
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
+import kotlinx.android.synthetic.main.activity_bottom_dialog.*
 import kotlinx.android.synthetic.main.activity_profile_edit.*
 import kotlinx.android.synthetic.main.activity_profile_edit.profile_edit_username_et
 import kotlinx.android.synthetic.main.activity_profile_edit.profile_edit_username_til
@@ -114,15 +116,30 @@ class ProfileEditActivity : AppCompatActivity() {
         profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_username_et.setText(AppPreference.getUserUniqueName())
         profile_edit_full_name_et.setText(AppPreference.getUserDisplayName())
+        profile_edit_full_name_et.setSelection(AppPreference.getUserDisplayName().length)
         profile_edit_mobile_et.setText(AppPreference.getPhoneNumber())
     }
 
     private fun updatePicture(url: String) {
+        profile_edit_bg_view.gone()
         profile_edit_iv.loadImage(
             url,
             R.drawable.ic_profile_placeholder,
             true
         )
+        profile_edit_iv.loadImageWithCallback(url, makeRound = true,
+            onSuccess = {
+                profile_edit_bg_view.visible()
+            },
+            onFailed = {
+                profile_edit_bg_view.visible()
+                profile_edit_iv.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        this,
+                        R.drawable.ic_profile_placeholder
+                    )
+                )
+            })
     }
 
     private fun observeViewModels() {

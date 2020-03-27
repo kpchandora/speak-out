@@ -12,6 +12,7 @@ import com.bumptech.glide.request.target.Target
 import com.speakout.R
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
+import com.speakout.extensions.loadImageWithCallback
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_home_post_layout.view.*
@@ -72,32 +73,12 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     @SuppressLint("CheckResult")
     private fun loadPost(url: String) {
-        Glide.with(view)
-            .load(url)
-            .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    view.item_home_post_load_fail_tv.visible()
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    view.item_home_post_load_fail_tv.gone()
-                    return false
-                }
+        view.item_home_post_image_iv.loadImageWithCallback(url,
+            onSuccess = {
+                view.item_home_post_load_fail_tv.gone()
+            }, onFailed = {
+                view.item_home_post_load_fail_tv.visible()
             })
-            .thumbnail(.1f)
-            .into(view.item_home_post_image_iv)
     }
 
 }

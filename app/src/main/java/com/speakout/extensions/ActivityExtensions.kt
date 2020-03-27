@@ -18,8 +18,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.speakout.R
+import kotlinx.android.synthetic.main.item_home_post_layout.view.*
 import java.lang.Exception
 
 fun Context.showShortToast(message: String) {
@@ -83,35 +88,3 @@ fun Activity.hideKeyboard(editText: EditText? = null) {
         } ?: it.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
     }
 }
-
-fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = false) {
-
-    var glide = if (url.isNotNullOrEmpty()) {
-        Glide.with(this).load(url)
-    } else {
-        Glide.with(this).load(placeholder)
-    }
-
-    if (makeRound) {
-        glide = glide.apply(RequestOptions.circleCropTransform())
-    }
-    glide
-        .thumbnail(.1f)
-        .placeholder(placeholder)
-        .error(placeholder)
-        .into(this)
-}
-
-fun EditText.setSmallCaseFilter() {
-    val filter = InputFilter { source, start, end, dest, dstart, dend ->
-        try {
-            source[0].let {
-                return@InputFilter it.toLowerCase().toString()
-            }
-        } catch (e: Exception) {
-        }
-        null
-    }
-    filters = arrayOf(filter)
-}
-

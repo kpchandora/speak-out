@@ -25,22 +25,7 @@ object ProfileService {
             val otherFollowersRef =
                 db.document("followers/${userMiniDetails.userId}/users/${AppPreference.getUserId()}")
 
-            val followingsUsersRefs =
-                db.document("followingsUsersRefs/${AppPreference.getUserId()}")
-            val followingsUsersRefsData = mapOf(
-                "users" to mapOf(userMiniDetails.userId to otherFollowersRef)
-            )
-
-            val followersUsersRefs =
-                db.document("followersUsersRefs/${userMiniDetails.userId}")
-            val followersUsersRefsData = mapOf(
-                "users" to mapOf(AppPreference.getUserId() to currentFollowingsRef)
-            )
-
             db.runBatch {
-
-                it.set(followersUsersRefs, followersUsersRefsData, SetOptions.merge())
-                it.set(followingsUsersRefs, followingsUsersRefsData, SetOptions.merge())
 
                 val followersFollowingsCountSelfRef =
                     db.document("followers_followings_count/${AppPreference.getUserId()}")
@@ -60,16 +45,9 @@ object ProfileService {
                     SetOptions.merge()
                 )
 
-                it.set(currentFollowingsRef, userMiniDetails)
+                it.set(currentFollowingsRef, mapOf("timeStamp" to System.currentTimeMillis()))
 
-                it.set(
-                    otherFollowersRef, UserMiniDetails(
-                        name = AppPreference.getUserDisplayName(),
-                        userId = AppPreference.getUserId(),
-                        photoUrl = AppPreference.getPhotoUrl(),
-                        username = AppPreference.getUserUniqueName()
-                    )
-                )
+                it.set(otherFollowersRef, mapOf("timeStamp" to System.currentTimeMillis()))
 
             }.addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -92,22 +70,7 @@ object ProfileService {
             val otherFollowersRef =
                 db.document("followers/${userMiniDetails.userId}/users/${AppPreference.getUserId()}")
 
-            val followingsUsersRefs =
-                db.document("followingsUsersRefs/${AppPreference.getUserId()}")
-            val followingsUsersRefsData = mapOf(
-                "users" to mapOf(userMiniDetails.userId to FieldValue.delete())
-            )
-
-            val followersUsersRefs =
-                db.document("followersUsersRefs/${userMiniDetails.userId}")
-            val followersUsersRefsData = mapOf(
-                "users" to mapOf(AppPreference.getUserId() to FieldValue.delete())
-            )
-
             db.runBatch {
-
-                it.set(followersUsersRefs, followersUsersRefsData, SetOptions.merge())
-                it.set(followingsUsersRefs, followingsUsersRefsData, SetOptions.merge())
 
                 val followersFollowingsCountSelfRef =
                     db.document("followers_followings_count/${AppPreference.getUserId()}")
@@ -142,22 +105,17 @@ object ProfileService {
 
     fun isFollowing(userId: String): LiveData<Boolean?> {
         val data = MutableLiveData<Boolean?>()
-        FirebaseUtils.FirestoreUtils.getFollowingsUserRefs(AppPreference.getUserId())
-            .get().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    try {
-                        data.value = task.result?.let { snapShot ->
-                            (snapShot.get("users") as? Map<String, DocumentReference>)?.containsKey(
-                                userId
-                            )
-                        }
-                    } catch (e: Exception) {
-                        data.value = false
-                    }
-                } else {
-                    data.value = null
-                }
+        FirebaseUtils.FirestoreUtils.isFollowingRef(
+            userId = userId,
+            selfId = AppPreference.getUserId()
+        ).get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                data.value = it.result?.exists() ?: false
+            } else {
+                data.value = null
             }
+        }
+
         return data
     }
 

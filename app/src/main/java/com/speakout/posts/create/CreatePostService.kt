@@ -3,6 +3,8 @@ package com.speakout.posts.create
 import android.graphics.Bitmap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.NameUtils
 import java.io.ByteArrayOutputStream
@@ -13,15 +15,21 @@ object CreatePostService {
         val data = MutableLiveData<Boolean>()
 
         val db = FirebaseUtils.FirestoreUtils.getRef()
-        val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
-        val updateUsersDataRef =
-            db.collection(NameUtils.DatabaseRefs.userDetailsRef).document(postData.userId)
-                .collection(NameUtils.DatabaseRefs.postsRef)
-                .document(postData.postId)
+        val postRef = FirebaseUtils.FirestoreUtils.getPostsRef().document(postData.postId)
+        val userPostsRef = FirebaseUtils.FirestoreUtils.getUsersRef().document(postData.userId)
+            .collection(NameUtils.DatabaseRefs.postsRef)
+            .document(postData.postId)
+
+        val postCountRef = FirebaseUtils.FirestoreUtils.getUsersRef().document(postData.userId)
 
         db.runBatch {
-            postRef.set(postData)
-            updateUsersDataRef.set(mapOf(postData.postId to postData.postId))
+            it.set(
+                postCountRef,
+                mapOf("postsCount" to FieldValue.increment(1)),
+                SetOptions.merge()
+            )
+            it.set(postRef, postData)
+            it.set(userPostsRef, mapOf("timeStamp" to System.currentTimeMillis()))
         }.addOnCompleteListener {
             data.value = it.isSuccessful
         }

@@ -56,19 +56,19 @@ class HomeFragment : Fragment() {
         })
 
         mHomeViewModel.likePost.observe(viewLifecycleOwner,
-            Observer { pair: Pair<Boolean, PostData> ->
-                Timber.d("likePost Content: ${pair.second.content}")
-                if (!pair.first) {
-                    mPostsAdapter.likePostFail(pair.second)
-                }
+            Observer { b: Boolean ->
+                Timber.d("likePost Content: $b")
+//                if (!pair.first) {
+//                    mPostsAdapter.likePostFail(pair.second)
+//                }
             })
 
         mHomeViewModel.unlikePost.observe(viewLifecycleOwner,
-            Observer { pair: Pair<Boolean, PostData> ->
-                Timber.d("unlikePost Content: ${pair.second.content}")
-                if (!pair.first) {
-                    mPostsAdapter.unlikePostFail(pair.second)
-                }
+            Observer { b: Boolean ->
+                Timber.d("unlikePost Content: $b")
+//                if (b) {
+//                    mPostsAdapter.unlikePostFail(pair.second)
+//                }
             })
 
     }

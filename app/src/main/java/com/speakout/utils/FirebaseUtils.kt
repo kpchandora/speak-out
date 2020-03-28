@@ -16,7 +16,9 @@ object FirebaseUtils {
 
         fun getTagsRef() = getRef().collection(NameUtils.DatabaseRefs.tags)
 
-        fun getPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
+        fun getAllPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
+
+        fun getSinglePostRef(postId: String) = getAllPostsRef().document(postId)
 
         fun getPostLikesRef(postId: String, userId: String) =
             getRef().document("post_likes/$postId/users/$userId")
@@ -29,6 +31,8 @@ object FirebaseUtils {
 
         fun isFollowingRef(userId: String, selfId: String) =
             getRef().document("/followings/${selfId}/users/${userId}")
+
+
     }
 
     fun currentUser() = FirebaseAuth.getInstance().currentUser

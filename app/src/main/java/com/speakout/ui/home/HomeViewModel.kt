@@ -11,11 +11,11 @@ class HomeViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val _unlikePost = MutableLiveData<Pair<Boolean, PostData>>()
-    val unlikePost: LiveData<Pair<Boolean, PostData>> = _unlikePost
+    private val _unlikePost = MutableLiveData<Boolean>()
+    val unlikePost: LiveData<Boolean> = _unlikePost
 
-    private val _likePost = MutableLiveData<Pair<Boolean, PostData>>()
-    val likePost: LiveData<Pair<Boolean, PostData>> = _likePost
+    private val _likePost = MutableLiveData<Boolean>()
+    val likePost: LiveData<Boolean> = _likePost
 
 
     private val _posts = MutableLiveData<String>()
@@ -28,22 +28,22 @@ class HomeViewModel : ViewModel() {
     }
 
     fun likePost(postData: PostData) {
-        compositeDisposable += HomeService.likePost(postData)
+        compositeDisposable += HomeService.newLikePost(postData)
             .withDefaultSchedulers()
             .subscribe({
                 _likePost.value = it
             }, {
-                _likePost.value = Pair(false, postData)
+                _likePost.value = false
             })
     }
 
     fun unlikePost(postData: PostData) {
-        compositeDisposable += HomeService.unlikePost(postData)
+        compositeDisposable += HomeService.newUnlikePost(postData)
             .withDefaultSchedulers()
             .subscribe({
                 _unlikePost.value = it
             }, {
-                _unlikePost.value = Pair(false, postData)
+                _unlikePost.value = false
             })
     }
 

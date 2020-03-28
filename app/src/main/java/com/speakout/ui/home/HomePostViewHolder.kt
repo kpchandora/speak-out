@@ -69,11 +69,11 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     }
 
     private fun setLikes(post: PostData) {
-        if (post.likesSet.isEmpty()) {
+        if (post.likesCount < 1) {
             view.item_home_post_like_count_tv.gone()
         } else {
             view.item_home_post_like_count_tv.visible()
-            view.item_home_post_like_count_tv.text = post.likesSet.size.toString()
+            view.item_home_post_like_count_tv.text = post.likesCount.toString()
         }
     }
 

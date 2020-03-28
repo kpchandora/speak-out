@@ -14,7 +14,8 @@ data class PostData(
     var username: String = "",
     var userImageUrl: String = "",
     var likes: List<String> = emptyList(),
-    var timeStampLong: Long = 0
+    var timeStampLong: Long = 0,
+    var likesCount: Long = 0
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -26,6 +27,7 @@ data class PostData(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.createStringArrayList() ?: emptyList(),
+        parcel.readLong(),
         parcel.readLong()
     )
 
@@ -40,6 +42,7 @@ data class PostData(
         parcel.writeString(userImageUrl)
         parcel.writeStringList(likes)
         parcel.writeLong(timeStampLong)
+        parcel.writeLong(likesCount)
     }
 
     override fun describeContents(): Int {

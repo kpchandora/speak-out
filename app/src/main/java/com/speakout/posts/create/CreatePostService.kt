@@ -14,15 +14,14 @@ object CreatePostService {
     fun createPost(postData: PostData): LiveData<Boolean> {
         val data = MutableLiveData<Boolean>()
 
-        val db = FirebaseUtils.FirestoreUtils.getRef()
-        val postRef = FirebaseUtils.FirestoreUtils.getPostsRef().document(postData.postId)
+        val postRef = FirebaseUtils.FirestoreUtils.getSinglePostRef(postData.postId)
         val userPostsRef = FirebaseUtils.FirestoreUtils.getUsersRef().document(postData.userId)
             .collection(NameUtils.DatabaseRefs.postsRef)
             .document(postData.postId)
 
         val postCountRef = FirebaseUtils.FirestoreUtils.getUsersRef().document(postData.userId)
 
-        db.runBatch {
+        FirebaseUtils.FirestoreUtils.getRef().runBatch {
             it.set(
                 postCountRef,
                 mapOf("postsCount" to FieldValue.increment(1)),

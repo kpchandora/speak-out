@@ -12,6 +12,7 @@ import com.speakout.R
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainViewModel
 import com.speakout.utils.AppPreference
+import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
@@ -20,6 +21,11 @@ class HomeFragment : Fragment() {
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = HomePostRecyclerViewAdapter()
     private val mainViewModel: MainViewModel by activityViewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mHomeViewModel.getPosts("I6BSfzDRIAccVU4VzflwXTOJIDN2")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,8 +47,6 @@ class HomeFragment : Fragment() {
         Timber.d("User Id ${AppPreference.getUserId()}")
 
         observeViewModels()
-        mHomeViewModel.getPosts("I6BSfzDRIAccVU4VzflwXTOJIDN2")
-
     }
 
     override fun onDestroyView() {

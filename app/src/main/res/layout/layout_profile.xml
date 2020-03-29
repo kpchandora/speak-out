@@ -139,6 +139,7 @@
         app:layout_constraintTop_toBottomOf="@+id/layout_profile_iv"
         tools:text="@tools:sample/full_names" />
 
+
     <Button
         android:id="@+id/layout_profile_follow_unfollow_btn"
         android:layout_width="wrap_content"

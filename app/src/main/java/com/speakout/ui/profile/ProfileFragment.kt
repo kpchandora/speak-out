@@ -38,6 +38,14 @@ class ProfileFragment : Fragment() {
         super.onCreate(savedInstanceState)
         mUserId = arguments?.getString("user_id") ?: ""
         isSelf = mUserId == AppPreference.getUserId()
+        profileViewModel.getPosts(mUserId)
+        profileViewModel.addFFObserver(mUserId)
+        if (isSelf) {
+            profileViewModel.addProfileObserver()
+        } else {
+            profileViewModel.isFollowing(mUserId)
+            profileViewModel.getUser(mUserId)
+        }
     }
 
     override fun onCreateView(
@@ -63,7 +71,7 @@ class ProfileFragment : Fragment() {
             adapter = mPostsAdapter
         }
 
-        profileViewModel.getPosts(mUserId)
+
         profileViewModel.posts.observe(viewLifecycleOwner, Observer {
             mPostsAdapter.updateData(it)
         })
@@ -84,13 +92,9 @@ class ProfileFragment : Fragment() {
                 )
         })
 
-        profileViewModel.addFFObserver(mUserId)
-
     }
 
     private fun initSelf() {
-
-        profileViewModel.addProfileObserver()
 
         layout_profile_follow_unfollow_btn.apply {
             layoutParams.width = screenSize.widthPixels / 2
@@ -139,7 +143,7 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        profileViewModel.getUser(mUserId)
+
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
             userDetails?.let {
                 populateData(it)
@@ -167,9 +171,6 @@ class ProfileFragment : Fragment() {
                 getString(R.string.follow)
             }
         })
-
-        profileViewModel.isFollowing(mUserId)
-
     }
 
     private fun populateData(userDetails: UserDetails) {

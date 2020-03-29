@@ -22,7 +22,7 @@
         android:layout_width="100dp"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/dr_round_stroke_black"
+        android:background="@drawable/dr_circle_stroke_black_grey500"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_profile_follow_unfollow_btn">
+        app:layout_constraintTop_toBottomOf="@+id/layout_profile_follow_unfollow_frame">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -139,17 +139,38 @@
         app:layout_constraintTop_toBottomOf="@+id/layout_profile_iv"
         tools:text="@tools:sample/full_names" />
 
-
-    <Button
-        android:id="@+id/layout_profile_follow_unfollow_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <FrameLayout
+        android:id="@+id/layout_profile_follow_unfollow_frame"
+        android:layout_width="100dp"
+        android:visibility="invisible"
+        android:layout_height="35dp"
         android:layout_marginTop="12dp"
-        android:text="@string/follow"
-        android:textAllCaps="false"
+        android:background="@drawable/dr_follow_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_profile_full_name_tv" />
+        app:layout_constraintTop_toBottomOf="@+id/layout_profile_full_name_tv">
+
+        <TextView
+            android:id="@+id/follow_unfollow_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/follow"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </FrameLayout>
+    <!--    <Button-->
+    <!--        android:id="@+id/layout_profile_follow_unfollow_btn"-->
+    <!--        android:visibility="gone"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="12dp"-->
+    <!--        android:text="@string/follow"-->
+    <!--        android:textAllCaps="false"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/layout_profile_full_name_tv" />-->
 
     <View
         android:id="@+id/view"

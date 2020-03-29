@@ -1,7 +1,5 @@
 package com.speakout.ui.profile
 
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -9,22 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.*
-import com.speakout.ui.home.HomeViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.layout_profile.*
-import timber.log.Timber
 
 class ProfileFragment : Fragment() {
 
@@ -96,15 +87,15 @@ class ProfileFragment : Fragment() {
 
     private fun initSelf() {
 
-        layout_profile_follow_unfollow_btn.apply {
+        layout_profile_follow_unfollow_frame.apply {
             layoutParams.width = screenSize.widthPixels / 2
-            setBackgroundColor(ContextCompat.getColor(context!!, R.color.white))
-            setTextColor(ContextCompat.getColor(context!!, R.color.black))
-            text = resources.getString(R.string.edit)
             setOnClickListener {
                 activity!!.openActivity(ProfileEditActivity::class.java)
             }
         }
+
+        showEdit()
+
         profileViewModel.profileObserver.observe(viewLifecycleOwner, Observer {
             it?.apply {
                 populateData(this)
@@ -127,22 +118,24 @@ class ProfileFragment : Fragment() {
 
 
     private fun initOther() {
-        layout_profile_follow_unfollow_btn.apply {
+        layout_profile_follow_unfollow_frame.apply {
             layoutParams.width = screenSize.widthPixels / 2
-            setBackgroundColor(ContextCompat.getColor(context!!, R.color.indigo_500))
-            setTextColor(ContextCompat.getColor(context!!, R.color.white))
+            setBackgroundResource(R.drawable.dr_follow_bg)
 
             setOnClickListener {
+                val text = follow_unfollow_tv.text
                 if (text == getString(R.string.follow)) {
-                    layout_profile_follow_unfollow_btn.text = getString(R.string.following)
+                    showFollowing()
                     profileViewModel.followUser(UserMiniDetails(userId = mUserId))
                 } else if (text == getString(R.string.following)) {
-                    layout_profile_follow_unfollow_btn.text = getString(R.string.follow)
+                    showFollow()
                     profileViewModel.unFollowUser(UserMiniDetails(userId = mUserId))
                 }
             }
         }
 
+        follow_unfollow_tv.text = getString(R.string.follow)
+        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
 
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
             userDetails?.let {
@@ -152,25 +145,47 @@ class ProfileFragment : Fragment() {
 
         profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
             if (!it) {
-                layout_profile_follow_unfollow_btn.text = getString(R.string.follow)
+                showFollow()
                 activity!!.showShortToast("Failed to follow user")
             }
         })
 
         profileViewModel.unFollowUser.observe(viewLifecycleOwner, Observer {
             if (!it) {
-                layout_profile_follow_unfollow_btn.text = getString(R.string.follow)
+                showFollowing()
                 activity!!.showShortToast("Failed to remove user")
             }
         })
 
         profileViewModel.isFollowing.observe(viewLifecycleOwner, Observer {
-            layout_profile_follow_unfollow_btn.text = if (it == true) {
-                getString(R.string.following)
-            } else {
-                getString(R.string.follow)
-            }
+            it?.let {
+                if (it) {
+                    showFollowing()
+                } else {
+                    showFollow()
+                }
+            } ?: activity!!.showShortToast("Failed to load data")
+
         })
+    }
+
+    private fun showFollow() {
+        layout_profile_follow_unfollow_frame.visible()
+        layout_profile_follow_unfollow_frame.setBackgroundResource(R.drawable.dr_follow_bg)
+        follow_unfollow_tv.text = getString(R.string.follow)
+        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
+    }
+
+    private fun showFollowing() {
+        layout_profile_follow_unfollow_frame.visible()
+        layout_profile_follow_unfollow_frame.setBackgroundResource(R.drawable.dr_unfollow_bg)
+        follow_unfollow_tv.text = getString(R.string.following)
+        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.black))
+    }
+
+    private fun showEdit() {
+        showFollowing()
+        follow_unfollow_tv.text = getString(R.string.edit)
     }
 
     private fun populateData(userDetails: UserDetails) {

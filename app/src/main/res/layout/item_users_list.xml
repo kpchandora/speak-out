@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
+    android:orientation="horizontal"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/item_users_list_profile_iv"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            tools:src="@tools:sample/avatars" />
+
+        <View
+            android:id="@+id/item_user_list_bg"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/dr_circle_stroke_black_grey500" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="12dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/item_users_list_username_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:text="@tools:sample/first_names" />
+
+        <TextView
+            android:id="@+id/item_users_list_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            tools:text="@tools:sample/full_names" />
+
+    </LinearLayout>
+
+</LinearLayout>

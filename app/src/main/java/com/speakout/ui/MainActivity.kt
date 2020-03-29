@@ -15,8 +15,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.speakout.R
+import com.speakout.extensions.addFragment
 import com.speakout.extensions.openActivity
 import com.speakout.posts.create.CreateNewPostActivity
+import com.speakout.users.UsersListFragment
 import com.speakout.utils.AppPreference
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +56,13 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(
                         it.itemId,
                         bundleOf("user_id" to AppPreference.getUserId())
+                    )
+                }
+                R.id.navigation_search -> {
+                    addFragment(
+                        container = R.id.container,
+                        backStackTag = UsersListFragment.TAG,
+                        fragment = UsersListFragment.newInstance()
                     )
                 }
                 else -> {

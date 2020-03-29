@@ -26,7 +26,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp"
-                android:background="@drawable/dr_round_stroke_black"
+                android:background="@drawable/dr_circle_stroke_black_grey500"
                 android:padding="4dp"
                 android:visibility="gone"
                 tools:visibility="visible" />

@@ -105,7 +105,7 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
             view.background = if (isSelected(tag.tag))
                 ContextCompat.getDrawable(
                     view.context,
-                    R.drawable.dr_round_bg_blue_50
+                    R.drawable.dr_round_bg_blue50_8dp
                 )
             else null
         }

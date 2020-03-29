@@ -21,7 +21,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:background="@drawable/dr_round_bg_blue"
+            android:background="@drawable/dr_circle_bg_blue"
             android:gravity="center_vertical"
             android:text="@string/hash_text"
             android:textAlignment="center"

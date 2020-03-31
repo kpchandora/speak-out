@@ -1,5 +1,7 @@
 package com.speakout.auth
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.PropertyName
 
@@ -35,9 +37,36 @@ data class UserDetails(
     val followersCount: Long = 0,
 
     val followingsCount: Long = 0
-) {
+) : Parcelable {
+
+    constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readValue(Long::class.java.classLoader) as? Long,
+        parcel.readValue(Long::class.java.classLoader) as? Long,
+        parcel.readString(),
+        parcel.readValue(Long::class.java.classLoader) as? Long,
+        parcel.readLong(),
+        parcel.readLong(),
+        parcel.readLong()
+    ) {
+    }
 
     companion object {
+        @JvmField
+        val CREATOR = object : Parcelable.Creator<UserDetails> {
+            override fun createFromParcel(parcel: Parcel): UserDetails {
+                return UserDetails(parcel)
+            }
+
+            override fun newArray(size: Int): Array<UserDetails?> {
+                return arrayOfNulls(size)
+            }
+        }
+
         @Exclude
         fun updateUsername(username: String) = Pair("username", username)
 
@@ -53,5 +82,25 @@ data class UserDetails(
         @Exclude
         fun updateTimeStamp(time: Long) = Pair("lastUpdated", time)
     }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(userId)
+        parcel.writeString(name)
+        parcel.writeString(email)
+        parcel.writeString(phoneNumber)
+        parcel.writeString(photoUrl)
+        parcel.writeValue(creationTimeStamp)
+        parcel.writeValue(lastSignInTimestamp)
+        parcel.writeString(username)
+        parcel.writeValue(lastUpdated)
+        parcel.writeLong(postsCount)
+        parcel.writeLong(followersCount)
+        parcel.writeLong(followingsCount)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.speakout.ui.observers
 
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LiveData
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration

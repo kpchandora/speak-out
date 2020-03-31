@@ -28,6 +28,8 @@
 
     <!--Profile strings-->
     <string name="follow">Follow</string>
+    <string name="un_follow">Unfollow</string>
+    <string name="cancel">Cancel</string>
     <string name="following">Following</string>
     <plurals name="number_of_posts">
         <item quantity="one">Post</item>

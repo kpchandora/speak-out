@@ -17,13 +17,14 @@ import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.layout_profile.*
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
 
     private val profileViewModel: ProfileViewModel by viewModels()
     private val mPostsAdapter = ProfilePostsAdapter()
     private var mUserId = ""
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
+    private var mUserDetails: UserDetails? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,6 +92,7 @@ class ProfileFragment : Fragment() {
             layoutParams.width = screenSize.widthPixels / 2
             setOnClickListener {
                 activity!!.openActivity(ProfileEditActivity::class.java)
+//                showUnFollowAlertDialog()
             }
         }
 
@@ -128,8 +130,7 @@ class ProfileFragment : Fragment() {
                     showFollowing()
                     profileViewModel.followUser(UserMiniDetails(userId = mUserId))
                 } else if (text == getString(R.string.following)) {
-                    showFollow()
-                    profileViewModel.unFollowUser(UserMiniDetails(userId = mUserId))
+                    showUnFollowAlertDialog()
                 }
             }
         }
@@ -191,7 +192,7 @@ class ProfileFragment : Fragment() {
     private fun populateData(userDetails: UserDetails) {
         layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
         layout_profile_bg_view.layoutParams.width = screenSize.widthPixels / 3
-
+        mUserDetails = userDetails
         layout_profile_bg_view.gone()
         layout_profile_iv.loadImageWithCallback(userDetails.photoUrl ?: "", makeRound = true,
             onSuccess = {
@@ -213,6 +214,21 @@ class ProfileFragment : Fragment() {
         layout_profile_posts_count_tv.text = userDetails.postsCount.toString()
         layout_profile_posts_tv.text =
             resources.getQuantityString(R.plurals.number_of_posts, userDetails.postsCount.toInt())
+    }
+
+    private fun showUnFollowAlertDialog() {
+        val bundle = Bundle().also {
+            it.putParcelable(UnFollowDialog.USER_DETAILS, mUserDetails)
+        }
+        val dialog = UnFollowDialog.newInstance(bundle)
+        dialog.setListener(this)
+        dialog.show(requireActivity().supportFragmentManager, "")
+
+    }
+
+    override fun onUnFollow(userId: String) {
+        showFollow()
+        profileViewModel.unFollowUser(UserMiniDetails(userId = userId))
     }
 
 }

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.extensions.gone
+import com.speakout.extensions.setSmallCaseFilter
 import com.speakout.extensions.visible
 import com.speakout.posts.create.CreatePostViewModel
 import com.speakout.ui.profile.ProfileEditActivity
@@ -94,7 +95,7 @@ class TagsFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                newText?.let {
+                newText?.toLowerCase(Locale.getDefault())?.let {
                     if (tagRegex.matches(it)) {
                         searchEditText.error = null
                         mAdapter.isLoading.set(true)

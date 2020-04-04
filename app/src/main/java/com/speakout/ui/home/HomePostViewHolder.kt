@@ -65,6 +65,10 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             item_home_post_details_ll.setOnClickListener {
                 mEventListener?.onProfileClick(post, item_home_post_profile_iv)
             }
+
+            item_home_post_like_count_tv.setOnClickListener {
+                mEventListener?.onLikedUsersClick(post)
+            }
         }
     }
 

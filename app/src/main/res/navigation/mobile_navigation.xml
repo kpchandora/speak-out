@@ -19,6 +19,10 @@
             android:id="@+id/action_home_to_profile_fragment"
             app:destination="@id/navigation_profile" />
 
+        <action
+            android:id="@+id/action_home_to_usersListFragment"
+            app:destination="@id/usersListFragment" />
+
     </fragment>
 
     <fragment
@@ -57,5 +61,32 @@
             android:name="username"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_navigation_profile_to_usersListFragment"
+            app:destination="@id/usersListFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/usersListFragment"
+        android:name="com.speakout.users.UsersListFragment"
+        android:label="UsersListFragment"
+        tools:layout="@layout/users_list_fragment">
+
+        <argument
+            android:name="userId"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="actionType"
+            android:defaultValue="Likes"
+            app:argType="com.speakout.users.ActionType" />
+
+        <action
+            android:id="@+id/action_usersListFragment_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+
+    </fragment>
+
+
 </navigation>

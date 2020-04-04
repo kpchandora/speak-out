@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainViewModel
+import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
@@ -95,6 +96,15 @@ class HomeFragment : Fragment() {
         findNavController().navigate(action, extras)
     }
 
+    private fun navigateToUsersList(postData: PostData) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionHomeToUsersListFragment(
+                userId = postData.userId,
+                actionType = ActionType.Likes
+            )
+        )
+    }
+
     private val mPostEventsListener = object : PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             mHomeViewModel.likePost(postData)
@@ -106,6 +116,10 @@ class HomeFragment : Fragment() {
 
         override fun onProfileClick(postData: PostData, profileImageView: ImageView) {
             navigateToProfile(postData, profileImageView)
+        }
+
+        override fun onLikedUsersClick(postData: PostData) {
+            navigateToUsersList(postData)
         }
     }
 

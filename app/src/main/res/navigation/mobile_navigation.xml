@@ -49,7 +49,12 @@
             app:nullable="true" />
 
         <argument
-            android:name="fullName"
+            android:name="transitionTag"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="username"
             app:argType="string"
             app:nullable="true" />
     </fragment>

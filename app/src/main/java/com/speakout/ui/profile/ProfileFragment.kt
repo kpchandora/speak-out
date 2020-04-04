@@ -17,6 +17,7 @@ import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
+import kotlinx.android.synthetic.main.item_home_post_layout.*
 import kotlinx.android.synthetic.main.layout_profile.*
 
 class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
@@ -38,10 +39,12 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
         if (isSelf) {
             profileViewModel.addProfileObserver()
         } else {
-            sharedElementEnterTransition =
-                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
             profileViewModel.isFollowing(mUserId)
             profileViewModel.getUser(mUserId)
+        }
+        safeArgs.transitionTag?.let {
+            sharedElementEnterTransition =
+                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
     }
 
@@ -56,11 +59,14 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
 
         screenSize = activity!!.getScreenSize()
 
+        safeArgs.transitionTag?.let {
+            layout_profile_iv.transitionName = it
+            loadImage(safeArgs.profileUrl)
+        }
+
         if (isSelf) {
             initSelf()
         } else {
-            layout_profile_iv.transitionName = safeArgs.fullName
-            loadImage(safeArgs.profileUrl)
             initOther()
         }
 

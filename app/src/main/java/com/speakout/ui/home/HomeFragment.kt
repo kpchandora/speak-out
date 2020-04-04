@@ -86,7 +86,8 @@ class HomeFragment : Fragment() {
         val action = HomeFragmentDirections.actionHomeToProfileFragment(
             userId = postData.userId,
             profileUrl = postData.userImageUrl,
-            fullName = postData.postId
+            transitionTag = postData.postId,
+            username = postData.username
         )
         val extras = FragmentNavigatorExtras(
             profileImageView to postData.postId

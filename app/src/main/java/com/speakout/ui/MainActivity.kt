@@ -58,8 +58,9 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(
                         MobileNavigationDirections.actionGlobalProfileFragment(
                             userId = AppPreference.getUserId(),
-                            fullName = AppPreference.getUserDisplayName(),
-                            profileUrl = AppPreference.getPhotoUrl()
+                            username = AppPreference.getUserUniqueName(),
+                            profileUrl = AppPreference.getPhotoUrl(),
+                            transitionTag = null
                         )
                     )
                 }

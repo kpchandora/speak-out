@@ -1,6 +1,7 @@
 package com.speakout.ui.profile
 
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
@@ -25,16 +27,19 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
     private var mUserDetails: UserDetails? = null
+    private val safeArgs: ProfileFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mUserId = arguments?.getString("user_id") ?: ""
+        mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         profileViewModel.getPosts(mUserId)
         profileViewModel.addFFObserver(mUserId)
         if (isSelf) {
             profileViewModel.addProfileObserver()
         } else {
+            sharedElementEnterTransition =
+                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
             profileViewModel.isFollowing(mUserId)
             profileViewModel.getUser(mUserId)
         }
@@ -54,6 +59,8 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
         if (isSelf) {
             initSelf()
         } else {
+            layout_profile_iv.transitionName = safeArgs.fullName
+            loadImage(safeArgs.profileUrl)
             initOther()
         }
 
@@ -190,11 +197,24 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
     }
 
     private fun populateData(userDetails: UserDetails) {
+
+        mUserDetails = userDetails
+
+        loadImage(userDetails.photoUrl)
+
+        layout_profile_full_name_tv.text = userDetails.name
+
+        layout_profile_posts_count_tv.text = userDetails.postsCount.toString()
+        layout_profile_posts_tv.text =
+            resources.getQuantityString(R.plurals.number_of_posts, userDetails.postsCount.toInt())
+    }
+
+    private fun loadImage(photoUrl: String?) {
         layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
         layout_profile_bg_view.layoutParams.width = screenSize.widthPixels / 3
-        mUserDetails = userDetails
+
         layout_profile_bg_view.gone()
-        layout_profile_iv.loadImageWithCallback(userDetails.photoUrl ?: "", makeRound = true,
+        layout_profile_iv.loadImageWithCallback(photoUrl ?: "", makeRound = true,
             onSuccess = {
                 layout_profile_bg_view.visible()
             },
@@ -207,13 +227,6 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
                     )
                 )
             })
-
-
-        layout_profile_full_name_tv.text = userDetails.name
-
-        layout_profile_posts_count_tv.text = userDetails.postsCount.toString()
-        layout_profile_posts_tv.text =
-            resources.getQuantityString(R.plurals.number_of_posts, userDetails.postsCount.toInt())
     }
 
     private fun showUnFollowAlertDialog() {
@@ -225,6 +238,7 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
         dialog.show(requireActivity().supportFragmentManager, "")
 
     }
+
 
     override fun onUnFollow(userId: String) {
         showFollow()

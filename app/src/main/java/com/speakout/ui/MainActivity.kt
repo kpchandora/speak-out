@@ -14,10 +14,12 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.speakout.MobileNavigationDirections
 import com.speakout.R
 import com.speakout.extensions.addFragment
 import com.speakout.extensions.openActivity
 import com.speakout.posts.create.CreateNewPostActivity
+import com.speakout.ui.profile.ProfileFragmentArgs
 import com.speakout.users.UsersListFragment
 import com.speakout.utils.AppPreference
 
@@ -54,8 +56,11 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.navigation_profile -> {
                     navController.navigate(
-                        it.itemId,
-                        bundleOf("user_id" to AppPreference.getUserId())
+                        MobileNavigationDirections.actionGlobalProfileFragment(
+                            userId = AppPreference.getUserId(),
+                            fullName = AppPreference.getUserDisplayName(),
+                            profileUrl = AppPreference.getPhotoUrl()
+                        )
                     )
                 }
                 R.id.navigation_search -> {
@@ -72,11 +77,5 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        mainViewModel.navigateToProfileFragment.observe(this, Observer {
-            navController.navigate(
-                R.id.navigation_profile,
-                bundleOf("user_id" to it)
-            )
-        })
     }
 }

@@ -21,7 +21,7 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     fun bind(post: PostData) {
         view.apply {
             item_home_post_profile_bg_iv.gone()
-
+            item_home_post_profile_iv.transitionName = post.postId
             item_home_post_profile_iv.loadImageWithCallback(post.userImageUrl,
                 makeRound = true,
                 onSuccess = {
@@ -63,7 +63,7 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             }
 
             item_home_post_details_ll.setOnClickListener {
-                mEventListener?.onProfileClick(post)
+                mEventListener?.onProfileClick(post, item_home_post_profile_iv)
             }
         }
     }

@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainViewModel
 import com.speakout.utils.AppPreference
-import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
@@ -77,6 +79,21 @@ class HomeFragment : Fragment() {
 
     }
 
+    private fun navigateToProfile(
+        postData: PostData,
+        profileImageView: ImageView
+    ) {
+        val action = HomeFragmentDirections.actionHomeToProfileFragment(
+            userId = postData.userId,
+            profileUrl = postData.userImageUrl,
+            fullName = postData.postId
+        )
+        val extras = FragmentNavigatorExtras(
+            profileImageView to postData.postId
+        )
+        findNavController().navigate(action, extras)
+    }
+
     private val mPostEventsListener = object : PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             mHomeViewModel.likePost(postData)
@@ -86,8 +103,8 @@ class HomeFragment : Fragment() {
             mHomeViewModel.unlikePost(postData)
         }
 
-        override fun onProfileClick(postData: PostData) {
-            mainViewModel.navigateToProfileFragment(postData.userId)
+        override fun onProfileClick(postData: PostData, profileImageView: ImageView) {
+            navigateToProfile(postData, profileImageView)
         }
     }
 

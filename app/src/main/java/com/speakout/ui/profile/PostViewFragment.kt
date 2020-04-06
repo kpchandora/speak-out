@@ -41,8 +41,6 @@ class PostViewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        sharedElementEnterTransition =
-            TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         return inflater.inflate(R.layout.fragment_post_view, container, false)
     }
 
@@ -51,7 +49,6 @@ class PostViewFragment : Fragment() {
         val screenSize = requireActivity().getScreenSize()
         item_home_post_image_iv.layoutParams.height = screenSize.widthPixels
         safeArgs.postData?.apply {
-            item_home_post_image_iv.transitionName = postId
             item_home_post_profile_bg_iv.gone()
             item_home_post_profile_iv.loadImageWithCallback(userImageUrl,
                 makeRound = true,
@@ -85,7 +82,6 @@ class PostViewFragment : Fragment() {
 
             loadPost(postImageUrl)
             setLikes(this)
-            postponeEnterTransition(1, TimeUnit.SECONDS)
         }
     }
 
@@ -103,11 +99,9 @@ class PostViewFragment : Fragment() {
         item_home_post_image_iv.loadImageWithCallback(url,
             onSuccess = {
                 item_home_post_load_fail_tv.gone()
-                startPostponedEnterTransition()
             },
             onFailed = {
                 item_home_post_load_fail_tv.visible()
-                startPostponedEnterTransition()
             })
     }
 

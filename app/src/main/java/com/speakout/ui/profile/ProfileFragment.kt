@@ -292,10 +292,11 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
             val action =
                 ProfileFragmentDirections.actionNavigationProfileToPostViewFragment(postData)
 
-            val extras = FragmentNavigatorExtras(
-                postImageView to postData.postId
-            )
-            findNavController().navigate(action, extras)
+//            val extras = FragmentNavigatorExtras(
+//                postImageView to postData.postId
+//            )
+//            findNavController().navigate(action, extras)
+            findNavController().navigate(action)
         }
     }
 

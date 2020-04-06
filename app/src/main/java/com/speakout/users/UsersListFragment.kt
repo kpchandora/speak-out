@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
 import kotlinx.android.synthetic.main.users_list_fragment.*
+import timber.log.Timber
 
 class UsersListFragment : Fragment() {
 
@@ -32,7 +33,6 @@ class UsersListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().title = safeArgs.actionType.toString()
         usersListViewModel.getPosts("")
     }
 

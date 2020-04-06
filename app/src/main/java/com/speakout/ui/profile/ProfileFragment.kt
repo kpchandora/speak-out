@@ -3,22 +3,30 @@ package com.speakout.ui.profile
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.util.DisplayMetrics
+import android.util.TimeFormatException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.*
+import com.speakout.posts.create.PostData
+import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
-import kotlinx.android.synthetic.main.item_home_post_layout.*
 import kotlinx.android.synthetic.main.layout_profile.*
+import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
 
@@ -42,15 +50,15 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
             profileViewModel.isFollowing(mUserId)
             profileViewModel.getUser(mUserId)
         }
-        safeArgs.transitionTag?.let {
-            sharedElementEnterTransition =
-                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
+        safeArgs.transitionTag?.let {
+            sharedElementEnterTransition =
+                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        }
         return inflater.inflate(R.layout.fragment_profile, container, false)
     }
 
@@ -69,6 +77,7 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
             initOther()
         }
 
+        mPostsAdapter.mListener = mListener
         profile_post_rv.apply {
             setHasFixedSize(true)
             layoutManager = GridLayoutManager(context, 3)
@@ -94,8 +103,37 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
                     R.plurals.number_of_followings,
                     it?.followingsCount?.toInt() ?: 0
                 )
+
+            if (it?.followersCount == 0L) {
+                layout_profile_followers_container.disable()
+            } else {
+                layout_profile_followers_container.enable()
+            }
+
+            if (it?.followingsCount == 0L) {
+                layout_profile_followings_container.disable()
+            } else {
+                layout_profile_followings_container.enable()
+            }
         })
 
+        layout_profile_followers_container.setOnClickListener {
+            navigateToUsersList(ActionType.Followers)
+        }
+
+        layout_profile_followings_container.setOnClickListener {
+            navigateToUsersList(ActionType.Followings)
+        }
+
+    }
+
+    private fun navigateToUsersList(actionType: ActionType) {
+        findNavController().navigate(
+            ProfileFragmentDirections.actionNavigationProfileToUsersListFragment(
+                userId = mUserId,
+                actionType = actionType
+            )
+        )
     }
 
     private fun initSelf() {
@@ -241,13 +279,24 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
         val dialog = UnFollowDialog.newInstance(bundle)
         dialog.setListener(this)
         dialog.show(requireActivity().supportFragmentManager, "")
-
     }
 
 
     override fun onUnFollow(userId: String) {
         showFollow()
         profileViewModel.unFollowUser(UserMiniDetails(userId = userId))
+    }
+
+    private val mListener = object : ProfilePostClickListener {
+        override fun onPostClick(postData: PostData, postImageView: ImageView) {
+            val action =
+                ProfileFragmentDirections.actionNavigationProfileToPostViewFragment(postData)
+
+            val extras = FragmentNavigatorExtras(
+                postImageView to postData.postId
+            )
+            findNavController().navigate(action, extras)
+        }
     }
 
 }

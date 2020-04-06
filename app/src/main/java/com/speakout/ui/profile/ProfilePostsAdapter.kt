@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.item_profile_post_layout.view.*
 class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePostsViewHolder>() {
 
     private val mPostsList = ArrayList<PostData>()
+    var mListener: ProfilePostClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfilePostsViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -39,21 +40,26 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
 
     override fun onBindViewHolder(holder: ProfilePostsViewHolder, position: Int) {
         holder.bind(mPostsList[position])
+        holder.mListener = this.mListener
     }
 
-    fun updateData(list: List<PostData>){
+    fun updateData(list: List<PostData>) {
         mPostsList.clear()
         mPostsList.addAll(list)
         notifyDataSetChanged()
     }
 
-    inner class ProfilePostsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-
+    class ProfilePostsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        var mListener: ProfilePostClickListener? = null
         fun bind(post: PostData) {
             view.item_profile_post_iv.loadImage(
                 post.postImageUrl,
                 R.drawable.ic_waiting
             )
+            view.item_profile_post_iv.transitionName = post.postId
+            view.setOnClickListener {
+                mListener?.onPostClick(post, view.item_profile_post_iv)
+            }
         }
     }
 

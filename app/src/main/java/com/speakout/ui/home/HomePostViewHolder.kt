@@ -86,7 +86,8 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         view.item_home_post_image_iv.loadImageWithCallback(url,
             onSuccess = {
                 view.item_home_post_load_fail_tv.gone()
-            }, onFailed = {
+            },
+            onFailed = {
                 view.item_home_post_load_fail_tv.visible()
             })
     }

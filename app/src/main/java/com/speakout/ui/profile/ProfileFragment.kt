@@ -16,19 +16,23 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
+import com.speakout.ui.BottomIconDoubleClick
+import com.speakout.ui.home.HomeViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
+import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
+class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener, BottomIconDoubleClick {
 
     private val profileViewModel: ProfileViewModel by viewModels()
     private val mPostsAdapter = ProfilePostsAdapter()
@@ -40,6 +44,7 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("hashCode: $profileViewModel")
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         profileViewModel.getPosts(mUserId)
@@ -281,6 +286,9 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener {
         dialog.show(requireActivity().supportFragmentManager, "")
     }
 
+    override fun doubleClick() {
+        fragment_profile_scroll_view.smoothScrollTo(0, 0)
+    }
 
     override fun onUnFollow(userId: String) {
         showFollow()

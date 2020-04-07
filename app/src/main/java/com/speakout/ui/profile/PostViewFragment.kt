@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
@@ -29,17 +30,20 @@ import com.speakout.ui.home.HomeFragmentDirections
 import com.speakout.users.ActionType
 import kotlinx.android.synthetic.main.item_home_post_layout.*
 import kotlinx.android.synthetic.main.item_home_post_layout.view.*
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 
 class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
+    private val profileViewModel: ProfileViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Timber.d("hashCode: $profileViewModel")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_post_view, container, false)
     }

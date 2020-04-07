@@ -12,16 +12,18 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.posts.create.PostData
+import com.speakout.ui.BottomIconDoubleClick
 import com.speakout.ui.MainViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = HomePostRecyclerViewAdapter()
@@ -133,6 +135,10 @@ class HomeFragment : Fragment() {
         override fun onLikedUsersClick(postData: PostData) {
             navigateToUsersList(postData)
         }
+    }
+
+    override fun doubleClick() {
+        fragment_home_rv.layoutManager?.smoothScrollToPosition(fragment_home_rv, null, 0)
     }
 
 }

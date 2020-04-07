@@ -9,6 +9,12 @@
         android:id="@+id/action_global_profileFragment"
         app:destination="@id/navigation_profile" />
 
+<!--    <action-->
+<!--        android:id="@+id/action_global_homeFragment"-->
+<!--        app:destination="@id/navigation_home"-->
+<!--        app:popUpTo="@id/navigation_home"-->
+<!--        app:popUpToInclusive="true" />-->
+
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.speakout.ui.home.HomeFragment"

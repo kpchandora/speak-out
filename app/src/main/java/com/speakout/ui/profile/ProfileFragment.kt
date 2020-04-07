@@ -3,7 +3,6 @@ package com.speakout.ui.profile
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.util.DisplayMetrics
-import android.util.TimeFormatException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,9 +31,9 @@ import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener, BottomIconDoubleClick {
+class ProfileFragment : Fragment(), BottomIconDoubleClick {
 
-    private val profileViewModel: ProfileViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
     private val mPostsAdapter = ProfilePostsAdapter()
     private var mUserId = ""
     private var isSelf = false
@@ -69,6 +68,7 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener, Bott
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Timber.d("onViewCreated")
         screenSize = activity!!.getScreenSize()
 
         safeArgs.transitionTag?.let {
@@ -223,6 +223,12 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener, Bott
             } ?: activity!!.showShortToast("Failed to load data")
 
         })
+
+        profileViewModel.confirmUnfollow.observe(viewLifecycleOwner, Observer {
+            showFollow()
+            profileViewModel.unFollowUser(UserMiniDetails(userId = mUserId))
+        })
+
     }
 
     private fun showFollow() {
@@ -278,21 +284,16 @@ class ProfileFragment : Fragment(), UnFollowDialog.OnUnFollowClickListener, Bott
     }
 
     private fun showUnFollowAlertDialog() {
-        val bundle = Bundle().also {
-            it.putParcelable(UnFollowDialog.USER_DETAILS, mUserDetails)
-        }
-        val dialog = UnFollowDialog.newInstance(bundle)
-        dialog.setListener(this)
-        dialog.show(requireActivity().supportFragmentManager, "")
+        findNavController().navigate(
+            ProfileFragmentDirections.actionNavigationProfileToUnFollowDialog(
+                profileUrl = mUserDetails?.photoUrl,
+                username = mUserDetails?.username
+            )
+        )
     }
 
     override fun doubleClick() {
         fragment_profile_scroll_view.smoothScrollTo(0, 0)
-    }
-
-    override fun onUnFollow(userId: String) {
-        showFollow()
-        profileViewModel.unFollowUser(UserMiniDetails(userId = userId))
     }
 
     private val mListener = object : ProfilePostClickListener {

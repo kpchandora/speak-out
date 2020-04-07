@@ -43,7 +43,6 @@ class PostViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("hashCode: $profileViewModel")
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_post_view, container, false)
     }
@@ -77,7 +76,7 @@ class PostViewFragment : Fragment() {
 
             item_home_post_like_count_tv.setOnClickListener {
                 findNavController().navigate(
-                    HomeFragmentDirections.actionHomeToUsersListFragment(
+                    PostViewFragmentDirections.actionPostViewFragmentToUsersListFragment(
                         userId = userId,
                         actionType = ActionType.Likes
                     )

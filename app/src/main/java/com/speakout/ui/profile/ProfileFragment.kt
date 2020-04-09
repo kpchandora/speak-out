@@ -22,7 +22,7 @@ import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
-import com.speakout.ui.BottomIconDoubleClick
+import com.speakout.ui.MainActivity
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
-class ProfileFragment : Fragment(), BottomIconDoubleClick {
+class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
     private val mPostsAdapter = ProfilePostsAdapter()
@@ -146,8 +146,8 @@ class ProfileFragment : Fragment(), BottomIconDoubleClick {
         layout_profile_follow_unfollow_frame.apply {
             layoutParams.width = screenSize.widthPixels / 2
             setOnClickListener {
-                activity!!.openActivity(ProfileEditActivity::class.java)
-//                showUnFollowAlertDialog()
+                //                activity!!.openActivity(ProfileEditActivity::class.java)
+                findNavController().navigate(ProfileFragmentDirections.actionNavigationProfileToProfileEditFragment())
             }
         }
 

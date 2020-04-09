@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             currentFragmentId = destination.id
             Timber.d("addOnDestinationChangedListener: ${destination.label}")
+            handleNavigationVisibility(currentFragmentId)
         }
 
         bottomNavigationView.setOnNavigationItemReselectedListener {
@@ -87,6 +88,14 @@ class MainActivity : AppCompatActivity() {
                 if (currentFragment is BottomIconDoubleClick)
                     currentFragment.doubleClick()
             }
+        }
+    }
+
+    private fun handleNavigationVisibility(id: Int) {
+        when (id) {
+            R.id.profileEditFragment,
+            R.id.userNameFragment -> navAnimGone()
+            else -> navAnimVisible()
         }
     }
 
@@ -105,8 +114,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-}
-
-interface BottomIconDoubleClick {
-    fun doubleClick()
+    interface BottomIconDoubleClick {
+        fun doubleClick()
+    }
 }

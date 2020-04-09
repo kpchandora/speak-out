@@ -16,14 +16,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.posts.create.PostData
-import com.speakout.ui.BottomIconDoubleClick
+import com.speakout.ui.MainActivity
 import com.speakout.ui.MainViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
-class HomeFragment : Fragment(), BottomIconDoubleClick {
+class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = HomePostRecyclerViewAdapter()

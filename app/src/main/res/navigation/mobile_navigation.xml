@@ -143,6 +143,14 @@
                 android:id="@+id/action_navigation_profile_to_unFollowDialog"
                 app:destination="@id/unFollowDialog" />
 
+            <action
+                android:id="@+id/action_navigation_profile_to_profileEditFragment"
+                app:destination="@id/profileEditFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
         </fragment>
 
         <fragment
@@ -183,6 +191,45 @@
 
         </dialog>
 
+        <fragment
+            android:id="@+id/profileEditFragment"
+            android:name="com.speakout.ui.profile.ProfileEditFragment"
+            android:label="Edit"
+            tools:layout="@layout/fragment_profile_edit">
+
+            <action
+                android:id="@+id/action_profileEditFragment_to_userNameFragment"
+                app:destination="@id/userNameFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+        </fragment>
+
     </navigation>
+
+    <fragment
+        android:id="@+id/userNameFragment"
+        android:name="com.speakout.auth.UserNameFragment"
+        android:label="{type} Username"
+        tools:layout="@layout/fragment_user_name">
+
+        <action
+            android:id="@+id/action_username_to_profileEditFragment"
+            app:destination="@id/profileEditFragment"
+            app:popUpTo="@id/profileEditFragment"/>
+
+        <argument
+            android:name="type"
+            android:defaultValue="Edit"
+            app:argType="com.speakout.auth.Type" />
+
+        <argument
+            android:name="username"
+            app:argType="string"
+            app:nullable="true" />
+
+    </fragment>
 
 </navigation>

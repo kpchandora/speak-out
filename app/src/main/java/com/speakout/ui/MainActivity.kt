@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        window.navigationBarColor = Color.parseColor("#20111111");
-
         setContentView(R.layout.activity_main)
         bottomNavigationView = findViewById(R.id.nav_view)
 
@@ -91,10 +90,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun handleNavigationVisibility(id: Int) {
         when (id) {
             R.id.profileEditFragment,
-            R.id.userNameFragment -> navAnimGone()
+            R.id.userNameFragment,
+            R.id.signInFragment -> navAnimGone()
             else -> navAnimVisible()
         }
     }
@@ -106,13 +107,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun navAnimGone() {
+    private fun navAnimGone() {
         if (bottomNavigationView.visibility == View.VISIBLE) {
             bottomNavigationView.visibility = View.GONE
             bottomNavigationView.animation =
                 AnimationUtils.loadAnimation(this, R.anim.slide_down)
         }
     }
+
+    override fun onBackPressed() {
+        if (currentFragmentId == R.id.navigation_home) {
+            finish()
+        } else
+            super.onBackPressed()
+    }
+
 
     interface BottomIconDoubleClick {
         fun doubleClick()

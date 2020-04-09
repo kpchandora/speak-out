@@ -20,7 +20,6 @@ import com.speakout.extensions.gone
 import com.speakout.extensions.setSmallCaseFilter
 import com.speakout.extensions.visible
 import com.speakout.posts.create.CreatePostViewModel
-import com.speakout.ui.profile.ProfileEditActivity
 import kotlinx.android.synthetic.main.fragment_post_tags.*
 import java.util.*
 

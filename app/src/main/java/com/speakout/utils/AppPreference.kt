@@ -107,6 +107,22 @@ object AppPreference {
         return getString(NameUtils.UserDetails.userId, "") ?: ""
     }
 
+    fun setLoggedIn() {
+        putBoolean(NameUtils.UserDetails.isLoggedIn, true)
+    }
+
+    fun setUsernameProcessComplete() {
+        putBoolean(NameUtils.UserDetails.usernameProcess, true)
+    }
+
+    fun isUsernameProcessComplete(): Boolean {
+        return getBoolean(NameUtils.UserDetails.usernameProcess)
+    }
+
+    fun isLoggedIn(): Boolean {
+        return getBoolean(NameUtils.UserDetails.isLoggedIn)
+    }
+
     fun clearUserDetails() {
         editor?.apply {
             NameUtils.UserDetails?.apply {
@@ -118,6 +134,7 @@ object AppPreference {
                 remove(lastLogin)
                 remove(isLoggedIn)
                 remove(photoUrl)
+                remove(usernameProcess)
             }
         }?.apply()
     }

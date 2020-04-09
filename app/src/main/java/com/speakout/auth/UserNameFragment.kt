@@ -5,34 +5,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.Navigator
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-
 import com.speakout.R
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
-import kotlinx.android.synthetic.main.activity_user_name.*
 import kotlinx.android.synthetic.main.fragment_user_name.*
 
-/**
- * A simple [Fragment] subclass.
- */
+
 class UserNameFragment : Fragment() {
 
     private val mUserViewModel: UserViewModel by viewModels()
     private var username = ""
     private val userNameRegex = "^[a-z0-9_]{1,25}\$".toRegex()
     private val safeArgs: UserNameFragmentArgs by navArgs()
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +44,17 @@ class UserNameFragment : Fragment() {
             fragment_username_et.setSelection(username.length)
             fragment_username_et.setDrawableEnd(R.drawable.ic_check)
             fragment_username_next_btn.text = getString(R.string.update)
+        } else {
+            (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(
+                false
+            )
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        requireActivity().finish()
+                    }
+
+                })
         }
 
         fragment_username_next_btn.isEnabled = false
@@ -67,7 +71,7 @@ class UserNameFragment : Fragment() {
                         fragment_username_til.error = null
                     }
                     FirebaseUtils.Data.CANCELLED -> {
-                        requireActivity().showShortToast(getString(R.string.error_something_went_wrong))
+                        showShortToast(getString(R.string.error_something_went_wrong))
                     }
                 }
             }
@@ -83,9 +87,12 @@ class UserNameFragment : Fragment() {
                         username
                     )
                     findNavController().navigateUp()
+                } else {
+                    AppPreference.setUsernameProcessComplete()
+                    findNavController().navigate(UserNameFragmentDirections.actionUserNameFragmentToNavigationHome())
                 }
             } else {
-                requireActivity().showShortToast(getString(R.string.error_something_went_wrong))
+                showShortToast(getString(R.string.error_something_went_wrong))
             }
         })
 
@@ -117,12 +124,6 @@ class UserNameFragment : Fragment() {
             //            showProgress()
             mUserViewModel.updateUserDetails(mapOf(UserDetails.updateUsername(username)))
         }
-    }
-
-    override fun onDestroy() {
-        if (safeArgs.type == Type.Create)
-            FirebaseUtils.signOut()
-        super.onDestroy()
     }
 
 }

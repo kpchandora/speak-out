@@ -14,6 +14,7 @@ object NameUtils {
         const val isEmailVerified = "is_email_verified"
         const val photoUrl = "photo_url"
         const val lastUserDetailsUpdate = "last_updated_time"
+        const val usernameProcess = "username_process"
     }
 
     object DatabaseRefs {

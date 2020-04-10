@@ -9,11 +9,6 @@
         android:id="@+id/action_global_profileFragment"
         app:destination="@id/profile_navigation" />
 
-    <!--    <action-->
-    <!--        android:id="@+id/action_global_homeFragment"-->
-    <!--        app:destination="@id/navigation_home"-->
-    <!--        app:popUpTo="@id/navigation_home"-->
-    <!--        app:popUpToInclusive="true" />-->
 
     <fragment
         android:id="@+id/navigation_home"
@@ -43,8 +38,8 @@
         <action
             android:id="@+id/action_navigation_home_to_userNameFragment"
             app:destination="@id/userNameFragment"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/navigation_home" />
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -267,5 +262,42 @@
             app:popUpTo="@id/userNameFragment" />
 
     </fragment>
+
+    <navigation
+        android:id="@+id/create_post_navigation"
+        app:startDestination="@id/createNewPostFragment">
+
+        <fragment
+            android:id="@+id/createNewPostFragment"
+            android:name="com.speakout.posts.create.CreateNewPostFragment"
+            android:label="New Post"
+            tools:layout="@layout/fragment_create_new_post">
+
+            <action
+                android:id="@+id/action_createNewPostFragment_to_tagsFragment"
+                app:destination="@id/tagsFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+        </fragment>
+
+        <fragment
+            android:id="@+id/tagsFragment"
+            android:name="com.speakout.posts.tags.TagsFragment"
+            android:label="Tags"
+            tools:layout="@layout/fragment_post_tags">
+
+            <argument
+                android:name="postContent"
+                app:argType="string"
+                app:nullable="false" />
+
+        </fragment>
+
+
+    </navigation>
+
 
 </navigation>

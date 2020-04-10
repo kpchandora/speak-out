@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.get
 import com.mlsdev.rximagepicker.RxImageConverters
 import com.mlsdev.rximagepicker.RxImagePicker
 import com.mlsdev.rximagepicker.Sources

@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.speakout.R
 import com.speakout.extensions.*
+import com.speakout.ui.MainActivity
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_user_name.*
@@ -78,7 +79,7 @@ class UserNameFragment : Fragment() {
         })
 
         mUserViewModel.updateDetailsObserver.observe(viewLifecycleOwner, Observer {
-            //            hideProgress()
+            (requireActivity() as MainActivity).hideProgress()
             if (it) {
                 AppPreference.saveUserDetails(UserDetails(username = username))
                 if (safeArgs.type == Type.Edit) {
@@ -121,7 +122,7 @@ class UserNameFragment : Fragment() {
         }
 
         fragment_username_next_btn.setOnClickListener {
-            //            showProgress()
+            (requireActivity() as MainActivity).showProgress()
             mUserViewModel.updateUserDetails(mapOf(UserDetails.updateUsername(username)))
         }
     }

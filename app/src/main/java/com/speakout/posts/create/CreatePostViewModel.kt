@@ -11,6 +11,7 @@ class CreatePostViewModel : ViewModel() {
     private val post = MutableLiveData<PostData>()
     private val uploadImage = MutableLiveData<Pair<Bitmap, String>>()
     val tags = MutableLiveData<List<String>>()
+    var imageBitmap: Bitmap? = null
 
     val uploadImageObserver: LiveData<String?> = Transformations.switchMap(uploadImage) {
         CreatePostService.uploadImage(bitmap = it.first, id = it.second)

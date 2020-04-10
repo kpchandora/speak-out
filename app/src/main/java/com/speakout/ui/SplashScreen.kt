@@ -14,12 +14,6 @@ class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        window.navigationBarColor = ContextCompat.getColor(this, R.color.black)
-//        window.decorView.apply {
-//            systemUiVisibility =
-//                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
-//        }
-
         handler = Handler()
         handler?.postDelayed({
             startActivity(Intent(this, MainActivity::class.java))

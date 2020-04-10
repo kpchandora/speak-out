@@ -78,6 +78,7 @@ fun AppCompatActivity.addFragment(
     }
 }
 
+
 fun Activity.showKeyboard(editText: EditText? = null) {
     (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.also {
         editText?.let { et ->

@@ -21,17 +21,11 @@
             android:theme="@style/Theme.UserDialog"
             android:windowSoftInputMode="adjustPan" />
 
-        <activity android:name=".posts.create.CreateNewPostActivity" />
-
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name=".auth.UserNameActivity"
-            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".ui.SplashScreen"

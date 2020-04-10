@@ -1,6 +1,5 @@
 package com.speakout.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -14,14 +13,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.speakout.*
-import com.speakout.extensions.addFragment
-import com.speakout.extensions.openActivity
-import com.speakout.posts.create.CreateNewPostActivity
-import com.speakout.users.UsersListFragment
 import com.speakout.utils.AppPreference
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private val mainViewModel: MainViewModel by viewModels()
     private lateinit var navController: NavController
@@ -53,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             Timber.d("setOnNavigationItemSelectedListener: ${it.title}")
             when (it.itemId) {
                 R.id.navigation_new_post -> {
-                    openActivity(CreateNewPostActivity::class.java)
+                    navController.navigate(R.id.create_post_navigation)
                     return@setOnNavigationItemSelectedListener false
                 }
                 R.id.navigation_profile -> {
@@ -95,7 +90,9 @@ class MainActivity : AppCompatActivity() {
         when (id) {
             R.id.profileEditFragment,
             R.id.userNameFragment,
-            R.id.signInFragment -> navAnimGone()
+            R.id.signInFragment,
+            R.id.createNewPostFragment,
+            R.id.tagsFragment -> navAnimGone()
             else -> navAnimVisible()
         }
     }

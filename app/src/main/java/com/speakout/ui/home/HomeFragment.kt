@@ -10,26 +10,50 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.speakout.R
+import com.speakout.auth.Type
 import com.speakout.posts.create.PostData
+import com.speakout.ui.MainActivity
 import com.speakout.ui.MainViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = HomePostRecyclerViewAdapter()
     private val mainViewModel: MainViewModel by activityViewModels()
+    private lateinit var mPreference: AppPreference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mHomeViewModel.getPosts("I6BSfzDRIAccVU4VzflwXTOJIDN2")
+        Timber.d("onCreate")
+        mPreference = AppPreference
+
+        when {
+            !mPreference.isLoggedIn() -> {
+                findNavController().navigate(HomeFragmentDirections.actionNavigationHomeToSignInFragment())
+            }
+            !mPreference.isUsernameProcessComplete() -> {
+                findNavController().navigate(
+                    HomeFragmentDirections.actionNavigationHomeToUserNameFragment(
+                        type = Type.Create,
+                        username = null
+                    )
+                )
+            }
+            else -> {
+                mHomeViewModel.getPosts("I6BSfzDRIAccVU4VzflwXTOJIDN2")
+            }
+        }
     }
 
     override fun onCreateView(
@@ -43,6 +67,14 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val hostFragment =
+            requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        if (hostFragment is NavHostFragment) {
+            hostFragment.childFragmentManager.fragments.forEach {
+                Timber.d("fragments: $it")
+            }
+        }
+
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_home_rv.apply {
             setHasFixedSize(true)
@@ -133,6 +165,10 @@ class HomeFragment : Fragment() {
         override fun onLikedUsersClick(postData: PostData) {
             navigateToUsersList(postData)
         }
+    }
+
+    override fun doubleClick() {
+        fragment_home_rv.layoutManager?.smoothScrollToPosition(fragment_home_rv, null, 0)
     }
 
 }

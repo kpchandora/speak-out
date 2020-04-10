@@ -21,6 +21,9 @@ class ProfileViewModel : ViewModel() {
     val profileObserver = MediatorLiveData<UserDetails?>()
     val followersFollowingsObserver = MediatorLiveData<FollowersFollowingsData?>()
 
+    private val _confirmUnfollow = MutableLiveData<Unit>()
+    val confirmUnfollow: LiveData<Unit> = _confirmUnfollow
+
     private val _userDetails = MutableLiveData<String>()
 
     val userDetails: LiveData<UserDetails?> = _userDetails.switchMap {
@@ -103,6 +106,10 @@ class ProfileViewModel : ViewModel() {
             }, {
                 _unFollowUser.value = false
             })
+    }
+
+    fun confirmUnfollow() {
+        _confirmUnfollow.value = Unit
     }
 
 }

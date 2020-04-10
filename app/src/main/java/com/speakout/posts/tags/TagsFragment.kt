@@ -3,25 +3,30 @@ package com.speakout.posts.tags
 
 import android.os.Bundle
 import android.os.Handler
-import android.text.InputType
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.extensions.gone
-import com.speakout.extensions.setSmallCaseFilter
+import com.speakout.extensions.showShortToast
 import com.speakout.extensions.visible
 import com.speakout.posts.create.CreatePostViewModel
-import com.speakout.ui.profile.ProfileEditActivity
+import com.speakout.posts.create.PostData
+import com.speakout.ui.MainActivity
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_post_tags.*
+import timber.log.Timber
+import java.text.DateFormat
 import java.util.*
 
 /**
@@ -29,22 +34,15 @@ import java.util.*
  */
 class TagsFragment : Fragment() {
 
-    companion object {
-
-        const val TAG = "TagsFragment"
-
-        fun newInstance(bundle: Bundle? = null) = TagsFragment().apply {
-            arguments = bundle
-        }
-    }
-
-    private val mCreatePostViewModel: CreatePostViewModel by activityViewModels()
+    private val mCreatePostViewModel: CreatePostViewModel by navGraphViewModels(R.id.create_post_navigation)
     private val mSelectedTags = hashMapOf<String, Tag>()
     private val mAdapter = TagsRecyclerViewAdapter()
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
     private val addTagQueue = LinkedList<Tag>()
     private val tagsViewModel: TagViewModel by viewModels()
     private val tagRegex = "^([a-z0-9]+\\b)(?!;)\$".toRegex()
+    private val createPostData = PostData()
+    private val safeArgs: TagsFragmentArgs by navArgs()
 
 
     override fun onCreateView(
@@ -77,7 +75,8 @@ class TagsFragment : Fragment() {
         observeViewModels()
 
         tag_done_fab.setOnClickListener {
-            mCreatePostViewModel.tags.value = mSelectedTags.keys.toList()
+            createPostData.tags = mSelectedTags.keys.toList()
+            uploadPost()
         }
 
         Handler().postDelayed({
@@ -112,6 +111,55 @@ class TagsFragment : Fragment() {
                 return true
             }
 
+        })
+
+    }
+
+    private fun uploadPost() {
+        mCreatePostViewModel.imageBitmap?.let { bitmap ->
+            (requireActivity() as MainActivity).showProgress()
+            val postId = UUID.randomUUID().toString()
+            createPostData.postId = postId
+            mCreatePostViewModel.uploadImage(Pair(bitmap, postId))
+        } ?: kotlin.run {
+            showShortToast("Failed to upload post")
+        }
+
+        mCreatePostViewModel.uploadImageObserver.observe(viewLifecycleOwner, Observer {
+            it?.let { url ->
+                val pref = AppPreference
+
+                Timber.d("Image Url: $url")
+                createPostData.apply {
+                    postImageUrl = url
+                    content = safeArgs.postContent
+                    timeStamp = DateFormat.getDateTimeInstance().format(Date())
+                    userId = pref.getUserId()
+                    userImageUrl = pref.getPhotoUrl()
+                    username = pref.getUserUniqueName()
+                    timeStampLong = System.nanoTime()
+                }
+
+                mCreatePostViewModel.uploadPost(createPostData)
+
+            } ?: kotlin.run {
+                (requireActivity() as MainActivity).hideProgress()
+                showShortToast("Failed to upload post")
+            }
+        })
+
+        mCreatePostViewModel.postObserver.observe(viewLifecycleOwner, Observer {
+            (requireActivity() as MainActivity).hideProgress()
+            if (it) {
+                showShortToast("Post uploaded successfully")
+                findNavController().previousBackStackEntry?.savedStateHandle?.set(
+                    "isSuccess",
+                    true
+                )
+                findNavController().navigateUp()
+            } else {
+                showShortToast("Failed to upload post")
+            }
         })
 
     }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".auth.UserNameActivity">
+    tools:context=".auth.UserNameFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/profile_edit_username_til"
+            android:id="@+id/fragment_username_til"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/profile_edit_username_et"
+                android:id="@+id/fragment_username_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -36,7 +36,7 @@
 
 
         <Button
-            android:id="@+id/user_name_next_btn"
+            android:id="@+id/fragment_username_next_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"

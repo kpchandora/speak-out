@@ -1,59 +1,62 @@
 package com.speakout.ui.profile
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
-import android.widget.TextView
-import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
+import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.get
 import com.mlsdev.rximagepicker.RxImageConverters
 import com.mlsdev.rximagepicker.RxImagePicker
 import com.mlsdev.rximagepicker.Sources
+
 import com.speakout.R
 import com.speakout.auth.UserDetails
-import com.speakout.auth.UserNameActivity
+import com.speakout.auth.Type
 import com.speakout.auth.UserViewModel
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
-import kotlinx.android.synthetic.main.activity_bottom_dialog.*
-import kotlinx.android.synthetic.main.activity_profile_edit.*
-import kotlinx.android.synthetic.main.activity_profile_edit.profile_edit_username_et
-import kotlinx.android.synthetic.main.activity_profile_edit.profile_edit_username_til
-import kotlinx.android.synthetic.main.activity_user_name.*
-import org.koin.android.viewmodel.compat.ViewModelCompat.viewModel
+import kotlinx.android.synthetic.main.fragment_profile_edit.*
 import timber.log.Timber
 import java.io.File
 
-class ProfileEditActivity : AppCompatActivity() {
+/**
+ * A simple [Fragment] subclass.
+ */
+class ProfileEditFragment : Fragment() {
 
-
-    companion object {
-        private const val REQUEST_CODE_USERNAME = 1001
-    }
-
-    private val profileViewModel: ProfileViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
     private var mProfileUrl = ""
     private var isUploading = false
+    private val profileViewModel: ProfileViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile_edit)
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_profile_edit, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mProfileUrl = AppPreference.getPhotoUrl()
+
         populateDetails()
 
         observeViewModels()
 
-        profile_edit_iv.setOnClickListener {
+        profile_edit_fragment_iv.setOnClickListener {
             if (!isUploading) {
                 pickImage()
             }
@@ -89,48 +92,45 @@ class ProfileEditActivity : AppCompatActivity() {
         }
 
         profile_edit_username_et.setOnClickListener {
-            openActivityForResult(
-                clazz = UserNameActivity::class.java,
-                requestCode = REQUEST_CODE_USERNAME,
-                extras = Bundle().also {
-                    it.putString("username", profile_edit_username_et.text.toString())
-                })
-        }
-    }
+            val action = ProfileEditFragmentDirections
+                .actionProfileEditFragmentToUserNameFragment(
+                    type = Type.Edit,
+                    username = profile_edit_username_et.text.toString()
+                )
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_USERNAME && resultCode == Activity.RESULT_OK) {
-            profile_edit_username_et.setText(data?.getStringExtra("username") ?: "")
+            findNavController().navigate(action)
         }
     }
 
     private fun populateDetails() {
-        val screenSize = getScreenSize()
+        val screenSize = requireActivity().getScreenSize()
         Timber.d("Height: ${screenSize.heightPixels}, Width: ${screenSize.widthPixels}")
         profile_edit_update_btn.layoutParams.width = screenSize.widthPixels / 4
-        profile_edit_iv.layoutParams.width = screenSize.widthPixels / 3
+        profile_edit_fragment_iv.layoutParams.width = screenSize.widthPixels / 3
         profile_edit_bg_view.layoutParams.width = screenSize.widthPixels / 3
+
         updatePicture(AppPreference.getPhotoUrl())
+
         profile_edit_add_iv.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_username_et.setText(AppPreference.getUserUniqueName())
         profile_edit_full_name_et.setText(AppPreference.getUserDisplayName())
         profile_edit_full_name_et.setSelection(AppPreference.getUserDisplayName().length)
         profile_edit_mobile_et.setText(AppPreference.getPhoneNumber())
+
     }
 
     private fun updatePicture(url: String) {
         profile_edit_bg_view.gone()
-        profile_edit_iv.loadImageWithCallback(url, makeRound = true,
+        profile_edit_fragment_iv.loadImageWithCallback(url, makeRound = true,
             onSuccess = {
                 profile_edit_bg_view.visible()
             },
             onFailed = {
                 profile_edit_bg_view.gone()
-                profile_edit_iv.setImageDrawable(
+                profile_edit_fragment_iv.setImageDrawable(
                     ContextCompat.getDrawable(
-                        this,
+                        requireContext(),
                         R.drawable.ic_account_circle_grey
                     )
                 )
@@ -138,7 +138,7 @@ class ProfileEditActivity : AppCompatActivity() {
     }
 
     private fun observeViewModels() {
-        profileViewModel.uploadProfilePicture.observe(this, Observer {
+        profileViewModel.uploadProfilePicture.observe(requireActivity(), Observer {
             isUploading = false
             profile_edit_pb.gone()
             profile_edit_update_btn.enable()
@@ -147,24 +147,32 @@ class ProfileEditActivity : AppCompatActivity() {
                 updatePicture(mProfileUrl)
             } else {
                 updatePicture(mProfileUrl)
-                showShortToast("Failed to upload profile picture")
+                requireActivity().showShortToast("Failed to upload profile picture")
             }
         })
 
-        userViewModel.updateDetailsObserver.observe(this, Observer {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("username")
+            ?.observe(
+                viewLifecycleOwner
+            ) {
+                Timber.d("Username Result: $it")
+                profile_edit_username_et.setText(it)
+            }
+
+        userViewModel.updateDetailsObserver.observe(requireActivity(), Observer {
             if (it) {
-                finish()
+                findNavController().navigateUp()
             } else {
-                showShortToast("Failed to update details")
+                requireActivity().showShortToast("Failed to update details")
             }
         })
     }
 
     @SuppressLint("CheckResult")
     private fun pickImage() {
-        RxImagePicker.with(supportFragmentManager).requestImage(Sources.GALLERY)
+        RxImagePicker.with(requireActivity().supportFragmentManager).requestImage(Sources.GALLERY)
             .flatMap {
-                RxImageConverters.uriToFile(this, it, createTempFile())
+                RxImageConverters.uriToFile(requireContext(), it, createTempFile())
             }
             .subscribe({
                 if (it != null) {
@@ -173,22 +181,18 @@ class ProfileEditActivity : AppCompatActivity() {
                     isUploading = true
                     profileViewModel.uploadProfilePicture(it)
                 } else {
-                    showShortToast("Failed to get image file")
+                    requireActivity().showShortToast("Failed to get image file")
                 }
             }, {
-                showShortToast("Failed to get image file")
+                requireActivity().showShortToast(it.message ?: "Failed to get image file")
             })
     }
 
     private fun createTempFile(): File {
         return File(
-            getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+            requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
             System.currentTimeMillis().toString() + "_image.jpeg"
         )
     }
 
-    override fun onBackPressed() {
-        if (isUploading) return
-        super.onBackPressed()
-    }
 }

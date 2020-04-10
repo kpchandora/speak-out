@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/indigo_50"
     android:orientation="vertical"
-    tools:context=".posts.create.CreateNewPostActivity">
+    tools:context=".posts.create.CreateNewPostFragment">
 
 
     <FrameLayout
@@ -45,7 +45,6 @@
 
     </FrameLayout>
 
-
     <com.google.android.material.button.MaterialButton
         android:id="@+id/create_post_next_btn"
         android:layout_width="wrap_content"
@@ -55,11 +54,5 @@
         android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_24dp"
         android:text="@string/next"
         android:textAllCaps="false" />
-
-    <FrameLayout
-        android:id="@+id/create_post_container_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:elevation="2dp" />
 
 </FrameLayout>

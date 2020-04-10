@@ -7,7 +7,8 @@
 
     <action
         android:id="@+id/action_global_profileFragment"
-        app:destination="@id/navigation_profile" />
+        app:destination="@id/profile_navigation" />
+
 
     <fragment
         android:id="@+id/navigation_home"
@@ -17,7 +18,7 @@
 
         <action
             android:id="@+id/action_home_to_profile_fragment"
-            app:destination="@id/navigation_profile"
+            app:destination="@id/profile_navigation"
             app:popExitAnim="@anim/slide_out_right" />
 
         <action
@@ -27,6 +28,18 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_signInFragment"
+            app:destination="@id/signInFragment"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_navigation_home_to_userNameFragment"
+            app:destination="@id/userNameFragment"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
@@ -42,11 +55,34 @@
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
+
     <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.speakout.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile">
+        android:id="@+id/usersListFragment"
+        android:name="com.speakout.users.UsersListFragment"
+        android:label="{actionType}"
+        tools:layout="@layout/users_list_fragment">
+
+        <argument
+            android:name="userId"
+            app:argType="string"
+            app:nullable="true" />
+
+        <argument
+            android:name="actionType"
+            android:defaultValue="Likes"
+            app:argType="com.speakout.users.ActionType" />
+
+        <action
+            android:id="@+id/action_usersListFragment_to_navigation_profile"
+            app:destination="@id/profile_navigation"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
+
+
+    <navigation
+        android:id="@+id/profile_navigation"
+        app:startDestination="@id/navigation_profile">
 
         <argument
             android:name="userId"
@@ -68,66 +104,200 @@
             app:argType="string"
             app:nullable="true" />
 
-        <action
-            android:id="@+id/action_navigation_profile_to_usersListFragment"
-            app:destination="@id/usersListFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+        <fragment
+            android:id="@+id/navigation_profile"
+            android:name="com.speakout.ui.profile.ProfileFragment"
+            android:label="@string/title_profile"
+            tools:layout="@layout/fragment_profile">
 
-        <action
-            android:id="@+id/action_navigation_profile_to_postViewFragment"
-            app:destination="@id/postViewFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            <argument
+                android:name="userId"
+                app:argType="string"
+                app:nullable="true" />
 
-    </fragment>
+            <argument
+                android:name="profileUrl"
+                app:argType="string"
+                app:nullable="true" />
+
+            <argument
+                android:name="transitionTag"
+                app:argType="string"
+                app:nullable="true" />
+
+            <argument
+                android:name="username"
+                app:argType="string"
+                app:nullable="true" />
+
+            <action
+                android:id="@+id/action_navigation_profile_to_usersListFragment"
+                app:destination="@id/usersListFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+            <action
+                android:id="@+id/action_navigation_profile_to_postViewFragment"
+                app:destination="@id/postViewFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+            <action
+                android:id="@+id/action_navigation_profile_to_unFollowDialog"
+                app:destination="@id/unFollowDialog" />
+
+            <action
+                android:id="@+id/action_navigation_profile_to_profileEditFragment"
+                app:destination="@id/profileEditFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+        </fragment>
+
+        <fragment
+            android:id="@+id/postViewFragment"
+            android:name="com.speakout.ui.profile.PostViewFragment"
+            android:label="Posts"
+            tools:layout="@layout/fragment_post_view">
+
+            <argument
+                android:name="postData"
+                app:argType="com.speakout.posts.create.PostData"
+                app:nullable="true" />
+
+            <action
+                android:id="@+id/action_postViewFragment_to_usersListFragment"
+                app:destination="@id/usersListFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+        </fragment>
+
+        <dialog
+            android:id="@+id/unFollowDialog"
+            android:name="com.speakout.ui.profile.UnFollowDialog"
+            android:label="UnFollowDialog">
+
+            <argument
+                android:name="profileUrl"
+                app:argType="string"
+                app:nullable="true" />
+
+            <argument
+                android:name="username"
+                app:argType="string"
+                app:nullable="true" />
+
+        </dialog>
+
+        <fragment
+            android:id="@+id/profileEditFragment"
+            android:name="com.speakout.ui.profile.ProfileEditFragment"
+            android:label="Edit"
+            tools:layout="@layout/fragment_profile_edit">
+
+            <action
+                android:id="@+id/action_profileEditFragment_to_userNameFragment"
+                app:destination="@id/userNameFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+        </fragment>
+
+    </navigation>
 
     <fragment
-        android:id="@+id/usersListFragment"
-        android:name="com.speakout.users.UsersListFragment"
-        android:label="{actionType}"
-        tools:layout="@layout/users_list_fragment">
+        android:id="@+id/userNameFragment"
+        android:name="com.speakout.auth.UserNameFragment"
+        android:label="{type} Username"
+        tools:layout="@layout/fragment_user_name">
 
         <argument
-            android:name="userId"
+            android:name="type"
+            android:defaultValue="Edit"
+            app:argType="com.speakout.auth.Type" />
+
+        <argument
+            android:name="username"
             app:argType="string"
             app:nullable="true" />
 
-        <argument
-            android:name="actionType"
-            android:defaultValue="Likes"
-            app:argType="com.speakout.users.ActionType" />
-
         <action
-            android:id="@+id/action_usersListFragment_to_navigation_profile"
-            app:destination="@id/navigation_profile"
-            app:popExitAnim="@anim/slide_out_right" />
+            android:id="@+id/action_userNameFragment_to_navigation_home"
+            app:destination="@id/navigation_home"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/postViewFragment"
-        android:name="com.speakout.ui.profile.PostViewFragment"
-        android:label="Posts"
-        tools:layout="@layout/fragment_post_view">
-
-        <argument
-            android:name="postData"
-            app:argType="com.speakout.posts.create.PostData"
-            app:nullable="true" />
+        android:id="@+id/signInFragment"
+        android:name="com.speakout.auth.SignInFragment"
+        android:label="SignIn"
+        tools:layout="@layout/fragment_sign_in">
 
         <action
-            android:id="@+id/action_postViewFragment_to_usersListFragment"
-            app:destination="@id/usersListFragment"
+            android:id="@+id/action_signInFragment_to_navigation_home"
+            app:destination="@id/navigation_home"
+            app:popUpTo="@id/navigation_home"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_signInFragment_to_userNameFragment"
+            app:destination="@id/userNameFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/userNameFragment" />
 
     </fragment>
+
+    <navigation
+        android:id="@+id/create_post_navigation"
+        app:startDestination="@id/createNewPostFragment">
+
+        <fragment
+            android:id="@+id/createNewPostFragment"
+            android:name="com.speakout.posts.create.CreateNewPostFragment"
+            android:label="New Post"
+            tools:layout="@layout/fragment_create_new_post">
+
+            <action
+                android:id="@+id/action_createNewPostFragment_to_tagsFragment"
+                app:destination="@id/tagsFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+        </fragment>
+
+        <fragment
+            android:id="@+id/tagsFragment"
+            android:name="com.speakout.posts.tags.TagsFragment"
+            android:label="Tags"
+            tools:layout="@layout/fragment_post_tags">
+
+            <argument
+                android:name="postContent"
+                app:argType="string"
+                app:nullable="false" />
+
+        </fragment>
+
+
+    </navigation>
+
 
 </navigation>

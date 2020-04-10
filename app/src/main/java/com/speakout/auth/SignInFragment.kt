@@ -1,25 +1,33 @@
 package com.speakout.auth
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import com.google.android.gms.auth.api.signin.*
+import androidx.navigation.fragment.findNavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+
 import com.speakout.R
 import com.speakout.extensions.*
-import com.speakout.ui.MainActivity
-import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.AppPreference
-import kotlinx.android.synthetic.main.activity_sign_in.*
+import com.speakout.utils.FirebaseUtils
+import kotlinx.android.synthetic.main.fragment_sign_in.*
 
-class SignInActivity : AppCompatActivity() {
-
+class SignInFragment : Fragment() {
 
     companion object {
         private const val RC_SIGN_IN = 101
@@ -30,33 +38,49 @@ class SignInActivity : AppCompatActivity() {
     private val mUserViewModel: UserViewModel by viewModels()
     private lateinit var mPreference: AppPreference
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_in)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        return inflater.inflate(R.layout.fragment_sign_in, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         mPreference = AppPreference
-        mUserViewModel.saveUserDetailsObserver.observe(this, Observer {
+
+        mUserViewModel.saveUserDetailsObserver.observe(requireActivity(), Observer {
             if (it) {
-                openActivity(UserNameActivity::class.java)
-                hideProgress()
-                finish()
+                sign_in_progress.gone()
+                mPreference.setLoggedIn()
+                val action = SignInFragmentDirections.actionSignInFragmentToNavigationHome()
+                findNavController().navigate(action)
             } else {
-                mPreference.clearUserDetails()
-                showShortToast("Failed")
                 hideProgress()
+                showShortToast("Failed")
                 FirebaseUtils.signOut()
             }
         })
 
-        mUserViewModel.getUserDataObserver.observe(this, Observer {
+        mUserViewModel.getUserDataObserver.observe(requireActivity(), Observer {
             it?.apply {
+                sign_in_progress.gone()
+                mPreference.setLoggedIn()
                 mPreference.saveUserDetails(this)
                 if (username.isNotNullOrEmpty()) {
-                    openActivity(MainActivity::class.java)
+                    mPreference.setUsernameProcessComplete()
+                    val action = SignInFragmentDirections.actionSignInFragmentToNavigationHome()
+                    findNavController().navigate(action)
                 } else {
-                    openActivity(UserNameActivity::class.java)
+                    val action = SignInFragmentDirections.actionSignInFragmentToUserNameFragment(
+                        Type.Create,
+                        null
+                    )
+                    findNavController().navigate(action)
                 }
-                hideProgress()
-                finish()
             } ?: FirebaseUtils.signOut().also {
                 hideProgress()
                 showShortToast("Something went wrong, please try again")
@@ -68,7 +92,7 @@ class SignInActivity : AppCompatActivity() {
             .requestEmail()
             .build()
 
-        googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
         auth = FirebaseAuth.getInstance()
 
         signInButton.setOnClickListener {
@@ -78,7 +102,6 @@ class SignInActivity : AppCompatActivity() {
                 RC_SIGN_IN
             )
         }
-
     }
 
     private fun showProgress() {
@@ -89,14 +112,6 @@ class SignInActivity : AppCompatActivity() {
     private fun hideProgress() {
         sign_in_progress.gone()
         signInButton.visible()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        FirebaseUtils.currentUser()?.let {
-            openActivity(MainActivity::class.java)
-            finish()
-        }
     }
 
 
@@ -135,6 +150,10 @@ class SignInActivity : AppCompatActivity() {
                         } else {
                             mUserViewModel.getUserData(uid = uid)
                         }
+                    } ?: kotlin.run {
+                        showShortToast("Failed")
+                        hideProgress()
+                        FirebaseUtils.signOut()
                     }
                 } else {
                     showShortToast("Failed")

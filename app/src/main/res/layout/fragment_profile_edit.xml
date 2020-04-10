@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.profile.ProfileEditActivity">
+    tools:context=".ui.profile.ProfileEditFragment">
 
     <ImageView
-        android:id="@+id/profile_edit_iv"
+        android:id="@+id/profile_edit_fragment_iv"
         android:layout_width="100dp"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
@@ -21,27 +21,27 @@
     <View
         android:id="@+id/profile_edit_bg_view"
         android:layout_width="100dp"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/dr_circle_stroke_black_grey500"
+        android:visibility="gone"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/profile_edit_add_iv"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/ic_plus"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_edit_iv"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_edit_fragment_iv"
         app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toEndOf="@+id/profile_edit_iv"
+        app:layout_constraintEnd_toEndOf="@+id/profile_edit_fragment_iv"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/profile_edit_iv"
-        app:layout_constraintTop_toTopOf="@+id/profile_edit_iv"
+        app:layout_constraintStart_toStartOf="@+id/profile_edit_fragment_iv"
+        app:layout_constraintTop_toTopOf="@+id/profile_edit_fragment_iv"
         app:layout_constraintVertical_bias="1.0" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -56,7 +56,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_edit_iv">
+        app:layout_constraintTop_toBottomOf="@+id/profile_edit_fragment_iv">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/profile_edit_username_et"
@@ -144,10 +144,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_edit_iv"
+        app:layout_constraintBottom_toBottomOf="@+id/profile_edit_fragment_iv"
         app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toEndOf="@+id/profile_edit_iv"
-        app:layout_constraintStart_toStartOf="@+id/profile_edit_iv"
-        app:layout_constraintTop_toTopOf="@+id/profile_edit_iv" />
+        app:layout_constraintEnd_toEndOf="@+id/profile_edit_fragment_iv"
+        app:layout_constraintStart_toStartOf="@+id/profile_edit_fragment_iv"
+        app:layout_constraintTop_toTopOf="@+id/profile_edit_fragment_iv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

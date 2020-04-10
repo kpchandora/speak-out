@@ -24,11 +24,16 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.speakout.R
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_home_post_layout.view.*
 import java.lang.Exception
 
 fun Context.showShortToast(message: String) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Fragment.showShortToast(message: String) {
+    Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
 }
 
 fun <T> Context.openActivity(clazz: Class<T>, extras: Bundle? = null): Intent {
@@ -72,6 +77,7 @@ fun AppCompatActivity.addFragment(
         it.commit()
     }
 }
+
 
 fun Activity.showKeyboard(editText: EditText? = null) {
     (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.also {

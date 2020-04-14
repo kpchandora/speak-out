@@ -6,7 +6,7 @@ import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
-import com.speakout.ui.home.HomeService
+import com.speakout.posts.PostsService
 import com.speakout.ui.observers.FollowersFollowingsLiveData
 import com.speakout.ui.observers.UserLiveData
 import com.speakout.utils.ImageUtils
@@ -18,6 +18,8 @@ import java.io.File
 class ProfileViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
+    private val mPostList = ArrayList<PostData>()
+
     val profileObserver = MediatorLiveData<UserDetails?>()
     val followersFollowingsObserver = MediatorLiveData<FollowersFollowingsData?>()
 
@@ -49,7 +51,7 @@ class ProfileViewModel : ViewModel() {
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        HomeService.getPosts(it)
+        PostsService.getPosts(it)
     }
 
     fun getPosts(id: String) {
@@ -111,5 +113,11 @@ class ProfileViewModel : ViewModel() {
     fun confirmUnfollow() {
         _confirmUnfollow.value = Unit
     }
+
+    fun addPosts(list: List<PostData>) {
+        mPostList.addAll(list)
+    }
+
+    fun getPosts() = mPostList
 
 }

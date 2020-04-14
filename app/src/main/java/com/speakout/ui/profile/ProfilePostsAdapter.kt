@@ -18,7 +18,7 @@ import com.speakout.extensions.loadImage
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import com.speakout.ui.home.HomePostViewHolder
-import kotlinx.android.synthetic.main.item_home_post_layout.view.*
+import kotlinx.android.synthetic.main.item_post_layout.view.*
 import kotlinx.android.synthetic.main.item_profile_post_layout.view.*
 
 class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePostsViewHolder>() {
@@ -58,7 +58,7 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
             )
             view.item_profile_post_iv.transitionName = post.postId
             view.setOnClickListener {
-                mListener?.onPostClick(post, view.item_profile_post_iv)
+                mListener?.onPostClick(post, view.item_profile_post_iv, adapterPosition)
             }
         }
     }

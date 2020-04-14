@@ -67,13 +67,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val hostFragment =
-            requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-        if (hostFragment is NavHostFragment) {
-            hostFragment.childFragmentManager.fragments.forEach {
-                Timber.d("fragments: $it")
-            }
-        }
 
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_home_rv.apply {

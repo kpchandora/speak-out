@@ -9,7 +9,7 @@
     android:paddingBottom="2dp">
 
     <LinearLayout
-        android:id="@+id/item_home_post_details_ll"
+        android:id="@+id/item_post_details_ll"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="2dp"
@@ -21,7 +21,7 @@
             android:padding="1dp">
 
             <View
-                android:id="@+id/item_home_post_profile_bg_iv"
+                android:id="@+id/item_post_profile_bg_iv"
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
@@ -32,7 +32,7 @@
                 tools:visibility="visible" />
 
             <ImageView
-                android:id="@+id/item_home_post_profile_iv"
+                android:id="@+id/item_post_profile_iv"
                 android:layout_width="48dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
@@ -49,7 +49,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/item_home_post_name_tv"
+                android:id="@+id/item_post_name_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -59,7 +59,7 @@
 
 
             <TextView
-                android:id="@+id/item_home_post_time_tv"
+                android:id="@+id/item_post_time_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -74,7 +74,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/item_home_post_image_iv"
+            android:id="@+id/item_post_image_iv"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:adjustViewBounds="true"
@@ -82,7 +82,7 @@
 
 
         <TextView
-            android:id="@+id/item_home_post_load_fail_tv"
+            android:id="@+id/item_post_load_fail_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -105,7 +105,7 @@
             android:layout_gravity="center_vertical">
 
             <CheckBox
-                android:id="@+id/item_home_post_like_cb"
+                android:id="@+id/item_post_like_cb"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
@@ -118,7 +118,7 @@
         </FrameLayout>
 
         <TextView
-            android:id="@+id/item_home_post_like_count_tv"
+            android:id="@+id/item_post_like_count_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

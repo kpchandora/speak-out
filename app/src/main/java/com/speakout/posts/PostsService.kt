@@ -1,19 +1,17 @@
-package com.speakout.ui.home
+package com.speakout.posts
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
-import com.speakout.auth.UserMiniDetails
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
-import com.speakout.utils.NameUtils
 import io.reactivex.Single
 import timber.log.Timber
 
-object HomeService {
+object PostsService {
 
     fun getPosts(userId: String): LiveData<List<PostData>> {
         val data = MutableLiveData<List<PostData>>()
@@ -43,7 +41,7 @@ object HomeService {
         return data
     }
 
-    fun newLikePost(postData: PostData): Single<Boolean> {
+    fun likePost(postData: PostData): Single<Boolean> {
         return Single.create {
 
             val postRef = FirebaseUtils.FirestoreUtils.getSinglePostRef(postData.postId)
@@ -73,41 +71,7 @@ object HomeService {
         }
     }
 
-    fun likePost(postData: PostData): Single<Pair<Boolean, PostData>> {
-        return Single.create {
-            val db = FirebaseUtils.FirestoreUtils.getRef()
-            val postLikesRef =
-                db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
-            val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
-
-            db.runTransaction {
-                val newPost =
-                    it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
-
-                it.update(postRef, "likes", FieldValue.arrayUnion(AppPreference.getUserId()))
-                it.set(
-                    postLikesRef,
-                    UserMiniDetails(
-                        name = AppPreference.getUserDisplayName(),
-                        username = AppPreference.getUserUniqueName(),
-                        photoUrl = AppPreference.getPhotoUrl(),
-                        userId = AppPreference.getUserId()
-                    )
-                )
-                return@runTransaction newPost
-            }.addOnCompleteListener { task ->
-                Timber.d("likePost: ${postData.content}")
-                if (task.isSuccessful && task.result != null) {
-                    it.onSuccess(Pair(true, task.result!!))
-                } else {
-                    it.onSuccess(Pair(false, postData))
-                }
-            }
-
-        }
-    }
-
-    fun newUnlikePost(postData: PostData): Single<Boolean> {
+    fun unlikePost(postData: PostData): Single<Boolean> {
         return Single.create {
 
             val postRef = FirebaseUtils.FirestoreUtils.getSinglePostRef(postData.postId)
@@ -131,30 +95,4 @@ object HomeService {
             }
         }
     }
-
-    fun unlikePost(postData: PostData): Single<Pair<Boolean, PostData>> {
-        return Single.create {
-            val db = FirebaseUtils.FirestoreUtils.getRef()
-            val postLikesRef =
-                db.document("post_likes/${postData.postId}/users/${AppPreference.getUserId()}")
-            val postRef = db.collection(NameUtils.DatabaseRefs.postsRef).document(postData.postId)
-
-            db.runTransaction {
-                val newPost =
-                    it.get(postRef).toObject(PostData::class.java) ?: return@runTransaction null
-
-                it.update(postRef, "likes", FieldValue.arrayRemove(AppPreference.getUserId()))
-                it.delete(postLikesRef)
-                return@runTransaction newPost
-            }.addOnCompleteListener { task ->
-                Timber.d("unlikePost: ${postData.content}")
-                if (task.isSuccessful && task.result != null) {
-                    it.onSuccess(Pair(true, task.result!!))
-                } else {
-                    it.onSuccess(Pair(false, postData))
-                }
-            }
-        }
-    }
-
 }

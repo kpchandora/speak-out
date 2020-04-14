@@ -8,7 +8,7 @@ import com.speakout.R
 import com.speakout.extensions.getScreenSize
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
-import kotlinx.android.synthetic.main.item_home_post_layout.view.*
+import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
 
 class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
@@ -19,13 +19,13 @@ class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomePostViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_home_post_layout, parent, false)
+            .inflate(R.layout.item_post_layout, parent, false)
         val holder = HomePostViewHolder(view)
         holder.userId = userId
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
         screenSize?.let {
-            holder.view.item_home_post_image_iv.layoutParams.height = it.widthPixels
+            holder.view.item_post_image_iv.layoutParams.height = it.widthPixels
         }
         return holder
     }
@@ -55,6 +55,7 @@ class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
         }
 
     }
+
 
     fun likePostFail(postData: PostData) {
         Timber.d("likePostFail Content: ${postData.content}")

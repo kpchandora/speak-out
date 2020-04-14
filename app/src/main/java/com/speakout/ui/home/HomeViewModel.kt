@@ -2,14 +2,15 @@ package com.speakout.ui.home
 
 import androidx.lifecycle.*
 import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.posts.PostsService
 import com.speakout.posts.create.PostData
-import com.speakout.utils.AppPreference
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 
 class HomeViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
+    private val mPostList = ArrayList<PostData>()
 
     private val _unlikePost = MutableLiveData<Boolean>()
     val unlikePost: LiveData<Boolean> = _unlikePost
@@ -20,7 +21,7 @@ class HomeViewModel : ViewModel() {
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        HomeService.getPosts(it)
+        PostsService.getPosts(it)
     }
 
     fun getPosts(id: String) {
@@ -28,7 +29,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun likePost(postData: PostData) {
-        compositeDisposable += HomeService.newLikePost(postData)
+        compositeDisposable += PostsService.likePost(postData)
             .withDefaultSchedulers()
             .subscribe({
                 _likePost.value = it
@@ -38,7 +39,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun unlikePost(postData: PostData) {
-        compositeDisposable += HomeService.newUnlikePost(postData)
+        compositeDisposable += PostsService.unlikePost(postData)
             .withDefaultSchedulers()
             .subscribe({
                 _unlikePost.value = it
@@ -46,6 +47,12 @@ class HomeViewModel : ViewModel() {
                 _unlikePost.value = false
             })
     }
+
+    fun addPosts(list: List<PostData>) {
+        mPostList.addAll(list)
+    }
+
+    fun getPosts() = mPostList
 
     override fun onCleared() {
         compositeDisposable.dispose()

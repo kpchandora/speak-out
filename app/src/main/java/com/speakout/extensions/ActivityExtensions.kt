@@ -25,7 +25,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.speakout.R
 import com.speakout.utils.AppPreference
-import kotlinx.android.synthetic.main.item_home_post_layout.view.*
+import kotlinx.android.synthetic.main.item_post_layout.view.*
 import java.lang.Exception
 
 fun Context.showShortToast(message: String) {

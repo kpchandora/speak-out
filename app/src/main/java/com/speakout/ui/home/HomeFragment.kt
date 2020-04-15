@@ -1,5 +1,8 @@
 package com.speakout.ui.home
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +21,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.auth.Type
+import com.speakout.extensions.showShortToast
+import com.speakout.posts.OnPostOptionsClickListener
+import com.speakout.posts.PostOptionsDialog
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
 import com.speakout.ui.MainViewModel
@@ -32,6 +38,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private val mPostsAdapter = HomePostRecyclerViewAdapter()
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var mPreference: AppPreference
+    private lateinit var dialog: PostOptionsDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +74,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_home_rv.apply {
             setHasFixedSize(true)
@@ -157,6 +164,31 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         override fun onLikedUsersClick(postData: PostData) {
             navigateToUsersList(postData)
+        }
+
+        override fun onMenuClick(postData: PostData, position: Int) {
+            dialog.setListener(mPostsOptionsClickListener)
+            dialog.show()
+            dialog.setPost(postData)
+        }
+    }
+
+
+    private val mPostsOptionsClickListener = object : OnPostOptionsClickListener {
+        override fun onCopy(post: PostData) {
+            val clipboard =
+                requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Content", post.content)
+            clipboard.setPrimaryClip(clip)
+            showShortToast("Copied Successfully")
+        }
+
+        override fun onDelete(post: PostData) {
+
+        }
+
+        override fun onSave(post: PostData) {
+
         }
     }
 

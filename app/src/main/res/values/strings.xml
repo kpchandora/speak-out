@@ -12,7 +12,7 @@
     <string name="title_search">Search</string>
     <string name="title_new_post">New Post</string>
 
-    <!--Create post strings-->
+    <!--Post strings-->
     <string name="sample_post_text">This is a sample posThis is a sample posThis is a sample posThis is a sample posThis is a sample post text to check how does this large text looks when it is shown in layout. It should be more than 150 characters so that we can make sure that even large text also looks fine.</string>
     <string name="sample_hindi_text">आग इतनी भीषण है कि मौके पर तुरंत 12 दमकल गाड़ियों को रवाना किया गया है. इसके अलावा 500 से ज्यादा दमकलकर्मियों को आग बुझाने के काम में लगाया गया है.</string>
     <string name="enter_content_hint">Speak your heart out…</string>
@@ -22,6 +22,12 @@
     <string name="loading_hint">Loading…</string>
     <string name="hash_text">＃</string>
     <string name="tick_text">✓</string>
+
+    <!--Post menu strings-->
+    <string name="copy_content">Copy content</string>
+    <string name="delete_post">Delete</string>
+    <string name="save_post">Save</string>
+
 
     <string name="error_something_went_wrong">Something went wrong. Please try again</string>
     <string name="error_image_load_fail">Failed to load. Tap to retry</string>
@@ -49,7 +55,6 @@
     <string name="mobile_error">Enter valid mobile number</string>
     <string name="full_name">Full Name</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="vertical_ellipse">⋮</string>
 
 </resources>

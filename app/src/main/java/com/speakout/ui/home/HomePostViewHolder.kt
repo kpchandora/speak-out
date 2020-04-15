@@ -1,12 +1,16 @@
 package com.speakout.ui.home
 
 import android.annotation.SuppressLint
+import android.view.ContextMenu
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImageWithCallback
+import com.speakout.extensions.showShortToast
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_post_layout.view.*
@@ -56,13 +60,22 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 setLikes(post)
             }
 
+            item_post_layout_menu_tv.setOnClickListener {
+                mEventListener?.onMenuClick(post, adapterPosition)
+            }
+
             item_post_load_fail_tv.setOnClickListener {
                 loadPost(post.postImageUrl)
             }
 
-            item_post_details_ll.setOnClickListener {
+            item_post_names_layout.setOnClickListener {
                 mEventListener?.onProfileClick(post, item_post_profile_iv)
             }
+
+            item_post_profile_iv.setOnClickListener {
+                mEventListener?.onProfileClick(post, item_post_profile_iv)
+            }
+
 
             item_post_like_count_tv.setOnClickListener {
                 mEventListener?.onLikedUsersClick(post)
@@ -89,5 +102,6 @@ class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
                 view.item_post_load_fail_tv.visible()
             })
     }
+
 
 }

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -17,8 +18,6 @@ import com.speakout.posts.create.PostData
 import com.speakout.ui.home.HomePostRecyclerViewAdapter
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.ui.home.PostClickEventListener
-import com.speakout.ui.profile.postview.PostViewFragmentArgs
-import com.speakout.ui.profile.postview.PostViewFragmentDirections
 import com.speakout.users.ActionType
 import kotlinx.android.synthetic.main.fragment_post_view.*
 
@@ -58,7 +57,7 @@ class PostViewFragment : Fragment() {
     }
 
     private fun observeViewModels() {
-        
+
     }
 
     private val mPostEventsListener = object : PostClickEventListener {
@@ -81,6 +80,10 @@ class PostViewFragment : Fragment() {
                     ActionType.Likes
                 )
             findNavController().navigate(action)
+        }
+
+        override fun onMenuClick(postData: PostData, position: Int) {
+
         }
     }
 

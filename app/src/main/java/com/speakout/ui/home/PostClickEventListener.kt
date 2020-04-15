@@ -8,4 +8,5 @@ interface PostClickEventListener {
     fun onDislike(position: Int, postData: PostData)
     fun onProfileClick(postData: PostData, profileImageView: ImageView)
     fun onLikedUsersClick(postData: PostData)
+    fun onMenuClick(postData: PostData, position: Int)
 }

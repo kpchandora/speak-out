@@ -1,9 +1,11 @@
 package com.speakout.ui.home
 
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,7 @@ import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.auth.Type
 import com.speakout.extensions.showShortToast
+import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.OnPostOptionsClickListener
 import com.speakout.posts.PostOptionsDialog
 import com.speakout.posts.create.PostData
@@ -29,6 +32,7 @@ import com.speakout.ui.MainActivity
 import com.speakout.ui.MainViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
+import com.speakout.utils.ImageUtils
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
@@ -187,7 +191,20 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         }
 
+        @SuppressLint("CheckResult")
         override fun onSave(post: PostData) {
+            Timber.d("Save post")
+            ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
+                .withDefaultSchedulers()
+                .subscribe({
+                    Timber.d("Home Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
+                    if (it)
+                        showShortToast("Saved Successfully")
+                    else
+                        showShortToast("Failed to save image")
+                }, {
+                    showShortToast(it.message ?: "")
+                })
 
         }
     }

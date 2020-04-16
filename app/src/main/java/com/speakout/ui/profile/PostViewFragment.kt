@@ -19,6 +19,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
+import com.speakout.common.EventObserver
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.OnPostOptionsClickListener
@@ -70,7 +71,13 @@ class PostViewFragment : Fragment() {
     }
 
     private fun observeViewModels() {
-
+        homeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
+            if (it) {
+                showShortToast("Deleted Successfully")
+            } else {
+                showShortToast("Failed to delete post")
+            }
+        })
     }
 
     private val mPostEventsListener = object : PostClickEventListener {
@@ -111,7 +118,7 @@ class PostViewFragment : Fragment() {
         }
 
         override fun onDelete(post: PostData) {
-
+            homeViewModel.deletePost(post)
         }
 
         @SuppressLint("CheckResult")
@@ -128,7 +135,6 @@ class PostViewFragment : Fragment() {
                 }, {
                     showShortToast(it.message ?: "")
                 })
-
         }
     }
 

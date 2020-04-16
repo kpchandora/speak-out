@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.auth.Type
+import com.speakout.common.Event
+import com.speakout.common.EventObserver
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.OnPostOptionsClickListener
@@ -111,20 +113,29 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         mHomeViewModel.likePost.observe(viewLifecycleOwner,
-            Observer { b: Boolean ->
+            EventObserver { b: Boolean ->
                 Timber.d("likePost Content: $b")
 //                if (!pair.first) {
 //                    mPostsAdapter.likePostFail(pair.second)
 //                }
             })
 
+
         mHomeViewModel.unlikePost.observe(viewLifecycleOwner,
-            Observer { b: Boolean ->
+            EventObserver { b: Boolean ->
                 Timber.d("unlikePost Content: $b")
 //                if (b) {
 //                    mPostsAdapter.unlikePostFail(pair.second)
 //                }
             })
+
+        mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
+            if (it) {
+                showShortToast("Deleted Successfully")
+            } else {
+                showShortToast("Failed to delete post")
+            }
+        })
 
     }
 
@@ -188,7 +199,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
         override fun onDelete(post: PostData) {
-
+            mHomeViewModel.deletePost(post)
         }
 
         @SuppressLint("CheckResult")

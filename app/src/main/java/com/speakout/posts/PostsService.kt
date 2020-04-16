@@ -5,9 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.speakout.common.Event
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getAllPostsRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSinglePostRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSingleUserRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersPostRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersRef
 import io.reactivex.Single
 import timber.log.Timber
 
@@ -15,7 +22,7 @@ object PostsService {
 
     fun getPosts(userId: String): LiveData<List<PostData>> {
         val data = MutableLiveData<List<PostData>>()
-        FirebaseUtils.FirestoreUtils.getAllPostsRef()
+        getAllPostsRef()
             .whereEqualTo("userId", userId)
             .orderBy("timeStampLong", Query.Direction.DESCENDING).get()
             .addOnSuccessListener {
@@ -44,7 +51,7 @@ object PostsService {
     fun likePost(postData: PostData): Single<Boolean> {
         return Single.create {
 
-            val postRef = FirebaseUtils.FirestoreUtils.getSinglePostRef(postData.postId)
+            val postRef = getSinglePostRef(postData.postId)
 
             val postLikesRef = FirebaseUtils.FirestoreUtils.getPostLikesRef(
                 postId = postData.postId,
@@ -74,7 +81,7 @@ object PostsService {
     fun unlikePost(postData: PostData): Single<Boolean> {
         return Single.create {
 
-            val postRef = FirebaseUtils.FirestoreUtils.getSinglePostRef(postData.postId)
+            val postRef = getSinglePostRef(postData.postId)
 
             val postLikesRef = FirebaseUtils.FirestoreUtils.getPostLikesRef(
                 postId = postData.postId,
@@ -95,4 +102,26 @@ object PostsService {
             }
         }
     }
+
+    fun deletePost(post: PostData): LiveData<Event<Boolean>> {
+        val data = MutableLiveData<Event<Boolean>>()
+
+        val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
+        val userPostCountRef = getSingleUserRef(post.userId)
+        val singlePostRef = getSinglePostRef(post.postId)
+
+        getRef().runBatch {
+            it.set(
+                userPostCountRef,
+                mapOf("postsCount" to FieldValue.increment(-1)),
+                SetOptions.merge()
+            )
+            it.delete(userPostRef)
+            it.delete(singlePostRef)
+        }.addOnCompleteListener {
+            data.value = Event(it.isSuccessful)
+        }
+        return data
+    }
+
 }

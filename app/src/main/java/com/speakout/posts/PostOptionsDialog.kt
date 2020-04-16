@@ -45,6 +45,7 @@ class PostOptionsDialog(private val mContext: Context) :
         }
 
         dialog_option_delete.setOnClickListener {
+            dismiss()
             mListener?.onDelete(mPost ?: PostData())
         }
     }

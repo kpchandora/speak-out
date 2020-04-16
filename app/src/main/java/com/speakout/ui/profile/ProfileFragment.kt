@@ -45,7 +45,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("hashCode: $profileViewModel")
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         homeViewModel.getPosts(mUserId)
@@ -70,7 +69,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.d("onViewCreated")
         screenSize = activity!!.getScreenSize()
 
         safeArgs.transitionTag?.let {
@@ -93,7 +91,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
-            Timber.d("In posts observer")
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
                 mPostsAdapter.updateData(it)
                 homeViewModel.addPosts(it)

@@ -14,11 +14,13 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.speakout.R
+import com.speakout.common.EventObserver
 import com.speakout.extensions.*
 import com.speakout.ui.MainActivity
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_user_name.*
+import timber.log.Timber
 
 
 class UserNameFragment : Fragment() {
@@ -78,7 +80,7 @@ class UserNameFragment : Fragment() {
             }
         })
 
-        mUserViewModel.updateDetailsObserver.observe(viewLifecycleOwner, Observer {
+        mUserViewModel.updateDetailsObserver.observe(viewLifecycleOwner, EventObserver {
             (requireActivity() as MainActivity).hideProgress()
             if (it) {
                 AppPreference.saveUserDetails(UserDetails(username = username))
@@ -89,6 +91,7 @@ class UserNameFragment : Fragment() {
                     )
                     findNavController().navigateUp()
                 } else {
+                    Timber.d("Details updated")
                     AppPreference.setUsernameProcessComplete()
                     findNavController().navigate(UserNameFragmentDirections.actionUserNameFragmentToNavigationHome())
                 }

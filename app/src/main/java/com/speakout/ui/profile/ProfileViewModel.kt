@@ -4,6 +4,7 @@ import androidx.lifecycle.*
 import com.speakout.auth.AuthService
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
+import com.speakout.common.Event
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
 import com.speakout.posts.PostsService
@@ -45,8 +46,8 @@ class ProfileViewModel : ViewModel() {
     val unFollowUser: LiveData<Boolean>
         get() = _unFollowUser
 
-    private val _uploadProfilePicture = MutableLiveData<String?>()
-    val uploadProfilePicture: LiveData<String?>
+    private val _uploadProfilePicture = MutableLiveData<Event<String?>>()
+    val uploadProfilePicture: LiveData<Event<String?>>
         get() = _uploadProfilePicture
 
     private val _posts = MutableLiveData<String>()
@@ -62,10 +63,10 @@ class ProfileViewModel : ViewModel() {
         compositeDisposable += ImageUtils.uploadImageFromFile(imageFile)
             .withDefaultSchedulers()
             .subscribe({
-                _uploadProfilePicture.value = it
+                _uploadProfilePicture.value = Event(it)
             }, {
                 Timber.d("Error: $it")
-                _uploadProfilePicture.value = null
+                _uploadProfilePicture.value = Event(null)
             })
 
     }

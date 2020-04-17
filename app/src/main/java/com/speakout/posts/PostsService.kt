@@ -10,8 +10,9 @@ import com.speakout.common.Result.Success
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import com.speakout.common.Result
-import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getAllPostsRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getPostLikesRef
+import com.speakout.utils.FirebaseUtils.FirestoreUtils.getPostSingleLikeRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSinglePostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSingleUserRef
@@ -54,7 +55,7 @@ object PostsService {
 
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = FirebaseUtils.FirestoreUtils.getPostLikesRef(
+            val postLikesRef = getPostSingleLikeRef(
                 postId = postData.postId,
                 userId = AppPreference.getUserId()
             )
@@ -78,7 +79,7 @@ object PostsService {
 
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = FirebaseUtils.FirestoreUtils.getPostLikesRef(
+            val postLikesRef = getPostSingleLikeRef(
                 postId = postData.postId,
                 userId = AppPreference.getUserId()
             )
@@ -98,6 +99,7 @@ object PostsService {
         val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
         val userPostCountRef = getSingleUserRef(post.userId)
         val singlePostRef = getSinglePostRef(post.postId)
+        val postLikesRef = getPostLikesRef(post.postId)
 
         getRef().runBatch {
             it.set(
@@ -107,6 +109,7 @@ object PostsService {
             )
             it.delete(userPostRef)
             it.delete(singlePostRef)
+            it.delete(postLikesRef)
         }.addOnCompleteListener {
             if (it.isSuccessful) {
                 data.value = Event(Success(post))

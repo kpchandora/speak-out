@@ -26,8 +26,10 @@ object FirebaseUtils {
 
         fun getSinglePostRef(postId: String) = getAllPostsRef().document(postId)
 
-        fun getPostLikesRef(postId: String, userId: String) =
+        fun getPostSingleLikeRef(postId: String, userId: String) =
             getRef().document("post_likes/$postId/users/$userId")
+
+        fun getPostLikesRef(postId: String) = getRef().document("post_likes/$postId")
 
         fun getFollowersFollowingsRef(userId: String) =
             getRef().document("followers_followings_count/${userId}")

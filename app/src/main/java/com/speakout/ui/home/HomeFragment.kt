@@ -13,6 +13,7 @@ import android.widget.ImageView
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
@@ -25,6 +26,7 @@ import com.speakout.R
 import com.speakout.auth.Type
 import com.speakout.common.Event
 import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.OnPostOptionsClickListener
@@ -109,7 +111,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
-            mPostsAdapter.updatePosts(it)
+            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                mPostsAdapter.updatePosts(it)
+            }
         })
 
         mHomeViewModel.likePost.observe(viewLifecycleOwner,
@@ -130,9 +134,14 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             })
 
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
-            if (it) {
+            if (it is Result.Success) {
+                Timber.d("Delete Success: ${it.data.postId}")
+                mPostsAdapter.deletePost(it.data)
                 showShortToast("Deleted Successfully")
-            } else {
+            }
+
+            if (it is Result.Error) {
+                Timber.d("Delete Failed: ${it.data?.postId}")
                 showShortToast("Failed to delete post")
             }
         })

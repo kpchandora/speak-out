@@ -56,6 +56,19 @@ class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
 
     }
 
+    fun deletePost(postData: PostData) {
+        var matchedPost: PostData? = null
+        mPostsList.forEachIndexed { index, post ->
+            if (postData.postId == post.postId) {
+                notifyItemRemoved(index)
+                matchedPost = post
+                return@forEachIndexed
+            }
+        }
+        matchedPost?.let {
+            mPostsList.remove(it)
+        }
+    }
 
     fun likePostFail(postData: PostData) {
         Timber.d("likePostFail Content: ${postData.content}")

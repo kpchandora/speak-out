@@ -6,15 +6,16 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.speakout.common.Event
+import com.speakout.common.Result.Success
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
+import com.speakout.common.Result
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getAllPostsRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSinglePostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSingleUserRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersPostRef
-import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersRef
 import io.reactivex.Single
 import timber.log.Timber
 
@@ -58,23 +59,17 @@ object PostsService {
                 userId = AppPreference.getUserId()
             )
 
-            FirebaseUtils.FirestoreUtils.getRef().runTransaction {
+            getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(1)), SetOptions.merge())
 
                 it.set(
                     postLikesRef,
                     mapOf("timeStamp" to System.currentTimeMillis())
                 )
-                true
             }.addOnCompleteListener { task ->
                 Timber.d("likePost: ${postData.content}")
-                if (task.isSuccessful && task.result != null) {
-                    it.onSuccess(task.result ?: false)
-                } else {
-                    it.onSuccess(false)
-                }
+                it.onSuccess(task.isSuccessful)
             }
-
         }
     }
 
@@ -88,24 +83,18 @@ object PostsService {
                 userId = AppPreference.getUserId()
             )
 
-            FirebaseUtils.FirestoreUtils.getRef().runTransaction {
+            getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(-1)), SetOptions.merge())
                 it.delete(postLikesRef)
-                true
             }.addOnCompleteListener { task ->
                 Timber.d("unlikePost: ${postData.content}")
-                if (task.isSuccessful && task.result != null) {
-                    it.onSuccess(true)
-                } else {
-                    it.onSuccess(true)
-                }
+                it.onSuccess(task.isSuccessful)
             }
         }
     }
 
-    fun deletePost(post: PostData): LiveData<Event<Boolean>> {
-        val data = MutableLiveData<Event<Boolean>>()
-
+    fun deletePost(post: PostData): LiveData<Event<Result<PostData>>> {
+        val data = MutableLiveData<Event<Result<PostData>>>()
         val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
         val userPostCountRef = getSingleUserRef(post.userId)
         val singlePostRef = getSinglePostRef(post.postId)
@@ -119,7 +108,11 @@ object PostsService {
             it.delete(userPostRef)
             it.delete(singlePostRef)
         }.addOnCompleteListener {
-            data.value = Event(it.isSuccessful)
+            if (it.isSuccessful) {
+                data.value = Event(Success(post))
+            } else {
+                data.value = Event(Result.Error(it.exception!!, post))
+            }
         }
         return data
     }

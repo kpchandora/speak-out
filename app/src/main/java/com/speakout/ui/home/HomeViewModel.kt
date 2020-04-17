@@ -7,6 +7,7 @@ import com.speakout.posts.PostsService
 import com.speakout.posts.create.PostData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import com.speakout.common.Result
 
 class HomeViewModel : ViewModel() {
 
@@ -20,7 +21,7 @@ class HomeViewModel : ViewModel() {
     val likePost: LiveData<Event<Boolean>> = _likePost
 
     private val _deletePost = MutableLiveData<PostData>()
-    val deletePost: LiveData<Event<Boolean>> = _deletePost.switchMap {
+    val deletePost: LiveData<Event<Result<PostData>>> = _deletePost.switchMap {
         PostsService.deletePost(it)
     }
 

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.OnPostOptionsClickListener
@@ -37,14 +38,10 @@ import timber.log.Timber
 class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
-    private val profileViewModel: ProfileViewModel by viewModels()
     private val mPostsAdapter = HomePostRecyclerViewAdapter()
     private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
     private lateinit var dialog: PostOptionsDialog
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,9 +69,14 @@ class PostViewFragment : Fragment() {
 
     private fun observeViewModels() {
         homeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
-            if (it) {
+            if (it is Result.Success) {
+                Timber.d("Delete Success: ${it.data.postId}")
+                mPostsAdapter.deletePost(it.data)
                 showShortToast("Deleted Successfully")
-            } else {
+            }
+
+            if (it is Result.Error) {
+                Timber.d("Delete Failed: ${it.data?.postId}")
                 showShortToast("Failed to delete post")
             }
         })

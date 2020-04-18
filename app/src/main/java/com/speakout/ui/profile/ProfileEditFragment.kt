@@ -23,6 +23,7 @@ import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.Type
 import com.speakout.auth.UserViewModel
+import com.speakout.common.EventObserver
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
@@ -39,6 +40,10 @@ class ProfileEditFragment : Fragment() {
     private val profileViewModel: ProfileViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mProfileUrl = AppPreference.getPhotoUrl()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +55,6 @@ class ProfileEditFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mProfileUrl = AppPreference.getPhotoUrl()
 
         populateDetails()
 
@@ -104,12 +108,11 @@ class ProfileEditFragment : Fragment() {
 
     private fun populateDetails() {
         val screenSize = requireActivity().getScreenSize()
-        Timber.d("Height: ${screenSize.heightPixels}, Width: ${screenSize.widthPixels}")
         profile_edit_update_btn.layoutParams.width = screenSize.widthPixels / 4
         profile_edit_fragment_iv.layoutParams.width = screenSize.widthPixels / 3
         profile_edit_bg_view.layoutParams.width = screenSize.widthPixels / 3
 
-        updatePicture(AppPreference.getPhotoUrl())
+        updatePicture(mProfileUrl)
 
         profile_edit_add_iv.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
@@ -138,7 +141,8 @@ class ProfileEditFragment : Fragment() {
     }
 
     private fun observeViewModels() {
-        profileViewModel.uploadProfilePicture.observe(requireActivity(), Observer {
+        profileViewModel.uploadProfilePicture.observe(requireActivity(), EventObserver {
+            Timber.d("Picture Uploaded")
             isUploading = false
             profile_edit_pb.gone()
             profile_edit_update_btn.enable()
@@ -159,7 +163,7 @@ class ProfileEditFragment : Fragment() {
                 profile_edit_username_et.setText(it)
             }
 
-        userViewModel.updateDetailsObserver.observe(requireActivity(), Observer {
+        userViewModel.updateDetailsObserver.observe(requireActivity(), EventObserver {
             if (it) {
                 findNavController().navigateUp()
             } else {

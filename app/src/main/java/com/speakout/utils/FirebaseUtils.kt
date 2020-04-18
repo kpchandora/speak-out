@@ -1,6 +1,7 @@
 package com.speakout.utils
 
 import com.google.firebase.auth.FirebaseAuth
+import com.speakout.utils.NameUtils.DatabaseRefs.userDetailsRef as userDetails
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -14,14 +15,21 @@ object FirebaseUtils {
         fun getUsersRef() =
             getRef().collection(NameUtils.DatabaseRefs.userDetailsRef)
 
+        fun getSingleUserRef(userId: String) = getRef().document("user_details/$userId")
+
+        fun getUsersPostRef(userId: String, postId: String) =
+            getRef().document("user_details/$userId/posts/$postId")
+
         fun getTagsRef() = getRef().collection(NameUtils.DatabaseRefs.tags)
 
         fun getAllPostsRef() = getRef().collection(NameUtils.DatabaseRefs.postsRef)
 
         fun getSinglePostRef(postId: String) = getAllPostsRef().document(postId)
 
-        fun getPostLikesRef(postId: String, userId: String) =
+        fun getPostSingleLikeRef(postId: String, userId: String) =
             getRef().document("post_likes/$postId/users/$userId")
+
+        fun getPostLikesRef(postId: String) = getRef().document("post_likes/$postId")
 
         fun getFollowersFollowingsRef(userId: String) =
             getRef().document("followers_followings_count/${userId}")

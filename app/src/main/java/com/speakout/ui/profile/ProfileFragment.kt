@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeUnit
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
+    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
     private val mPostsAdapter = ProfilePostsAdapter()
     private var mUserId = ""
     private var isSelf = false
@@ -43,10 +45,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("hashCode: $profileViewModel")
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
-        profileViewModel.getPosts(mUserId)
+        homeViewModel.getPosts(mUserId)
         profileViewModel.addFFObserver(mUserId)
         if (isSelf) {
             profileViewModel.addProfileObserver()
@@ -68,7 +69,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Timber.d("onViewCreated")
         screenSize = activity!!.getScreenSize()
 
         safeArgs.transitionTag?.let {
@@ -90,8 +90,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
 
-        profileViewModel.posts.observe(viewLifecycleOwner, Observer {
-            mPostsAdapter.updateData(it)
+        homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                mPostsAdapter.updateData(it)
+                homeViewModel.addPosts(it)
+            }
         })
 
         profileViewModel.followersFollowingsObserver.observe(viewLifecycleOwner, Observer {
@@ -297,9 +300,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private val mListener = object : ProfilePostClickListener {
-        override fun onPostClick(postData: PostData, postImageView: ImageView) {
+        override fun onPostClick(postData: PostData, postImageView: ImageView, position: Int) {
             val action =
-                ProfileFragmentDirections.actionNavigationProfileToPostViewFragment(postData)
+                ProfileFragmentDirections.actionNavigationProfileToPostViewFragment(position)
 
 //            val extras = FragmentNavigatorExtras(
 //                postImageView to postData.postId

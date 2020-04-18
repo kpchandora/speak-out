@@ -1,6 +1,11 @@
 package com.speakout.ui.home
 
+import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,30 +13,37 @@ import android.widget.ImageView
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.auth.Type
+import com.speakout.common.EventObserver
+import com.speakout.common.Result
+import com.speakout.extensions.showShortToast
+import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.posts.view.OnPostOptionsClickListener
+import com.speakout.posts.view.PostOptionsDialog
+import com.speakout.posts.view.PostRecyclerViewAdapter
 import com.speakout.posts.create.PostData
+import com.speakout.posts.view.PostClickEventListener
 import com.speakout.ui.MainActivity
 import com.speakout.ui.MainViewModel
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
+import com.speakout.utils.ImageUtils
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
-    private val mPostsAdapter = HomePostRecyclerViewAdapter()
+    private val mPostsAdapter = PostRecyclerViewAdapter()
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var mPreference: AppPreference
+    private lateinit var dialog: PostOptionsDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,14 +79,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val hostFragment =
-            requireActivity().supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-        if (hostFragment is NavHostFragment) {
-            hostFragment.childFragmentManager.fragments.forEach {
-                Timber.d("fragments: $it")
-            }
-        }
-
+        dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_home_rv.apply {
             setHasFixedSize(true)
@@ -103,24 +108,40 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
-            mPostsAdapter.updatePosts(it)
+            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                mPostsAdapter.updatePosts(it)
+            }
         })
 
         mHomeViewModel.likePost.observe(viewLifecycleOwner,
-            Observer { b: Boolean ->
+            EventObserver { b: Boolean ->
                 Timber.d("likePost Content: $b")
 //                if (!pair.first) {
 //                    mPostsAdapter.likePostFail(pair.second)
 //                }
             })
 
+
         mHomeViewModel.unlikePost.observe(viewLifecycleOwner,
-            Observer { b: Boolean ->
+            EventObserver { b: Boolean ->
                 Timber.d("unlikePost Content: $b")
 //                if (b) {
 //                    mPostsAdapter.unlikePostFail(pair.second)
 //                }
             })
+
+        mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                Timber.d("Delete Success: ${it.data.postId}")
+                mPostsAdapter.deletePost(it.data)
+                showShortToast("Deleted Successfully")
+            }
+
+            if (it is Result.Error) {
+                Timber.d("Delete Failed: ${it.data?.postId}")
+                showShortToast("Failed to delete post")
+            }
+        })
 
     }
 
@@ -149,7 +170,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         )
     }
 
-    private val mPostEventsListener = object : PostClickEventListener {
+    private val mPostEventsListener = object :
+        PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             mHomeViewModel.likePost(postData)
         }
@@ -164,6 +186,45 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         override fun onLikedUsersClick(postData: PostData) {
             navigateToUsersList(postData)
+        }
+
+        override fun onMenuClick(postData: PostData, position: Int) {
+            dialog.setListener(mPostsOptionsClickListener)
+            dialog.show()
+            dialog.setPost(postData)
+        }
+    }
+
+
+    private val mPostsOptionsClickListener = object :
+        OnPostOptionsClickListener {
+        override fun onCopy(post: PostData) {
+            val clipboard =
+                requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Content", post.content)
+            clipboard.setPrimaryClip(clip)
+            showShortToast("Copied Successfully")
+        }
+
+        override fun onDelete(post: PostData) {
+            mHomeViewModel.deletePost(post)
+        }
+
+        @SuppressLint("CheckResult")
+        override fun onSave(post: PostData) {
+            Timber.d("Save post")
+            ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
+                .withDefaultSchedulers()
+                .subscribe({
+                    Timber.d("Home Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
+                    if (it)
+                        showShortToast("Saved Successfully")
+                    else
+                        showShortToast("Failed to save image")
+                }, {
+                    showShortToast(it.message ?: "")
+                })
+
         }
     }
 

@@ -1,26 +1,33 @@
 package com.speakout.ui.home
 
 import androidx.lifecycle.*
+import com.speakout.common.Event
 import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.posts.PostsService
 import com.speakout.posts.create.PostData
-import com.speakout.utils.AppPreference
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import com.speakout.common.Result
 
 class HomeViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
+    private val mPostList = ArrayList<PostData>()
 
-    private val _unlikePost = MutableLiveData<Boolean>()
-    val unlikePost: LiveData<Boolean> = _unlikePost
+    private val _unlikePost = MutableLiveData<Event<Boolean>>()
+    val unlikePost: LiveData<Event<Boolean>> = _unlikePost
 
-    private val _likePost = MutableLiveData<Boolean>()
-    val likePost: LiveData<Boolean> = _likePost
+    private val _likePost = MutableLiveData<Event<Boolean>>()
+    val likePost: LiveData<Event<Boolean>> = _likePost
 
+    private val _deletePost = MutableLiveData<PostData>()
+    val deletePost: LiveData<Event<Result<PostData>>> = _deletePost.switchMap {
+        PostsService.deletePost(it)
+    }
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        HomeService.getPosts(it)
+        PostsService.getPosts(it)
     }
 
     fun getPosts(id: String) {
@@ -28,23 +35,33 @@ class HomeViewModel : ViewModel() {
     }
 
     fun likePost(postData: PostData) {
-        compositeDisposable += HomeService.newLikePost(postData)
+        compositeDisposable += PostsService.likePost(postData)
             .withDefaultSchedulers()
             .subscribe({
-                _likePost.value = it
+                _likePost.value = Event(it)
             }, {
-                _likePost.value = false
+                _likePost.value = Event(false)
             })
     }
 
     fun unlikePost(postData: PostData) {
-        compositeDisposable += HomeService.newUnlikePost(postData)
+        compositeDisposable += PostsService.unlikePost(postData)
             .withDefaultSchedulers()
             .subscribe({
-                _unlikePost.value = it
+                _unlikePost.value = Event(it)
             }, {
-                _unlikePost.value = false
+                _unlikePost.value = Event(false)
             })
+    }
+
+    fun addPosts(list: List<PostData>) {
+        mPostList.addAll(list)
+    }
+
+    fun getPosts() = mPostList
+
+    fun deletePost(postData: PostData) {
+        _deletePost.value = postData
     }
 
     override fun onCleared() {

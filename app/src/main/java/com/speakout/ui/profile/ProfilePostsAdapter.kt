@@ -1,24 +1,14 @@
 package com.speakout.ui.profile
 
 import android.app.Activity
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.speakout.R
 import com.speakout.extensions.getScreenSize
-import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
-import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
-import com.speakout.ui.home.HomePostViewHolder
-import kotlinx.android.synthetic.main.item_home_post_layout.view.*
 import kotlinx.android.synthetic.main.item_profile_post_layout.view.*
 
 class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePostsViewHolder>() {
@@ -58,7 +48,7 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
             )
             view.item_profile_post_iv.transitionName = post.postId
             view.setOnClickListener {
-                mListener?.onPostClick(post, view.item_profile_post_iv)
+                mListener?.onPostClick(post, view.item_profile_post_iv, adapterPosition)
             }
         }
     }

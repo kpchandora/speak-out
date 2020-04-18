@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.SetOptions
+import com.speakout.common.Event
 import com.speakout.utils.FirebaseUtils
 import com.speakout.utils.NameUtils
 import java.lang.Exception
@@ -42,12 +43,12 @@ object AuthService {
         return data
     }
 
-    fun updateUserData(map: Map<String, Any>): LiveData<Boolean> {
-        val data = MutableLiveData<Boolean>()
+    fun updateUserData(map: Map<String, Any>): LiveData<Event<Boolean>> {
+        val data = MutableLiveData<Event<Boolean>>()
         FirebaseUtils.userId()?.let {
             FirebaseUtils.FirestoreUtils.getUsersRef().document(it)
                 .update(map).addOnCompleteListener { task ->
-                    data.value = task.isSuccessful
+                    data.value = Event(task.isSuccessful)
                 }
         }
         return data

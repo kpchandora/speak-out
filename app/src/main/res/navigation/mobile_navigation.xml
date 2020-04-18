@@ -167,9 +167,11 @@
             tools:layout="@layout/fragment_post_view">
 
             <argument
-                android:name="postData"
-                app:argType="com.speakout.posts.create.PostData"
-                app:nullable="true" />
+                android:name="itemPosition"
+                android:defaultValue="0"
+                app:argType="integer"
+                app:nullable="false" />
+
 
             <action
                 android:id="@+id/action_postViewFragment_to_usersListFragment"

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="2dp"
-    tools:context=".ui.profile.PostViewFragment">
+    android:layout_height="match_parent">
 
-    <include layout="@layout/item_home_post_layout" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_post_view_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/item_post_layout" />
 
-</ScrollView>
+</FrameLayout>

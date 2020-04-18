@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.speakout.common.Event
 import com.speakout.utils.FirebaseUtils
 
 class UserViewModel : ViewModel() {
@@ -17,7 +18,7 @@ class UserViewModel : ViewModel() {
         AuthService.isUsernamePresent(key = it)
     }
 
-    val updateDetailsObserver: LiveData<Boolean> = Transformations.switchMap(updateUserDetails) {
+    val updateDetailsObserver: LiveData<Event<Boolean>> = Transformations.switchMap(updateUserDetails) {
         AuthService.updateUserData(it)
     }
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import com.speakout.posts.PostsService
 
 class CreatePostViewModel : ViewModel() {
 
@@ -14,11 +15,11 @@ class CreatePostViewModel : ViewModel() {
     var imageBitmap: Bitmap? = null
 
     val uploadImageObserver: LiveData<String?> = Transformations.switchMap(uploadImage) {
-        CreatePostService.uploadImage(bitmap = it.first, id = it.second)
+        PostsService.uploadImage(bitmap = it.first, id = it.second)
     }
 
     val postObserver: LiveData<Boolean> = Transformations.switchMap(post) {
-        CreatePostService.createPost(postData = it)
+        PostsService.createPost(postData = it)
     }
 
     fun uploadImage(pair: Pair<Bitmap, String>) {

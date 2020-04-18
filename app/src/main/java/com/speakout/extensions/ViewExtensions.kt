@@ -41,13 +41,13 @@ fun View.disable() {
     isEnabled = false
 }
 
-inline fun View.addViewObserver(crossinline function: () -> Unit) {
+inline fun View.addViewObserver(crossinline function: (View) -> Unit) {
     val view = this
     view.viewTreeObserver.addOnGlobalLayoutListener(object :
         ViewTreeObserver.OnGlobalLayoutListener {
         override fun onGlobalLayout() {
             view.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            function.invoke()
+            function.invoke(view)
         }
     })
 }

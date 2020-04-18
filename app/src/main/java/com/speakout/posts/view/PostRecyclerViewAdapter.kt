@@ -1,4 +1,4 @@
-package com.speakout.ui.home
+package com.speakout.posts.view
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -8,40 +8,40 @@ import com.speakout.R
 import com.speakout.extensions.getScreenSize
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
-import kotlinx.android.synthetic.main.item_home_post_layout.view.*
+import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
 
-class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
+class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
     private val userId = AppPreference.getUserId()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomePostViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_home_post_layout, parent, false)
-        val holder = HomePostViewHolder(view)
+            .inflate(R.layout.item_post_layout, parent, false)
+        val holder = PostViewHolder(view)
         holder.userId = userId
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
         screenSize?.let {
-            holder.view.item_home_post_image_iv.layoutParams.height = it.widthPixels
+            holder.view.item_post_image_iv.layoutParams.height = it.widthPixels
         }
         return holder
     }
 
     override fun getItemCount() = mPostsList.size
 
-    override fun onBindViewHolder(holder: HomePostViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         holder.apply {
-            mEventListener = this@HomePostRecyclerViewAdapter.mEventListener
+            mEventListener = this@PostRecyclerViewAdapter.mEventListener
             bind(mPostsList[position])
         }
     }
 
 
     override fun onBindViewHolder(
-        holder: HomePostViewHolder,
+        holder: PostViewHolder,
         position: Int, payloads: MutableList<Any>
     ) {
 
@@ -54,6 +54,20 @@ class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
             super.onBindViewHolder(holder, position, payloads)
         }
 
+    }
+
+    fun deletePost(postData: PostData) {
+        var matchedPost: PostData? = null
+        mPostsList.forEachIndexed { index, post ->
+            if (postData.postId == post.postId) {
+                notifyItemRemoved(index)
+                matchedPost = post
+                return@forEachIndexed
+            }
+        }
+        matchedPost?.let {
+            mPostsList.remove(it)
+        }
     }
 
     fun likePostFail(postData: PostData) {

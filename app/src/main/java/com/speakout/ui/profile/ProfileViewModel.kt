@@ -4,9 +4,10 @@ import androidx.lifecycle.*
 import com.speakout.auth.AuthService
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
+import com.speakout.common.Event
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
-import com.speakout.ui.home.HomeService
+import com.speakout.posts.PostsService
 import com.speakout.ui.observers.FollowersFollowingsLiveData
 import com.speakout.ui.observers.UserLiveData
 import com.speakout.utils.ImageUtils
@@ -18,6 +19,8 @@ import java.io.File
 class ProfileViewModel : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
+    private val mPostList = ArrayList<PostData>()
+
     val profileObserver = MediatorLiveData<UserDetails?>()
     val followersFollowingsObserver = MediatorLiveData<FollowersFollowingsData?>()
 
@@ -43,13 +46,13 @@ class ProfileViewModel : ViewModel() {
     val unFollowUser: LiveData<Boolean>
         get() = _unFollowUser
 
-    private val _uploadProfilePicture = MutableLiveData<String?>()
-    val uploadProfilePicture: LiveData<String?>
+    private val _uploadProfilePicture = MutableLiveData<Event<String?>>()
+    val uploadProfilePicture: LiveData<Event<String?>>
         get() = _uploadProfilePicture
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        HomeService.getPosts(it)
+        PostsService.getPosts(it)
     }
 
     fun getPosts(id: String) {
@@ -60,10 +63,10 @@ class ProfileViewModel : ViewModel() {
         compositeDisposable += ImageUtils.uploadImageFromFile(imageFile)
             .withDefaultSchedulers()
             .subscribe({
-                _uploadProfilePicture.value = it
+                _uploadProfilePicture.value = Event(it)
             }, {
                 Timber.d("Error: $it")
-                _uploadProfilePicture.value = null
+                _uploadProfilePicture.value = Event(null)
             })
 
     }
@@ -111,5 +114,11 @@ class ProfileViewModel : ViewModel() {
     fun confirmUnfollow() {
         _confirmUnfollow.value = Unit
     }
+
+    fun addPosts(list: List<PostData>) {
+        mPostList.addAll(list)
+    }
+
+    fun getPosts() = mPostList
 
 }

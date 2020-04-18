@@ -7,8 +7,8 @@ exports.onNewPostCreation = functions.firestore.document('posts/{postId}')
     .onCreate((snapshot, context) => {
         console.log('onNewPostCreation called')
         const singlePost = snapshot.data()
-        const postId = singlePost.postId
-        const userId = singlePost.userId
+        // const postId = singlePost.postId
+        // const userId = singlePost.userId
         const tagsList = singlePost.tags
 
         const batch = db.batch()
@@ -63,31 +63,31 @@ exports.getPostsByUserId = functions.https.onRequest(async (req, res) => {
     }
 })
 
-exports.isFollowedByUser = functions.https.onRequest((req, res) => {
-    console.log("In isFollowedByUser")
-    const selfUserId = req.body.selfUserId
-    const otherUserId = req.body.otherUserId
+// exports.isFollowedByUser = functions.https.onRequest((req, res) => {
+//     console.log("In isFollowedByUser")
+//     const selfUserId = req.body.selfUserId
+//     const otherUserId = req.body.otherUserId
 
-    db.doc(`followingsRefs/${selfUserId}`).get().then(snapshot => {
-        if (snapshot.exists) {
-            if (snapshot.data().refs) {
-                res.send({
-                    success: true,
-                    isFollowing: (otherUserId in snapshot.data().refs)
-                })
-            }
-        }
-        res.send({
-            success: true,
-            isFollowing: false
-        })
-    }).catch(e => {
-        res.send({
-            success: false,
-            isFollowing: false
-        })
-    })
-})
+//     db.doc(`followingsRefs/${selfUserId}`).get().then(snapshot => {
+//         if (snapshot.exists) {
+//             if (snapshot.data().refs) {
+//                 res.send({
+//                     success: true,
+//                     isFollowing: (otherUserId in snapshot.data().refs)
+//                 })
+//             }
+//         }
+//         res.send({
+//             success: true,
+//             isFollowing: false
+//         })
+//     }).catch(e => {
+//         res.send({
+//             success: false,
+//             isFollowing: false
+//         })
+//     })
+// })
 
 exports.getFollowers = functions.https.onRequest(async (req, res) => {
     console.log('In getFollowers: ', req.body.userId)
@@ -156,20 +156,18 @@ exports.getFollowings = functions.https.onRequest(async (req, res) => {
 })
 
 
+exports.getLikesDetails = async function (data, context) {
+    console.log('In getLikesDetails: ', data.postId)
 
-exports.getLikesDetails = functions.https.onRequest(async (req, res) => {
-    console.log('In getFollowings: ', req.body.postId)
     try {
-        const usersDocument = await db.collection(`/post_likes/${req.body.postId}/users`).get()
+        const usersDocument = await db.collection(`/post_likes/${data.postId}/users`).get()
         if (usersDocument.empty) {
-            res.send({
-                error: 'No followings'
-            })
+            return functions.https.HttpsError("No data")
         } else {
             const usersList = []
             const promises = []
             usersDocument.forEach(doc => {
-                promises.push(db.doc(`users/${doc.id}`).get().then(value => {
+                promises.push(db.doc(`user_details/${doc.id}`).get().then(value => {
                     const data = value.data()
                     usersList.push({
                         name: data.name,
@@ -177,16 +175,14 @@ exports.getLikesDetails = functions.https.onRequest(async (req, res) => {
                     })
                 }))
             })
-            Promise.all(promises).then(r => {
-                res.status(200).send(usersList)
+            return Promise.all(promises).then(r => {
+                return usersList
             }).catch(error => {
-                res.status(500).send({ error: error })
+                return functions.https.HttpsError("Failed to get data")
             })
         }
     } catch (error) {
-        res.status(500).send({
-            error: error
-        })
+        return functions.https.HttpsError("Failed to get data")
     }
-})
+}
 

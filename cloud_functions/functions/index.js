@@ -5,4 +5,13 @@ if (admin.apps.length === 0) {
 }
 
 // exports.user = require('./user')
-exports.posts = require('./posts')
+const posts = require('./posts')
+exports.posts
+
+
+
+exports.getLikesDetails = functions.https.onCall((data, context) => {
+    console.log('getLikesDetails in index.js')
+    return posts.getLikesDetails(data, context)
+})
+

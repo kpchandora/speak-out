@@ -24,6 +24,7 @@ import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.posts.PostsService
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.view.PostRecyclerViewAdapter
@@ -48,6 +49,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("onCreate")
+        PostsService.getAllPosts()
         mPreference = AppPreference
 
         when {

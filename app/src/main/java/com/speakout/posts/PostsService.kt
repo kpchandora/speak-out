@@ -1,11 +1,14 @@
 package com.speakout.posts
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.functions.FirebaseFunctions
 import com.speakout.common.Event
 import com.speakout.common.Result.Success
 import com.speakout.posts.create.PostData
@@ -172,6 +175,20 @@ object PostsService {
             }
         }
         return data
+    }
+
+    fun getAllPosts() {
+        //aa230665-b59f-4be2-9eec-0236c8147368
+        val postId = mapOf("postId" to "aa230665-b59f-4be2-9eec-0236c8147368")
+        FirebaseFunctions.getInstance().getHttpsCallable("getLikesDetails")
+            .call(postId)
+            .continueWith {
+                Timber.d("Error: ${it.exception?.message}")
+                Timber.d("Is main thread: ${Looper.getMainLooper() == Looper.myLooper()}")
+                Timber.d("Data: ${it.result?.data}")
+            }.addOnCompleteListener {
+                Timber.d("Is Successful: ${it.isSuccessful}")
+            }
     }
 
 }

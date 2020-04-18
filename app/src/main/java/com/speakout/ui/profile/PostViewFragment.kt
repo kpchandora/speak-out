@@ -11,8 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.widget.PopupMenu
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -23,12 +21,12 @@ import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
-import com.speakout.posts.OnPostOptionsClickListener
-import com.speakout.posts.PostOptionsDialog
+import com.speakout.posts.view.OnPostOptionsClickListener
+import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.create.PostData
-import com.speakout.ui.home.HomePostRecyclerViewAdapter
+import com.speakout.posts.view.PostRecyclerViewAdapter
 import com.speakout.ui.home.HomeViewModel
-import com.speakout.ui.home.PostClickEventListener
+import com.speakout.posts.view.PostClickEventListener
 import com.speakout.users.ActionType
 import com.speakout.utils.ImageUtils
 import kotlinx.android.synthetic.main.fragment_post_view.*
@@ -38,7 +36,7 @@ import timber.log.Timber
 class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
-    private val mPostsAdapter = HomePostRecyclerViewAdapter()
+    private val mPostsAdapter = PostRecyclerViewAdapter()
     private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
     private lateinit var dialog: PostOptionsDialog
 
@@ -82,7 +80,8 @@ class PostViewFragment : Fragment() {
         })
     }
 
-    private val mPostEventsListener = object : PostClickEventListener {
+    private val mPostEventsListener = object :
+        PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             homeViewModel.likePost(postData)
         }
@@ -110,7 +109,8 @@ class PostViewFragment : Fragment() {
         }
     }
 
-    private val mPostsOptionsClickListener = object : OnPostOptionsClickListener {
+    private val mPostsOptionsClickListener = object :
+        OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
             val clipboard =
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

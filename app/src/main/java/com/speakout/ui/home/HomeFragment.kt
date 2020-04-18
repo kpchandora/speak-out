@@ -16,22 +16,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.TransitionInflater
 import com.speakout.R
 import com.speakout.auth.Type
-import com.speakout.common.Event
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
-import com.speakout.posts.OnPostOptionsClickListener
-import com.speakout.posts.PostOptionsDialog
+import com.speakout.posts.view.OnPostOptionsClickListener
+import com.speakout.posts.view.PostOptionsDialog
+import com.speakout.posts.view.PostRecyclerViewAdapter
 import com.speakout.posts.create.PostData
+import com.speakout.posts.view.PostClickEventListener
 import com.speakout.ui.MainActivity
 import com.speakout.ui.MainViewModel
 import com.speakout.users.ActionType
@@ -43,7 +40,7 @@ import timber.log.Timber
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
-    private val mPostsAdapter = HomePostRecyclerViewAdapter()
+    private val mPostsAdapter = PostRecyclerViewAdapter()
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
@@ -173,7 +170,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         )
     }
 
-    private val mPostEventsListener = object : PostClickEventListener {
+    private val mPostEventsListener = object :
+        PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             mHomeViewModel.likePost(postData)
         }
@@ -198,7 +196,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
 
-    private val mPostsOptionsClickListener = object : OnPostOptionsClickListener {
+    private val mPostsOptionsClickListener = object :
+        OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
             val clipboard =
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

@@ -1,11 +1,10 @@
-package com.speakout.posts
+package com.speakout.posts.view
 
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.Window
-import androidx.fragment.app.DialogFragment
 import com.speakout.R
 import com.speakout.extensions.addViewObserver
 import com.speakout.extensions.getScreenSize

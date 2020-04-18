@@ -1,4 +1,4 @@
-package com.speakout.posts
+package com.speakout.posts.view
 
 import com.speakout.posts.create.PostData
 

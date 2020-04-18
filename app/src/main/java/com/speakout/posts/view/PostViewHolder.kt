@@ -1,21 +1,17 @@
-package com.speakout.ui.home
+package com.speakout.posts.view
 
 import android.annotation.SuppressLint
-import android.view.ContextMenu
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImageWithCallback
-import com.speakout.extensions.showShortToast
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_post_layout.view.*
 
-class HomePostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     var mEventListener: PostClickEventListener? = null
     var userId = ""

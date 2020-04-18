@@ -1,4 +1,4 @@
-package com.speakout.ui.home
+package com.speakout.posts.view
 
 import android.widget.ImageView
 import com.speakout.posts.create.PostData

@@ -1,4 +1,4 @@
-package com.speakout.ui.home
+package com.speakout.posts.view
 
 import android.app.Activity
 import android.view.LayoutInflater
@@ -11,16 +11,16 @@ import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
 
-class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
+class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
     private val userId = AppPreference.getUserId()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomePostViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_post_layout, parent, false)
-        val holder = HomePostViewHolder(view)
+        val holder = PostViewHolder(view)
         holder.userId = userId
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
@@ -32,16 +32,16 @@ class HomePostRecyclerViewAdapter : RecyclerView.Adapter<HomePostViewHolder>() {
 
     override fun getItemCount() = mPostsList.size
 
-    override fun onBindViewHolder(holder: HomePostViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         holder.apply {
-            mEventListener = this@HomePostRecyclerViewAdapter.mEventListener
+            mEventListener = this@PostRecyclerViewAdapter.mEventListener
             bind(mPostsList[position])
         }
     }
 
 
     override fun onBindViewHolder(
-        holder: HomePostViewHolder,
+        holder: PostViewHolder,
         position: Int, payloads: MutableList<Any>
     ) {
 

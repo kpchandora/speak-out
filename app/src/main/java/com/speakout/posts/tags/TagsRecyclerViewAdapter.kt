@@ -1,5 +1,6 @@
 package com.speakout.posts.tags
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,6 +80,7 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
     }
 
     inner class TagsHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        @SuppressLint("SetTextI18n")
         fun bind(tag: Tag) {
             view.item_tag_name_tv.text = tag.tag
 
@@ -86,7 +88,11 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
                 view.item_tag_add_layout.gone()
                 if (it > 0) {
                     view.item_tag_posts_count_tv.visible()
-                    view.item_tag_posts_count_tv.text = "$it posts"
+                    view.item_tag_posts_count_tv.text =
+                        "$it ${view.context.resources.getQuantityString(
+                            R.plurals.number_of_posts,
+                            it.toInt()
+                        ).toLowerCase()}"
                 } else {
                     view.item_tag_posts_count_tv.gone()
                 }

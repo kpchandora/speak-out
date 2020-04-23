@@ -23,6 +23,7 @@ import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSinglePostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSingleUserRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersPostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersRef
+import com.speakout.utils.FirebaseUtils.getPostsStorageRef
 import com.speakout.utils.NameUtils
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +64,7 @@ object PostsService {
         val data = MutableLiveData<String>()
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val ref = FirebaseUtils.getPostsStorageRef().child("$id.jpg")
+        val ref = getPostsStorageRef().child("$id.jpg")
         ref.putBytes(baos.toByteArray())
             .continueWithTask { task ->
                 if (!task.isSuccessful) {
@@ -155,44 +156,31 @@ object PostsService {
         }
     }
 
-    fun deletePost(post: PostData): LiveData<Event<Result<PostData>>> {
-        val data = MutableLiveData<Event<Result<PostData>>>()
-        val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
-        val userPostCountRef = getSingleUserRef(post.userId)
-        val singlePostRef = getSinglePostRef(post.postId)
-        val postLikesRef = getPostLikesRef(post.postId)
+    suspend fun deletePost(post: PostData): Event<Result<PostData>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
+                val userPostCountRef = getSingleUserRef(post.userId)
+                val singlePostRef = getSinglePostRef(post.postId)
+                val postLikesRef = getPostLikesRef(post.postId)
+                val postStorageRef = getPostsStorageRef().child("${post.postId}.jpg")
 
-        getRef().runBatch {
-            it.set(
-                userPostCountRef,
-                mapOf("postsCount" to FieldValue.increment(-1)),
-                SetOptions.merge()
-            )
-            it.delete(userPostRef)
-            it.delete(singlePostRef)
-            it.delete(postLikesRef)
-        }.addOnCompleteListener {
-            if (it.isSuccessful) {
-                data.value = Event(Success(post))
-            } else {
-                data.value = Event(Result.Error(it.exception!!, post))
+                getRef().runBatch {
+                    it.set(
+                        userPostCountRef,
+                        mapOf("postsCount" to FieldValue.increment(-1)),
+                        SetOptions.merge()
+                    )
+                    it.delete(userPostRef)
+                    it.delete(singlePostRef)
+                    it.delete(postLikesRef)
+                }.await()
+
+                postStorageRef.delete().await()
+
+                Event(Success(post))
+            } catch (e: Exception) {
+                Event(Result.Error(e, post))
             }
         }
-        return data
-    }
-
-
-    suspend fun getAllPosts(): String = withContext(Dispatchers.IO) {
-        try {
-            val postId = mapOf("postId" to "aa230665-b59f-4be2-9eec-0236c8147368")
-            Timber.d("Task1: ${Looper.getMainLooper() == Looper.myLooper()}")
-            val task = FirebaseFunctions.getInstance().getHttpsCallable("getLikesDetails")
-                .call(postId)
-            Timber.d("Task: ${task.await().data}")
-            "Success"
-        } catch (e: Exception) {
-            "Failure"
-        }
-    }
-
 }

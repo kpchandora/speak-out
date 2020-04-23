@@ -27,10 +27,8 @@ class HomeViewModel : ViewModel() {
     private val _likePost = MutableLiveData<Event<Boolean>>()
     val likePost: LiveData<Event<Boolean>> = _likePost
 
-    private val _deletePost = MutableLiveData<PostData>()
-    val deletePost: LiveData<Event<Result<PostData>>> = _deletePost.switchMap {
-        PostsService.deletePost(it)
-    }
+    private val _deletePost = MutableLiveData<Event<Result<PostData>>>()
+    val deletePost: LiveData<Event<Result<PostData>>> = _deletePost
 
 
     private val _posts = MutableLiveData<String>()
@@ -69,7 +67,9 @@ class HomeViewModel : ViewModel() {
     fun getPosts() = mPostList
 
     fun deletePost(postData: PostData) {
-        _deletePost.value = postData
+        viewModelScope.launch {
+            _deletePost.value = PostsService.deletePost(postData)
+        }
     }
 
 

@@ -28,6 +28,7 @@ import java.util.*
 class CreateNewPostFragment : Fragment() {
 
     private val mCreatePostViewModel: CreatePostViewModel by navGraphViewModels(R.id.create_post_navigation)
+    private var postContent: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,10 +46,12 @@ class CreateNewPostFragment : Fragment() {
             }
         }
 
+        create_post_content_tv.text = postContent
+
         create_post_container_layout.setOnClickListener {
             startActivityForResult(
                 Intent(requireContext(), BottomDialogActivity::class.java).putExtra(
-                    BottomDialogActivity.CONTENT, create_post_content_tv.text
+                    BottomDialogActivity.CONTENT, create_post_content_tv.text.toString()
                 ), NameUtils.IntentStrings.CreatePost.REQUEST_CODE
             )
         }
@@ -73,6 +76,7 @@ class CreateNewPostFragment : Fragment() {
             .subscribe({ bitmap ->
                 bitmap?.let {
                     mCreatePostViewModel.imageBitmap = it
+                    postContent = create_post_content_tv.text.toString()
                     findNavController().navigate(
                         CreateNewPostFragmentDirections.actionCreateNewPostFragmentToTagsFragment(
                             create_post_content_tv.text.toString()

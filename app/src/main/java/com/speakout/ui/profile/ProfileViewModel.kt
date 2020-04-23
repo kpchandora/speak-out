@@ -24,26 +24,25 @@ class ProfileViewModel : ViewModel() {
     val profileObserver = MediatorLiveData<UserDetails?>()
     val followersFollowingsObserver = MediatorLiveData<FollowersFollowingsData?>()
 
-    private val _confirmUnfollow = MutableLiveData<Unit>()
-    val confirmUnfollow: LiveData<Unit> = _confirmUnfollow
+    private val _confirmUnfollow = MutableLiveData<Event<Unit>>()
+    val confirmUnfollow: LiveData<Event<Unit>> = _confirmUnfollow
 
     private val _userDetails = MutableLiveData<String>()
-
     val userDetails: LiveData<UserDetails?> = _userDetails.switchMap {
         AuthService.getUserData(it)
     }
 
     private val _isFollowing = MutableLiveData<String>()
-    val isFollowing: LiveData<Boolean?> = _isFollowing.switchMap {
+    val isFollowing: LiveData<Event<Boolean?>> = _isFollowing.switchMap {
         ProfileService.isFollowing(it)
     }
 
-    private val _followUser = MutableLiveData<Boolean>()
-    val followUser: LiveData<Boolean>
+    private val _followUser = MutableLiveData<Event<Boolean>>()
+    val followUser: LiveData<Event<Boolean>>
         get() = _followUser
 
-    private val _unFollowUser = MutableLiveData<Boolean>()
-    val unFollowUser: LiveData<Boolean>
+    private val _unFollowUser = MutableLiveData<Event<Boolean>>()
+    val unFollowUser: LiveData<Event<Boolean>>
         get() = _unFollowUser
 
     private val _uploadProfilePicture = MutableLiveData<Event<String?>>()
@@ -95,9 +94,9 @@ class ProfileViewModel : ViewModel() {
         compositeDisposable += ProfileService.follow(userMiniDetails)
             .withDefaultSchedulers()
             .subscribe({
-                _followUser.value = it
+                _followUser.value = Event(it)
             }, {
-                _followUser.value = false
+                _followUser.value = Event(false)
             })
     }
 
@@ -105,14 +104,14 @@ class ProfileViewModel : ViewModel() {
         compositeDisposable += ProfileService.unFollowUser(userMiniDetails)
             .withDefaultSchedulers()
             .subscribe({
-                _unFollowUser.value = it
+                _unFollowUser.value = Event(it)
             }, {
-                _unFollowUser.value = false
+                _unFollowUser.value = Event(false)
             })
     }
 
     fun confirmUnfollow() {
-        _confirmUnfollow.value = Unit
+        _confirmUnfollow.value = Event(Unit)
     }
 
     fun addPosts(list: List<PostData>) {

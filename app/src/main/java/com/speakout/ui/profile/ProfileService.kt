@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.speakout.auth.UserMiniDetails
+import com.speakout.common.Event
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import io.reactivex.Single
@@ -103,16 +104,16 @@ object ProfileService {
         }
     }
 
-    fun isFollowing(userId: String): LiveData<Boolean?> {
-        val data = MutableLiveData<Boolean?>()
+    fun isFollowing(userId: String): LiveData<Event<Boolean?>> {
+        val data = MutableLiveData<Event<Boolean?>>()
         FirebaseUtils.FirestoreUtils.isFollowingRef(
             userId = userId,
             selfId = AppPreference.getUserId()
         ).get().addOnCompleteListener {
             if (it.isSuccessful) {
-                data.value = it.result?.exists() ?: false
+                data.value = Event(it.result?.exists() ?: false)
             } else {
-                data.value = null
+                data.value = Event(null)
             }
         }
 

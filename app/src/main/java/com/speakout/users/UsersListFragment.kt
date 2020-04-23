@@ -15,17 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
+import com.speakout.common.Result
 import kotlinx.android.synthetic.main.users_list_fragment.*
 import timber.log.Timber
 
 class UsersListFragment : Fragment() {
-
-    companion object {
-        const val TAG = "UsersListFragment"
-
-        fun newInstance() = UsersListFragment()
-
-    }
 
     private val safeArgs: UsersListFragmentArgs by navArgs()
     private val usersListViewModel: UsersListViewModel by viewModels()
@@ -33,7 +27,17 @@ class UsersListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        usersListViewModel.getPosts("")
+        when (safeArgs.actionType) {
+            ActionType.Likes -> {
+                usersListViewModel.getLikesList(safeArgs.id ?: "")
+            }
+            ActionType.Followers -> {
+                usersListViewModel.getFollowersList(safeArgs.id ?: "")
+            }
+            ActionType.Followings -> {
+                usersListViewModel.getFollowingsList(safeArgs.id ?: "")
+            }
+        }
     }
 
     override fun onCreateView(
@@ -51,8 +55,28 @@ class UsersListFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }
-        usersListViewModel.usersList.observe(viewLifecycleOwner, Observer {
-            mAdapter.updateData(it)
+
+        observeViewModels()
+
+    }
+
+    private fun observeViewModels() {
+        usersListViewModel.followersList.observe(viewLifecycleOwner, Observer {
+            if (it is Result.Success) {
+                mAdapter.updateData(it.data)
+            }
+        })
+
+        usersListViewModel.followingsList.observe(viewLifecycleOwner, Observer {
+            if (it is Result.Success) {
+                mAdapter.updateData(it.data)
+            }
+        })
+
+        usersListViewModel.likesList.observe(viewLifecycleOwner, Observer {
+            if (it is Result.Success) {
+                mAdapter.updateData(it.data)
+            }
         })
     }
 

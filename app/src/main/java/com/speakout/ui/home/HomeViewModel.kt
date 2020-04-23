@@ -1,5 +1,6 @@
 package com.speakout.ui.home
 
+import android.os.Looper
 import androidx.lifecycle.*
 import com.speakout.common.Event
 import com.speakout.extensions.withDefaultSchedulers
@@ -8,8 +9,14 @@ import com.speakout.posts.create.PostData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import com.speakout.common.Result
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class HomeViewModel : ViewModel() {
+
+    private val bgScope = viewModelScope.coroutineContext + Dispatchers.IO
 
     private val compositeDisposable = CompositeDisposable()
     private val mPostList = ArrayList<PostData>()
@@ -24,6 +31,7 @@ class HomeViewModel : ViewModel() {
     val deletePost: LiveData<Event<Result<PostData>>> = _deletePost.switchMap {
         PostsService.deletePost(it)
     }
+
 
     private val _posts = MutableLiveData<String>()
     val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
@@ -63,6 +71,7 @@ class HomeViewModel : ViewModel() {
     fun deletePost(postData: PostData) {
         _deletePost.value = postData
     }
+
 
     override fun onCleared() {
         compositeDisposable.dispose()

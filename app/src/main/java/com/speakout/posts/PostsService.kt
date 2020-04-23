@@ -25,6 +25,10 @@ import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersPostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersRef
 import com.speakout.utils.NameUtils
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
@@ -177,18 +181,18 @@ object PostsService {
         return data
     }
 
-    fun getAllPosts() {
-        //aa230665-b59f-4be2-9eec-0236c8147368
-        val postId = mapOf("postId" to "aa230665-b59f-4be2-9eec-0236c8147368")
-        FirebaseFunctions.getInstance().getHttpsCallable("getLikesDetails")
-            .call(postId)
-            .continueWith {
-                Timber.d("Error: ${it.exception?.message}")
-                Timber.d("Is main thread: ${Looper.getMainLooper() == Looper.myLooper()}")
-                Timber.d("Data: ${it.result?.data}")
-            }.addOnCompleteListener {
-                Timber.d("Is Successful: ${it.isSuccessful}")
-            }
+
+    suspend fun getAllPosts(): String = withContext(Dispatchers.IO) {
+        try {
+            val postId = mapOf("postId" to "aa230665-b59f-4be2-9eec-0236c8147368")
+            Timber.d("Task1: ${Looper.getMainLooper() == Looper.myLooper()}")
+            val task = FirebaseFunctions.getInstance().getHttpsCallable("getLikesDetails")
+                .call(postId)
+            Timber.d("Task: ${task.await().data}")
+            "Success"
+        } catch (e: Exception) {
+            "Failure"
+        }
     }
 
 }

@@ -138,7 +138,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun navigateToUsersList(actionType: ActionType) {
         findNavController().navigate(
             ProfileFragmentDirections.actionNavigationProfileToUsersListFragment(
-                userId = mUserId,
+                id = mUserId,
                 actionType = actionType
             )
         )

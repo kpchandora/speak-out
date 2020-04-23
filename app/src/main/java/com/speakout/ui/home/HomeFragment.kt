@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,10 @@ import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -49,8 +54,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("onCreate")
-        PostsService.getAllPosts()
         mPreference = AppPreference
+
 
         when {
             !mPreference.isLoggedIn() -> {
@@ -81,6 +86,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_home_rv.apply {
@@ -166,7 +172,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun navigateToUsersList(postData: PostData) {
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToUsersListFragment(
-                userId = postData.userId,
+                id = postData.postId,
                 actionType = ActionType.Likes
             )
         )

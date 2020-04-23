@@ -15,3 +15,12 @@ exports.getLikesDetails = functions.https.onCall((data, context) => {
     return posts.getLikesDetails(data, context)
 })
 
+exports.getFollowings = functions.https.onCall((data, context) => {
+    console.log('getFollowings in index.js')
+    return posts.getFollowings(data, context)
+})
+
+exports.getFollowers = functions.https.onCall((data, context) => {
+    console.log('getFollowers in index.js')
+    return posts.getFollowers(data, context)
+})

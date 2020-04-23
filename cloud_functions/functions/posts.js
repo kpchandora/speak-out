@@ -89,80 +89,75 @@ exports.getPostsByUserId = functions.https.onRequest(async (req, res) => {
 //     })
 // })
 
-exports.getFollowers = functions.https.onRequest(async (req, res) => {
-    console.log('In getFollowers: ', req.body.userId)
+exports.getFollowers = async function (data, context) {
+    console.log('In getFollowers: ', data.userId)
     try {
-        const followers = await db.collection(`followers/${req.body.userId}/users`).get()
+        const followers = await db.collection(`followers/${data.userId}/users`).get()
         if (followers.empty) {
-            res.send({
-                error: 'No followers'
-            })
+            return []
         } else {
             const followersList = []
             const promises = []
             followers.forEach(doc => {
-                promises.push(db.doc(`users/${doc.id}`).get().then(value => {
+                promises.push(db.doc(`user_details/${doc.id}`).get().then(value => {
                     const data = value.data()
                     followersList.push({
                         name: data.name,
-                        userId: data.userId
+                        userId: data.userId,
+                        photoUrl: data.photoUrl,
+                        username: data.username
                     })
                 }))
             })
-            Promise.all(promises).then(r => {
-                res.status(200).send(followersList)
+            return Promise.all(promises).then(r => {
+                return followersList
             }).catch(error => {
-                res.status(500).send({ error: error })
+                return functions.https.HttpsError(error)
             })
         }
     } catch (error) {
-        res.status(500).send({
-            error: error
-        })
+        return functions.https.HttpsError(error)
     }
-})
+}
 
-exports.getFollowings = functions.https.onRequest(async (req, res) => {
-    console.log('In getFollowings: ', req.body.userId)
+exports.getFollowings = async function (data, context) {
+    console.log('In getFollowings: ', data.userId)
     try {
-        const followings = await db.collection(`followings/${req.body.userId}/users`).get()
+        const followings = await db.collection(`followings/${data.userId}/users`).get()
         if (followings.empty) {
-            res.send({
-                error: 'No followings'
-            })
+            return []
         } else {
             const followingsList = []
             const promises = []
             followings.forEach(doc => {
-                promises.push(db.doc(`users/${doc.id}`).get().then(value => {
+                promises.push(db.doc(`user_details/${doc.id}`).get().then(value => {
                     const data = value.data()
                     followingsList.push({
                         name: data.name,
-                        userId: data.userId
+                        userId: data.userId,
+                        photoUrl: data.photoUrl,
+                        username: data.username
                     })
                 }))
             })
-            Promise.all(promises).then(r => {
-                res.status(200).send(followingsList)
+            return Promise.all(promises).then(r => {
+                return followingsList
             }).catch(error => {
-                res.status(500).send({ error: error })
+                return functions.https.HttpsError(error)
             })
         }
     } catch (error) {
-        res.status(500).send({
-            error: error
-        })
+        return functions.https.HttpsError(error)
     }
-})
-
+}
 
 exports.getLikesDetails = async function (data, context) {
-    console.log('In getLikesDetails: ', data.postId)
+    console.log('In getLikesDetails new: ', data.postId)
 
     try {
         const usersDocument = await db.collection(`/post_likes/${data.postId}/users`).get()
         if (usersDocument.empty) {
-            return functions.https.HttpsError("No data")
+            return []
         } else {
             const usersList = []
             const promises = []
@@ -171,18 +166,20 @@ exports.getLikesDetails = async function (data, context) {
                     const data = value.data()
                     usersList.push({
                         name: data.name,
-                        userId: data.userId
+                        userId: data.userId,
+                        photoUrl: data.photoUrl,
+                        username: data.username
                     })
                 }))
             })
             return Promise.all(promises).then(r => {
                 return usersList
             }).catch(error => {
-                return functions.https.HttpsError("Failed to get data")
+                return functions.https.HttpsError(error)
             })
         }
     } catch (error) {
-        return functions.https.HttpsError("Failed to get data")
+        return functions.https.HttpsError(error)
     }
 }
 

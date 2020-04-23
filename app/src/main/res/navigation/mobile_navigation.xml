@@ -63,7 +63,7 @@
         tools:layout="@layout/users_list_fragment">
 
         <argument
-            android:name="userId"
+            android:name="id"
             app:argType="string"
             app:nullable="true" />
 

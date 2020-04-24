@@ -22,6 +22,7 @@ import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -31,6 +32,7 @@ import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
+import java.lang.Error
 import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -94,8 +96,14 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                mPostsAdapter.updateData(it)
-                homeViewModel.addPosts(it)
+                if (it is Result.Success) {
+                    mPostsAdapter.updateData(it.data)
+                    homeViewModel.addPosts(it.data)
+                }
+
+                if (it is Result.Error) {
+                    Timber.d("Failed to fetch posts: ${it.error}")
+                }
             }
         })
 

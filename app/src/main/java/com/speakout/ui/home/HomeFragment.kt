@@ -56,10 +56,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         Timber.d("onCreate")
         mPreference = AppPreference
 
-        CoroutineScope(Dispatchers.Main).launch {
-            PostsService.getProfilePosts(mPreference.getUserId())
-        }
-
         when {
             !mPreference.isLoggedIn() -> {
                 findNavController().navigate(HomeFragmentDirections.actionNavigationHomeToSignInFragment())
@@ -120,26 +116,28 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                mPostsAdapter.updatePosts(it)
+                if (it is Result.Success) {
+                    mPostsAdapter.updatePosts(it.data)
+                }
+
+                if (it is Result.Error) {
+                    Timber.d("Failed to fetch posts: ${it.error}")
+                }
             }
         })
 
-        mHomeViewModel.likePost.observe(viewLifecycleOwner,
-            EventObserver { b: Boolean ->
-                Timber.d("likePost Content: $b")
-//                if (!pair.first) {
-//                    mPostsAdapter.likePostFail(pair.second)
-//                }
-            })
+        mHomeViewModel.likePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Error) {
+                mPostsAdapter.likePostFail(it.data!!)
+            }
+        })
 
 
-        mHomeViewModel.unlikePost.observe(viewLifecycleOwner,
-            EventObserver { b: Boolean ->
-                Timber.d("unlikePost Content: $b")
-//                if (b) {
-//                    mPostsAdapter.unlikePostFail(pair.second)
-//                }
-            })
+        mHomeViewModel.unlikePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Error) {
+                mPostsAdapter.unlikePostFail(it.data!!)
+            }
+        })
 
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {

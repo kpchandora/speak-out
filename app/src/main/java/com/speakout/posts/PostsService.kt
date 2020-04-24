@@ -100,7 +100,6 @@ object PostsService {
                     it.forEach { document ->
                         try {
                             val d = document.toObject(PostData::class.java)
-                            d.likesSet = d.likes.toHashSet()
                             list.add(d)
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -115,16 +114,14 @@ object PostsService {
         return data
     }
 
-    fun likePost(postData: PostData): Single<Boolean> {
-        return Single.create {
-
+    suspend fun likePostNew(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
+        try {
             val postRef = getSinglePostRef(postData.postId)
 
             val postLikesRef = getPostSingleLikeRef(
                 postId = postData.postId,
                 userId = AppPreference.getUserId()
             )
-
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(1)), SetOptions.merge())
 
@@ -132,16 +129,16 @@ object PostsService {
                     postLikesRef,
                     mapOf("timeStamp" to System.currentTimeMillis())
                 )
-            }.addOnCompleteListener { task ->
-                Timber.d("likePost: ${postData.content}")
-                it.onSuccess(task.isSuccessful)
-            }
+            }.await()
+            Success(postData)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(e, postData)
         }
     }
 
-    fun unlikePost(postData: PostData): Single<Boolean> {
-        return Single.create {
-
+    suspend fun unlikePostNew(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
+        try {
             val postRef = getSinglePostRef(postData.postId)
 
             val postLikesRef = getPostSingleLikeRef(
@@ -152,10 +149,12 @@ object PostsService {
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(-1)), SetOptions.merge())
                 it.delete(postLikesRef)
-            }.addOnCompleteListener { task ->
-                Timber.d("unlikePost: ${postData.content}")
-                it.onSuccess(task.isSuccessful)
-            }
+            }.await()
+
+            Success(postData)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(e, postData)
         }
     }
 
@@ -183,17 +182,23 @@ object PostsService {
 
                 Event(Success(post))
             } catch (e: Exception) {
+                Timber.e(e)
                 Event(Result.Error(e, post))
             }
         }
 
-    suspend fun getProfilePosts(userId: String) = withContext(Dispatchers.IO) {
-        try {
-            val data = mapOf("userId" to userId)
-            val result = getFirebaseFunction("getProfilePosts").call(data).await()
-            Timber.d("Posts: ${Gson().toJson(result.data)}")
-        } catch (e: Exception) {
-            e.printStackTrace()
+    suspend fun getProfilePosts(userId: String): Result<List<PostData>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val data = mapOf("userId" to userId)
+                val result = getFirebaseFunction("getProfilePosts").call(data).await()
+                val json = Gson().toJson(result.data)
+                val list = Gson().fromJson(json, Array<PostData>::class.java).asList()
+                Timber.d("Posts List: ${list.size}")
+                Success(list)
+            } catch (e: Exception) {
+                Timber.e(e)
+                Result.Error(e, null)
+            }
         }
-    }
 }

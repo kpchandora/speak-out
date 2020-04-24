@@ -21,43 +21,35 @@ class HomeViewModel : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
     private val mPostList = ArrayList<PostData>()
 
-    private val _unlikePost = MutableLiveData<Event<Boolean>>()
-    val unlikePost: LiveData<Event<Boolean>> = _unlikePost
+    private val _unlikePost = MutableLiveData<Event<Result<PostData>>>()
+    val unlikePost: LiveData<Event<Result<PostData>>> = _unlikePost
 
-    private val _likePost = MutableLiveData<Event<Boolean>>()
-    val likePost: LiveData<Event<Boolean>> = _likePost
+    private val _likePost = MutableLiveData<Event<Result<PostData>>>()
+    val likePost: LiveData<Event<Result<PostData>>> = _likePost
 
     private val _deletePost = MutableLiveData<Event<Result<PostData>>>()
     val deletePost: LiveData<Event<Result<PostData>>> = _deletePost
 
 
-    private val _posts = MutableLiveData<String>()
-    val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        PostsService.getPosts(it)
-    }
+    private val _posts = MutableLiveData<Result<List<PostData>>>()
+    val posts: LiveData<Result<List<PostData>>> = _posts
 
     fun getPosts(id: String) {
-        _posts.value = id
+        viewModelScope.launch {
+            _posts.value = PostsService.getProfilePosts(id)
+        }
     }
 
     fun likePost(postData: PostData) {
-        compositeDisposable += PostsService.likePost(postData)
-            .withDefaultSchedulers()
-            .subscribe({
-                _likePost.value = Event(it)
-            }, {
-                _likePost.value = Event(false)
-            })
+        viewModelScope.launch {
+            _likePost.value = Event(PostsService.likePostNew(postData))
+        }
     }
 
     fun unlikePost(postData: PostData) {
-        compositeDisposable += PostsService.unlikePost(postData)
-            .withDefaultSchedulers()
-            .subscribe({
-                _unlikePost.value = Event(it)
-            }, {
-                _unlikePost.value = Event(false)
-            })
+        viewModelScope.launch {
+            _unlikePost.value = Event(PostsService.unlikePostNew(postData))
+        }
     }
 
     fun addPosts(list: List<PostData>) {

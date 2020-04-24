@@ -5,6 +5,7 @@ import com.speakout.auth.AuthService
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Event
+import com.speakout.common.Result
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
 import com.speakout.posts.PostsService
@@ -13,6 +14,7 @@ import com.speakout.ui.observers.UserLiveData
 import com.speakout.utils.ImageUtils
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 
@@ -49,13 +51,13 @@ class ProfileViewModel : ViewModel() {
     val uploadProfilePicture: LiveData<Event<String?>>
         get() = _uploadProfilePicture
 
-    private val _posts = MutableLiveData<String>()
-    val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        PostsService.getPosts(it)
-    }
+    private val _posts = MutableLiveData<Result<List<PostData>>>()
+    val posts: LiveData<Result<List<PostData>>> = _posts
 
     fun getPosts(id: String) {
-        _posts.value = id
+        viewModelScope.launch {
+            _posts.value = PostsService.getProfilePosts(id)
+        }
     }
 
     fun uploadProfilePicture(imageFile: File) {

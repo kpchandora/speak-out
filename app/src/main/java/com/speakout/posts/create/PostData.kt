@@ -13,9 +13,9 @@ data class PostData(
     var timeStamp: String = "",
     var username: String = "",
     var userImageUrl: String = "",
-    var likes: List<String> = emptyList(),
     var timeStampLong: Long = 0,
-    var likesCount: Long = 0
+    var likesCount: Long = 0,
+    var isLikedBySelf: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -26,10 +26,11 @@ data class PostData(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.createStringArrayList() ?: emptyList(),
         parcel.readLong(),
-        parcel.readLong()
-    )
+        parcel.readLong(),
+        parcel.readByte() != 0.toByte()
+    ) {
+    }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(postId)
@@ -40,9 +41,9 @@ data class PostData(
         parcel.writeString(timeStamp)
         parcel.writeString(username)
         parcel.writeString(userImageUrl)
-        parcel.writeStringList(likes)
         parcel.writeLong(timeStampLong)
         parcel.writeLong(likesCount)
+        parcel.writeByte(if (isLikedBySelf) 1 else 0)
     }
 
     override fun describeContents(): Int {
@@ -58,9 +59,4 @@ data class PostData(
             return arrayOfNulls(size)
         }
     }
-
-    @set:Exclude
-    @get:Exclude
-    var likesSet = hashSetOf<String>()
-
 }

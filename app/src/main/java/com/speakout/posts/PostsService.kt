@@ -46,6 +46,7 @@ object PostsService {
             .document(postData.postId)
 
         val postCountRef = getUsersRef().document(postData.userId)
+        val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
 
         getRef().runBatch {
             it.set(
@@ -55,6 +56,7 @@ object PostsService {
             )
             it.set(postRef, postData)
             it.set(userPostsRef, mapOf("timeStamp" to System.currentTimeMillis()))
+            it.set(postLikesRef, mapOf("timeStamp" to FieldValue.serverTimestamp()))
         }.addOnCompleteListener {
             data.value = it.isSuccessful
         }
@@ -114,21 +116,17 @@ object PostsService {
         return data
     }
 
-    suspend fun likePostNew(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
+    suspend fun likePost(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
         try {
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = getPostSingleLikeRef(
-                postId = postData.postId,
-                userId = AppPreference.getUserId()
-            )
+            val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
+            val userToAddMap =
+                mapOf("usersMap.${AppPreference.getUserId()}" to FieldValue.serverTimestamp())
+
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(1)), SetOptions.merge())
-
-                it.set(
-                    postLikesRef,
-                    mapOf("timeStamp" to System.currentTimeMillis())
-                )
+                it.update(postLikesRef, userToAddMap)
             }.await()
             Success(postData)
         } catch (e: Exception) {
@@ -137,18 +135,17 @@ object PostsService {
         }
     }
 
-    suspend fun unlikePostNew(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
+    suspend fun unlikePost(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
         try {
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = getPostSingleLikeRef(
-                postId = postData.postId,
-                userId = AppPreference.getUserId()
-            )
+            val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
+            val userToRemoveMap =
+                mapOf("usersMap.${AppPreference.getUserId()}" to FieldValue.delete())
 
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(-1)), SetOptions.merge())
-                it.delete(postLikesRef)
+                it.update(postLikesRef, userToRemoveMap)
             }.await()
 
             Success(postData)
@@ -194,7 +191,7 @@ object PostsService {
                 val result = getFirebaseFunction("getProfilePosts").call(data).await()
                 val json = Gson().toJson(result.data)
                 val list = Gson().fromJson(json, Array<PostData>::class.java).asList()
-                Timber.d("Posts List: ${list.size}")
+                Timber.d("Posts List: $list")
                 Success(list)
             } catch (e: Exception) {
                 Timber.e(e)

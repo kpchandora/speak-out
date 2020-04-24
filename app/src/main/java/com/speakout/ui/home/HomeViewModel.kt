@@ -1,18 +1,13 @@
 package com.speakout.ui.home
 
-import android.os.Looper
 import androidx.lifecycle.*
 import com.speakout.common.Event
-import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.PostsService
 import com.speakout.posts.create.PostData
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import com.speakout.common.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class HomeViewModel : ViewModel() {
 
@@ -42,13 +37,13 @@ class HomeViewModel : ViewModel() {
 
     fun likePost(postData: PostData) {
         viewModelScope.launch {
-            _likePost.value = Event(PostsService.likePostNew(postData))
+            _likePost.value = Event(PostsService.likePost(postData))
         }
     }
 
     fun unlikePost(postData: PostData) {
         viewModelScope.launch {
-            _unlikePost.value = Event(PostsService.unlikePostNew(postData))
+            _unlikePost.value = Event(PostsService.unlikePost(postData))
         }
     }
 

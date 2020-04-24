@@ -3,7 +3,7 @@ const admin = require('firebase-admin');
 
 const db = admin.firestore()
 
-// exports.onUserDataChanged = functions.firestore.document('users/{userId}')
+// exports.onUserDataChanged = functions.firestore.document('user_details/{userId}')
 //     .onUpdate(async (change, context) => {
 //         console.log('onUserDataChanged')
 //         const oldData = change.before.data()
@@ -85,11 +85,11 @@ exports.getFollowers = async function (data, context) {
             return Promise.all(promises).then(r => {
                 return followersList
             }).catch(error => {
-                return functions.https.HttpsError(error)
+                return new functions.https.HttpsError(error)
             })
         }
     } catch (error) {
-        return functions.https.HttpsError(error)
+        return new functions.https.HttpsError(error)
     }
 }
 
@@ -116,11 +116,11 @@ exports.getFollowings = async function (data, context) {
             return Promise.all(promises).then(r => {
                 return followingsList
             }).catch(error => {
-                return functions.https.HttpsError(error)
+                return new functions.https.HttpsError(error)
             })
         }
     } catch (error) {
-        return functions.https.HttpsError(error)
+        return new functions.https.HttpsError(error)
     }
 }
 
@@ -148,11 +148,11 @@ exports.getLikesDetails = async function (data, context) {
             return Promise.all(promises).then(r => {
                 return usersList
             }).catch(error => {
-                return functions.https.HttpsError(error)
+                return new functions.https.HttpsError(error)
             })
         }
     } catch (error) {
-        return functions.https.HttpsError(error)
+        return new functions.https.HttpsError(error)
     }
 }
 

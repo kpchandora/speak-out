@@ -6,21 +6,31 @@ if (admin.apps.length === 0) {
 
 // exports.user = require('./user')
 const posts = require('./posts')
-exports.posts
 
+const user = require('./user')
 
 
 exports.getLikesDetails = functions.https.onCall((data, context) => {
     console.log('getLikesDetails in index.js')
-    return posts.getLikesDetails(data, context)
+    return user.getLikesDetails(data, context)
 })
 
 exports.getFollowings = functions.https.onCall((data, context) => {
     console.log('getFollowings in index.js')
-    return posts.getFollowings(data, context)
+    return user.getFollowings(data, context)
 })
 
 exports.getFollowers = functions.https.onCall((data, context) => {
     console.log('getFollowers in index.js')
-    return posts.getFollowers(data, context)
+    return user.getFollowers(data, context)
+})
+
+exports.getProfilePosts = functions.https.onCall((data, context) => {
+    console.log('getProfilePosts in index.js')
+    return posts.getProfilePosts(data, context)
+})
+
+exports.onNewPostCreation = functions.firestore.document('posts/{postId}').onCreate((snapshot, context) => {
+    console.log('onNewPostCreation in index.js')
+    return posts.onNewPostCreation(snapshot, context)
 })

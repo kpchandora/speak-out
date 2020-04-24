@@ -56,6 +56,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         Timber.d("onCreate")
         mPreference = AppPreference
 
+        CoroutineScope(Dispatchers.Main).launch {
+            PostsService.getProfilePosts(mPreference.getUserId())
+        }
 
         when {
             !mPreference.isLoggedIn() -> {

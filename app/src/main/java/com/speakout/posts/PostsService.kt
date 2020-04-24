@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.gson.Gson
 import com.speakout.common.Event
 import com.speakout.common.Result.Success
 import com.speakout.posts.create.PostData
@@ -23,6 +24,7 @@ import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSinglePostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSingleUserRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersPostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersRef
+import com.speakout.utils.FirebaseUtils.getFirebaseFunction
 import com.speakout.utils.FirebaseUtils.getPostsStorageRef
 import com.speakout.utils.NameUtils
 import io.reactivex.Single
@@ -88,7 +90,8 @@ object PostsService {
         val data = MutableLiveData<List<PostData>>()
         getAllPostsRef()
             .whereEqualTo("userId", userId)
-            .orderBy("timeStampLong", Query.Direction.DESCENDING).get()
+            .orderBy("timeStampLong", Query.Direction.DESCENDING)
+            .get()
             .addOnSuccessListener {
                 if (it.isEmpty) {
                     data.value = emptyList()
@@ -183,4 +186,14 @@ object PostsService {
                 Event(Result.Error(e, post))
             }
         }
+
+    suspend fun getProfilePosts(userId: String) = withContext(Dispatchers.IO) {
+        try {
+            val data = mapOf("userId" to userId)
+            val result = getFirebaseFunction("getProfilePosts").call(data).await()
+            Timber.d("Posts: ${Gson().toJson(result.data)}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

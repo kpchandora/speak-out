@@ -139,7 +139,7 @@ class TagsFragment : Fragment() {
                     userId = pref.getUserId()
                     userImageUrl = pref.getPhotoUrl()
                     username = pref.getUserUniqueName()
-                    timeStampLong = System.nanoTime()
+                    timeStampLong = System.currentTimeMillis()
                 }
 
                 mCreatePostViewModel.uploadPost(createPostData)

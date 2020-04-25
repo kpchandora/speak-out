@@ -65,38 +65,42 @@ object UsersService {
             }
         }
 
-    suspend fun searchUsers(usernameQuery: String) = withContext(Dispatchers.IO) {
-        try {
-            val nextChar = StringJava.next(usernameQuery)
-            var usersRef = getUsersRef().whereGreaterThanOrEqualTo("username", usernameQuery)
-            if (usernameQuery.isNotEmpty()) {
-                usersRef = usersRef.whereLessThan("username", nextChar)
-            }
-
-            val querySnapshot = usersRef.limit(20).get().await()
-            if (querySnapshot.isEmpty) {
-                Timber.d("Search users list empty")
-            } else {
-                val usersList = mutableListOf<UserMiniDetails>()
-                querySnapshot.forEach { singleUserSnapshot ->
-                    try {
-                        val user = singleUserSnapshot.toObject(UserDetails::class.java)
-                        usersList.add(
-                            UserMiniDetails(
-                                userId = user.userId, username = user.username,
-                                name = user.name, photoUrl = user.photoUrl
-                            )
-                        )
-                    } catch (e: Exception) {
-                       Timber.e(e)
-                    }
+    suspend fun searchUsers(usernameQuery: String): List<UserMiniDetails> =
+        withContext(Dispatchers.IO) {
+            try {
+                Timber.d("Search Query: $usernameQuery")
+                val nextChar = StringJava.next(usernameQuery)
+                var usersRef = getUsersRef().whereGreaterThanOrEqualTo("username", usernameQuery)
+                if (usernameQuery.isNotEmpty()) {
+                    usersRef = usersRef.whereLessThan("username", nextChar)
                 }
-                Timber.d("Search Users List: $usersList")
-            }
 
-        } catch (e: Exception) {
-            Timber.e(e)
+                val querySnapshot = usersRef.limit(20).get().await()
+                if (querySnapshot.isEmpty) {
+                    Timber.d("Search users list empty")
+                    emptyList<UserMiniDetails>()
+                } else {
+                    val usersList = mutableListOf<UserMiniDetails>()
+                    querySnapshot.forEach { singleUserSnapshot ->
+                        try {
+                            val user = singleUserSnapshot.toObject(UserDetails::class.java)
+                            usersList.add(
+                                UserMiniDetails(
+                                    userId = user.userId, username = user.username,
+                                    name = user.name, photoUrl = user.photoUrl
+                                )
+                            )
+                        } catch (e: Exception) {
+                            Timber.e(e)
+                        }
+                    }
+                    Timber.d("Search Users List: $usersList")
+                    usersList
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                emptyList<UserMiniDetails>()
+            }
         }
-    }
 
 }

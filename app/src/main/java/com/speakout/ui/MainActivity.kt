@@ -115,8 +115,10 @@ class MainActivity : BaseActivity() {
     override fun onBackPressed() {
         if (currentFragmentId == R.id.navigation_home) {
             finish()
-        } else
+        } else {
+            Timber.d("onBackPressed: $currentFragmentId")
             super.onBackPressed()
+        }
     }
 
 

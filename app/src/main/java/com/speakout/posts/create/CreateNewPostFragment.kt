@@ -40,9 +40,11 @@ class CreateNewPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         create_post_container_layout.addViewObserver {
-            requireActivity().getScreenSize().let {
-                create_post_container_layout.layoutParams.height = it.widthPixels
-                create_post_container_layout.requestLayout()
+            activity?.let {
+                it.getScreenSize().let {
+                    create_post_container_layout.layoutParams.height = it.widthPixels
+                    create_post_container_layout.requestLayout()
+                }
             }
         }
 

@@ -47,7 +47,14 @@
         android:id="@+id/navigation_search"
         android:name="com.speakout.ui.search.SearchFragment"
         android:label="@string/title_search"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search">
+
+        <action
+            android:id="@+id/action_searchFragment_to_navigation_profile"
+            app:destination="@id/profile_navigation"
+            app:popExitAnim="@anim/slide_out_right" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"

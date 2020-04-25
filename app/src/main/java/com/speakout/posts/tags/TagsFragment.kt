@@ -29,9 +29,6 @@ import timber.log.Timber
 import java.text.DateFormat
 import java.util.*
 
-/**
- * A simple [Fragment] subclass.
- */
 class TagsFragment : Fragment() {
 
     private val mCreatePostViewModel: CreatePostViewModel by navGraphViewModels(R.id.create_post_navigation)
@@ -49,7 +46,6 @@ class TagsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_post_tags, container, false)
     }
 

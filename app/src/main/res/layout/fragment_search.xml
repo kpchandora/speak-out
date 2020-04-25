@@ -1,13 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.search.SearchFragment">
 
-    <EditText
+    <FrameLayout
         android:layout_width="match_parent"
-        android:id="@+id/search_user"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@color/indigo_500">
 
-</FrameLayout>
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/intput_bg_dr"
+            android:focusable="false"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@drawable/intput_bg_dr"
+            app:queryHint="Search here..." />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_search_user_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:lottie_fileName="search_lottie.json"
+            app:lottie_loop="true" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_search_empty_animation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:lottie_fileName="search_empty.json"
+            app:lottie_loop="true" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/users_list_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_users_list" />
+
+    </FrameLayout>
+
+
+</LinearLayout>

@@ -14,7 +14,7 @@ class TagViewModel : ViewModel() {
     }
 
     private val _addTag = MutableLiveData<Tag>()
-    val addTag = Transformations.switchMap(_addTag) {
+    val addTag: LiveData<Boolean> = Transformations.switchMap(_addTag) {
         TagsService.addTag(tag = it)
     }
 

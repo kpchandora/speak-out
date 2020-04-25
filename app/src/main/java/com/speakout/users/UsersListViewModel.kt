@@ -1,22 +1,40 @@
 package com.speakout.users
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
+import androidx.lifecycle.*
+import com.speakout.auth.UserMiniDetails
+import com.speakout.common.Result
 import com.speakout.posts.create.PostData
 import com.speakout.posts.PostsService
 import com.speakout.utils.AppPreference
+import kotlinx.coroutines.launch
 
 class UsersListViewModel : ViewModel() {
 
-    private val _usersList = MutableLiveData<String>()
-    val usersList: LiveData<List<PostData>> = _usersList.switchMap {
-        PostsService.getPosts(AppPreference.getUserId())
+    private val _likesList = MutableLiveData<Result<List<UserMiniDetails>>>()
+    val likesList: LiveData<Result<List<UserMiniDetails>>> = _likesList
+
+    private val _followersList = MutableLiveData<Result<List<UserMiniDetails>>>()
+    val followersList: LiveData<Result<List<UserMiniDetails>>> = _followersList
+
+    private val _followingsList = MutableLiveData<Result<List<UserMiniDetails>>>()
+    val followingsList: LiveData<Result<List<UserMiniDetails>>> = _followingsList
+
+    fun getLikesList(postId: String) {
+        viewModelScope.launch {
+            _likesList.value = UsersService.getLikesList(postId)
+        }
     }
 
-    fun getPosts(id: String) {
-        _usersList.value = ""
+    fun getFollowingsList(userId: String) {
+        viewModelScope.launch {
+            _followingsList.value = UsersService.getFollowings(userId)
+        }
+    }
+
+    fun getFollowersList(userId: String) {
+        viewModelScope.launch {
+            _followersList.value = UsersService.getFollowers(userId)
+        }
     }
 
 }

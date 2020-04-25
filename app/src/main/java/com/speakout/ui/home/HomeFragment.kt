@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.posts.PostsService
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.view.PostRecyclerViewAdapter
@@ -35,6 +37,10 @@ import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -79,6 +85,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_home_rv.apply {
@@ -109,26 +116,28 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                mPostsAdapter.updatePosts(it)
+                if (it is Result.Success) {
+                    mPostsAdapter.updatePosts(it.data)
+                }
+
+                if (it is Result.Error) {
+                    Timber.d("Failed to fetch posts: ${it.error}")
+                }
             }
         })
 
-        mHomeViewModel.likePost.observe(viewLifecycleOwner,
-            EventObserver { b: Boolean ->
-                Timber.d("likePost Content: $b")
-//                if (!pair.first) {
-//                    mPostsAdapter.likePostFail(pair.second)
-//                }
-            })
+        mHomeViewModel.likePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Error) {
+                mPostsAdapter.likePostFail(it.data!!)
+            }
+        })
 
 
-        mHomeViewModel.unlikePost.observe(viewLifecycleOwner,
-            EventObserver { b: Boolean ->
-                Timber.d("unlikePost Content: $b")
-//                if (b) {
-//                    mPostsAdapter.unlikePostFail(pair.second)
-//                }
-            })
+        mHomeViewModel.unlikePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Error) {
+                mPostsAdapter.unlikePostFail(it.data!!)
+            }
+        })
 
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
@@ -164,7 +173,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun navigateToUsersList(postData: PostData) {
         findNavController().navigate(
             HomeFragmentDirections.actionHomeToUsersListFragment(
-                userId = postData.userId,
+                id = postData.postId,
                 actionType = ActionType.Likes
             )
         )

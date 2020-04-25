@@ -5,6 +5,7 @@ import com.speakout.auth.AuthService
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Event
+import com.speakout.common.Result
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
 import com.speakout.posts.PostsService
@@ -13,6 +14,7 @@ import com.speakout.ui.observers.UserLiveData
 import com.speakout.utils.ImageUtils
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 
@@ -24,39 +26,38 @@ class ProfileViewModel : ViewModel() {
     val profileObserver = MediatorLiveData<UserDetails?>()
     val followersFollowingsObserver = MediatorLiveData<FollowersFollowingsData?>()
 
-    private val _confirmUnfollow = MutableLiveData<Unit>()
-    val confirmUnfollow: LiveData<Unit> = _confirmUnfollow
+    private val _confirmUnfollow = MutableLiveData<Event<Unit>>()
+    val confirmUnfollow: LiveData<Event<Unit>> = _confirmUnfollow
 
     private val _userDetails = MutableLiveData<String>()
-
     val userDetails: LiveData<UserDetails?> = _userDetails.switchMap {
         AuthService.getUserData(it)
     }
 
     private val _isFollowing = MutableLiveData<String>()
-    val isFollowing: LiveData<Boolean?> = _isFollowing.switchMap {
+    val isFollowing: LiveData<Event<Boolean?>> = _isFollowing.switchMap {
         ProfileService.isFollowing(it)
     }
 
-    private val _followUser = MutableLiveData<Boolean>()
-    val followUser: LiveData<Boolean>
+    private val _followUser = MutableLiveData<Event<Boolean>>()
+    val followUser: LiveData<Event<Boolean>>
         get() = _followUser
 
-    private val _unFollowUser = MutableLiveData<Boolean>()
-    val unFollowUser: LiveData<Boolean>
+    private val _unFollowUser = MutableLiveData<Event<Boolean>>()
+    val unFollowUser: LiveData<Event<Boolean>>
         get() = _unFollowUser
 
     private val _uploadProfilePicture = MutableLiveData<Event<String?>>()
     val uploadProfilePicture: LiveData<Event<String?>>
         get() = _uploadProfilePicture
 
-    private val _posts = MutableLiveData<String>()
-    val posts: LiveData<List<PostData>> = Transformations.switchMap(_posts) {
-        PostsService.getPosts(it)
-    }
+    private val _posts = MutableLiveData<Result<List<PostData>>>()
+    val posts: LiveData<Result<List<PostData>>> = _posts
 
     fun getPosts(id: String) {
-        _posts.value = id
+        viewModelScope.launch {
+            _posts.value = PostsService.getProfilePosts(id)
+        }
     }
 
     fun uploadProfilePicture(imageFile: File) {
@@ -95,9 +96,9 @@ class ProfileViewModel : ViewModel() {
         compositeDisposable += ProfileService.follow(userMiniDetails)
             .withDefaultSchedulers()
             .subscribe({
-                _followUser.value = it
+                _followUser.value = Event(it)
             }, {
-                _followUser.value = false
+                _followUser.value = Event(false)
             })
     }
 
@@ -105,14 +106,14 @@ class ProfileViewModel : ViewModel() {
         compositeDisposable += ProfileService.unFollowUser(userMiniDetails)
             .withDefaultSchedulers()
             .subscribe({
-                _unFollowUser.value = it
+                _unFollowUser.value = Event(it)
             }, {
-                _unFollowUser.value = false
+                _unFollowUser.value = Event(false)
             })
     }
 
     fun confirmUnfollow() {
-        _confirmUnfollow.value = Unit
+        _confirmUnfollow.value = Event(Unit)
     }
 
     fun addPosts(list: List<PostData>) {

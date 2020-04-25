@@ -5,12 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".ui.search.SearchFragment">
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:text="Search Fragment"
-        android:textSize="24sp" />
+        android:id="@+id/search_user"
+        android:layout_height="wrap_content"/>
 
 </FrameLayout>

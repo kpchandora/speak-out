@@ -1,11 +1,15 @@
 package com.speakout.posts
 
 import android.graphics.Bitmap
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.functions.FirebaseFunctions
+import com.google.gson.Gson
 import com.speakout.common.Event
 import com.speakout.common.Result.Success
 import com.speakout.posts.create.PostData
@@ -20,8 +24,14 @@ import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSinglePostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getSingleUserRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersPostRef
 import com.speakout.utils.FirebaseUtils.FirestoreUtils.getUsersRef
+import com.speakout.utils.FirebaseUtils.getFirebaseFunction
+import com.speakout.utils.FirebaseUtils.getPostsStorageRef
 import com.speakout.utils.NameUtils
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
@@ -36,6 +46,7 @@ object PostsService {
             .document(postData.postId)
 
         val postCountRef = getUsersRef().document(postData.userId)
+        val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
 
         getRef().runBatch {
             it.set(
@@ -45,6 +56,7 @@ object PostsService {
             )
             it.set(postRef, postData)
             it.set(userPostsRef, mapOf("timeStamp" to System.currentTimeMillis()))
+            it.set(postLikesRef, mapOf("timeStamp" to FieldValue.serverTimestamp()))
         }.addOnCompleteListener {
             data.value = it.isSuccessful
         }
@@ -56,7 +68,7 @@ object PostsService {
         val data = MutableLiveData<String>()
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val ref = FirebaseUtils.getPostsStorageRef().child("$id.jpg")
+        val ref = getPostsStorageRef().child("$id.jpg")
         ref.putBytes(baos.toByteArray())
             .continueWithTask { task ->
                 if (!task.isSuccessful) {
@@ -80,7 +92,8 @@ object PostsService {
         val data = MutableLiveData<List<PostData>>()
         getAllPostsRef()
             .whereEqualTo("userId", userId)
-            .orderBy("timeStampLong", Query.Direction.DESCENDING).get()
+            .orderBy("timeStampLong", Query.Direction.DESCENDING)
+            .get()
             .addOnSuccessListener {
                 if (it.isEmpty) {
                     data.value = emptyList()
@@ -89,7 +102,6 @@ object PostsService {
                     it.forEach { document ->
                         try {
                             val d = document.toObject(PostData::class.java)
-                            d.likesSet = d.likes.toHashSet()
                             list.add(d)
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -104,74 +116,86 @@ object PostsService {
         return data
     }
 
-    fun likePost(postData: PostData): Single<Boolean> {
-        return Single.create {
-
+    suspend fun likePost(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
+        try {
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = getPostSingleLikeRef(
-                postId = postData.postId,
-                userId = AppPreference.getUserId()
-            )
+            val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
+            val userToAddMap =
+                mapOf("usersMap.${AppPreference.getUserId()}" to FieldValue.serverTimestamp())
 
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(1)), SetOptions.merge())
-
-                it.set(
-                    postLikesRef,
-                    mapOf("timeStamp" to System.currentTimeMillis())
-                )
-            }.addOnCompleteListener { task ->
-                Timber.d("likePost: ${postData.content}")
-                it.onSuccess(task.isSuccessful)
-            }
+                it.update(postLikesRef, userToAddMap)
+            }.await()
+            Success(postData)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(e, postData)
         }
     }
 
-    fun unlikePost(postData: PostData): Single<Boolean> {
-        return Single.create {
-
+    suspend fun unlikePost(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
+        try {
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = getPostSingleLikeRef(
-                postId = postData.postId,
-                userId = AppPreference.getUserId()
-            )
+            val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
+            val userToRemoveMap =
+                mapOf("usersMap.${AppPreference.getUserId()}" to FieldValue.delete())
 
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(-1)), SetOptions.merge())
-                it.delete(postLikesRef)
-            }.addOnCompleteListener { task ->
-                Timber.d("unlikePost: ${postData.content}")
-                it.onSuccess(task.isSuccessful)
-            }
+                it.update(postLikesRef, userToRemoveMap)
+            }.await()
+
+            Success(postData)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(e, postData)
         }
     }
 
-    fun deletePost(post: PostData): LiveData<Event<Result<PostData>>> {
-        val data = MutableLiveData<Event<Result<PostData>>>()
-        val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
-        val userPostCountRef = getSingleUserRef(post.userId)
-        val singlePostRef = getSinglePostRef(post.postId)
-        val postLikesRef = getPostLikesRef(post.postId)
+    suspend fun deletePost(post: PostData): Event<Result<PostData>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
+                val userPostCountRef = getSingleUserRef(post.userId)
+                val singlePostRef = getSinglePostRef(post.postId)
+                val postLikesRef = getPostLikesRef(post.postId)
+                val postStorageRef = getPostsStorageRef().child("${post.postId}.jpg")
 
-        getRef().runBatch {
-            it.set(
-                userPostCountRef,
-                mapOf("postsCount" to FieldValue.increment(-1)),
-                SetOptions.merge()
-            )
-            it.delete(userPostRef)
-            it.delete(singlePostRef)
-            it.delete(postLikesRef)
-        }.addOnCompleteListener {
-            if (it.isSuccessful) {
-                data.value = Event(Success(post))
-            } else {
-                data.value = Event(Result.Error(it.exception!!, post))
+                getRef().runBatch {
+                    it.set(
+                        userPostCountRef,
+                        mapOf("postsCount" to FieldValue.increment(-1)),
+                        SetOptions.merge()
+                    )
+                    it.delete(userPostRef)
+                    it.delete(singlePostRef)
+                    it.delete(postLikesRef)
+                }.await()
+
+                postStorageRef.delete().await()
+
+                Event(Success(post))
+            } catch (e: Exception) {
+                Timber.e(e)
+                Event(Result.Error(e, post))
             }
         }
-        return data
-    }
 
+    suspend fun getProfilePosts(userId: String): Result<List<PostData>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val data = mapOf("userId" to userId)
+                val result = getFirebaseFunction("getProfilePosts").call(data).await()
+                val json = Gson().toJson(result.data)
+                val list = Gson().fromJson(json, Array<PostData>::class.java).asList()
+                Timber.d("Posts List: $list")
+                Success(list)
+            } catch (e: Exception) {
+                Timber.e(e)
+                Result.Error(e, null)
+            }
+        }
 }

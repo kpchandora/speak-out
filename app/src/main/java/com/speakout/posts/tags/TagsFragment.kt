@@ -35,7 +35,7 @@ import java.util.*
 class TagsFragment : Fragment() {
 
     private val mCreatePostViewModel: CreatePostViewModel by navGraphViewModels(R.id.create_post_navigation)
-    private val mSelectedTags = hashMapOf<String, Tag>()
+    private val mSelectedTags = hashMapOf<Long, Tag>()
     private val mAdapter = TagsRecyclerViewAdapter()
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
     private val addTagQueue = LinkedList<Tag>()
@@ -75,7 +75,9 @@ class TagsFragment : Fragment() {
         observeViewModels()
 
         tag_done_fab.setOnClickListener {
-            createPostData.tags = mSelectedTags.keys.toList()
+            createPostData.tags = mSelectedTags.keys.map {
+                it.toString()
+            }
             uploadPost()
         }
 
@@ -137,7 +139,7 @@ class TagsFragment : Fragment() {
                     userId = pref.getUserId()
                     userImageUrl = pref.getPhotoUrl()
                     username = pref.getUserUniqueName()
-                    timeStampLong = System.nanoTime()
+                    timeStampLong = System.currentTimeMillis()
                 }
 
                 mCreatePostViewModel.uploadPost(createPostData)
@@ -197,11 +199,11 @@ class TagsFragment : Fragment() {
 
     private val tagsListener = object : OnTagClickListener {
         override fun onTagClick(tag: Tag) {
-            if (mSelectedTags.contains(tag.tag)) {
-                mSelectedTags.remove(tag.tag)
+            if (mSelectedTags.contains(tag.id)) {
+                mSelectedTags.remove(tag.id)
                 mSelectedTagsAdapter.removeTag(tag)
             } else {
-                mSelectedTags[tag.tag] = tag
+                mSelectedTags[tag.id] = tag
                 mSelectedTagsAdapter.addTag(tag)
             }
             if (mSelectedTags.isEmpty()) {
@@ -223,7 +225,7 @@ class TagsFragment : Fragment() {
 
     private val selectedTagsListener = object : OnTagClickListener {
         override fun onTagClick(tag: Tag) {
-            mSelectedTags.remove(tag.tag)
+            mSelectedTags.remove(tag.id)
             if (mSelectedTags.isEmpty()) {
                 selected_tags_rv.gone()
             }

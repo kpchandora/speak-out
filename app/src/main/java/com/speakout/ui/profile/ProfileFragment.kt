@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
+import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -30,6 +32,7 @@ import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
+import java.lang.Error
 import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -48,7 +51,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         homeViewModel.getPosts(mUserId)
+        screenSize = requireActivity().getScreenSize()
         profileViewModel.addFFObserver(mUserId)
+
         if (isSelf) {
             profileViewModel.addProfileObserver()
         } else {
@@ -69,7 +74,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        screenSize = activity!!.getScreenSize()
 
         safeArgs.transitionTag?.let {
             layout_profile_iv.transitionName = it
@@ -92,33 +96,47 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                mPostsAdapter.updateData(it)
-                homeViewModel.addPosts(it)
+                if (it is Result.Success) {
+                    mPostsAdapter.updateData(it.data)
+                    homeViewModel.addPosts(it.data)
+                }
+
+                if (it is Result.Error) {
+                    Timber.d("Failed to fetch posts: ${it.error}")
+                }
             }
         })
 
         profileViewModel.followersFollowingsObserver.observe(viewLifecycleOwner, Observer {
-            layout_profile_followers_count_tv.text = it?.followersCount?.toString() ?: "0"
+            layout_profile_followers_count_tv.text = if (it?.followersCount ?: 0 < 0) {
+                "0"
+            } else {
+                it?.followersCount?.toString() ?: "0"
+            }
             layout_profile_followers_tv.text =
                 resources.getQuantityString(
                     R.plurals.number_of_followers,
                     it?.followersCount?.toInt() ?: 0
                 )
 
-            layout_profile_followings_count_tv.text = it?.followingsCount?.toString() ?: "0"
+            layout_profile_followings_count_tv.text = if (it?.followingsCount ?: 0 < 0) {
+                "0"
+            } else {
+                it?.followingsCount?.toString() ?: "0"
+            }
             layout_profile_followings_tv.text =
                 resources.getQuantityString(
                     R.plurals.number_of_followings,
                     it?.followingsCount?.toInt() ?: 0
                 )
 
-            if (it?.followersCount == 0L) {
+            if (it?.followersCount ?: 0 <= 0L) {
                 layout_profile_followers_container.disable()
             } else {
                 layout_profile_followers_container.enable()
             }
 
-            if (it?.followingsCount == 0L) {
+            if (it?.followingsCount ?: 0 <= 0L) {
                 layout_profile_followings_container.disable()
             } else {
                 layout_profile_followings_container.enable()
@@ -138,7 +156,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun navigateToUsersList(actionType: ActionType) {
         findNavController().navigate(
             ProfileFragmentDirections.actionNavigationProfileToUsersListFragment(
-                userId = mUserId,
+                id = mUserId,
                 actionType = actionType
             )
         )
@@ -193,8 +211,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
         }
 
-        follow_unfollow_tv.text = getString(R.string.follow)
-        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
+//        follow_unfollow_tv.text = getString(R.string.follow)
+//        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
 
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
             userDetails?.let {
@@ -202,21 +220,21 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
         })
 
-        profileViewModel.followUser.observe(viewLifecycleOwner, Observer {
+        profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {
             if (!it) {
                 showFollow()
                 activity!!.showShortToast("Failed to follow user")
             }
         })
 
-        profileViewModel.unFollowUser.observe(viewLifecycleOwner, Observer {
+        profileViewModel.unFollowUser.observe(viewLifecycleOwner, EventObserver {
             if (!it) {
                 showFollowing()
-                activity!!.showShortToast("Failed to remove user")
+                activity!!.showShortToast("Failed to unfollow user")
             }
         })
 
-        profileViewModel.isFollowing.observe(viewLifecycleOwner, Observer {
+        profileViewModel.isFollowing.observe(viewLifecycleOwner, EventObserver {
             it?.let {
                 if (it) {
                     showFollowing()
@@ -227,7 +245,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         })
 
-        profileViewModel.confirmUnfollow.observe(viewLifecycleOwner, Observer {
+        profileViewModel.confirmUnfollow.observe(viewLifecycleOwner, EventObserver {
             showFollow()
             profileViewModel.unFollowUser(UserMiniDetails(userId = mUserId))
         })
@@ -261,7 +279,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         layout_profile_full_name_tv.text = userDetails.name
 
-        layout_profile_posts_count_tv.text = userDetails.postsCount.toString()
+        layout_profile_posts_count_tv.text =
+            if (userDetails.postsCount > 0) userDetails.postsCount.toString() else "0"
         layout_profile_posts_tv.text =
             resources.getQuantityString(R.plurals.number_of_posts, userDetails.postsCount.toInt())
     }

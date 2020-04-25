@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHolder>() {
 
-    private val usersList = ArrayList<PostData>()
+    private val usersList = ArrayList<UserMiniDetails>()
     var mListener: OnUserClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersListViewHolder {
@@ -34,7 +34,7 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
     }
 
 
-    fun updateData(list: List<PostData>) {
+    fun updateData(list: List<UserMiniDetails>) {
         usersList.clear()
         usersList.addAll(list)
         notifyDataSetChanged()
@@ -43,11 +43,11 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
     class UsersListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         var mListener: OnUserClickListener? = null
 
-        fun bind(postData: PostData) {
+        fun bind(user: UserMiniDetails) {
             view.apply {
                 item_user_list_bg.gone()
-                item_users_list_profile_iv.transitionName = postData.postId
-                item_users_list_profile_iv.loadImageWithCallback(postData.postImageUrl,
+                item_users_list_profile_iv.transitionName = user.userId
+                item_users_list_profile_iv.loadImageWithCallback(user.photoUrl ?: "",
                     makeRound = true,
                     onSuccess = {
                         item_user_list_bg.visible()
@@ -62,17 +62,12 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
                         item_user_list_bg.visible()
                     })
 
-                item_users_list_username_tv.text = postData.username
-                item_users_list_name_tv.text = postData.postId.substring(0, 15)
+                item_users_list_username_tv.text = user.username
+                item_users_list_name_tv.text = user.name
 
                 setOnClickListener {
                     mListener?.onUserClick(
-                        UserMiniDetails(
-                            userId = postData.userId,
-                            username = postData.username,
-                            photoUrl = postData.userImageUrl,
-                            name = postData.postId
-                        ),
+                        user,
                         item_users_list_profile_iv
                     )
                 }

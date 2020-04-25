@@ -74,7 +74,8 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         Timber.d("likePostFail Content: ${postData.content}")
         mPostsList.forEachIndexed { index, postDataItem ->
             if (postData.postId == postDataItem.postId) {
-                postDataItem.likesSet.remove(userId)
+                postDataItem.isLikedBySelf = false
+                postDataItem.likesCount--
                 notifyItemChanged(index, postDataItem)
             }
         }
@@ -82,10 +83,10 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     fun unlikePostFail(postData: PostData) {
         Timber.d("unlikePostFail Content: ${postData.content}")
-        Timber.d("")
         mPostsList.forEachIndexed { index, postDataItem ->
             if (postData.postId == postDataItem.postId) {
-                postDataItem.likesSet.add(userId)
+                postDataItem.isLikedBySelf = true
+                postDataItem.likesCount++
                 notifyItemChanged(index, postDataItem)
             }
         }

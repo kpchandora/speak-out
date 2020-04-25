@@ -43,14 +43,16 @@ class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
             loadPost(post.postImageUrl)
 
-            item_post_like_cb.isChecked = post.likesSet.contains(userId)
+            item_post_like_cb.isChecked = post.isLikedBySelf
 
             item_post_like_cb.setOnClickListener {
                 if (item_post_like_cb.isChecked) {
-                    post.likesSet.add(userId)
+                    post.isLikedBySelf = true
+                    post.likesCount++
                     mEventListener?.onLike(adapterPosition, post)
                 } else {
-                    post.likesSet.remove(userId)
+                    post.isLikedBySelf = false
+                    post.likesCount--
                     mEventListener?.onDislike(adapterPosition, post)
                 }
                 setLikes(post)

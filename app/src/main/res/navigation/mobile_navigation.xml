@@ -207,7 +207,6 @@
         <fragment
             android:id="@+id/profileEditFragment"
             android:name="com.speakout.ui.profile.ProfileEditFragment"
-            android:label="Edit"
             tools:layout="@layout/fragment_profile_edit">
 
             <action
@@ -225,7 +224,6 @@
     <fragment
         android:id="@+id/userNameFragment"
         android:name="com.speakout.auth.UserNameFragment"
-        android:label="{type} Username"
         tools:layout="@layout/fragment_user_name">
 
         <argument

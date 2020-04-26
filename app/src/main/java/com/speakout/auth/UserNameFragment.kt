@@ -40,17 +40,25 @@ class UserNameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         username = safeArgs.username ?: ""
 
         if (safeArgs.type == Type.Edit) {
+            view.post {
+                setUpToolbar(view)?.let {
+                    it.title = "${safeArgs.type} Username"
+                }
+            }
             fragment_username_et.setText(username)
             fragment_username_et.setSelection(username.length)
             fragment_username_et.setDrawableEnd(R.drawable.ic_check)
             fragment_username_next_btn.text = getString(R.string.update)
         } else {
-            (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(
-                false
-            )
+            view.post {
+                setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.let {
+                    it.title = "${safeArgs.type} Username"
+                }
+            }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {

@@ -84,24 +84,28 @@ fun AppCompatActivity.addFragment(
 }
 
 
-fun Fragment.setUpToolbar(view: View) {
+fun Fragment.setUpToolbar(view: View): Toolbar? {
     view.findViewById<Toolbar>(R.id.toolbar)?.let {
         val navHostFragment = NavHostFragment.findNavController(this)
         NavigationUI.setupWithNavController(it, navHostFragment)
+        return it
     }
+    return null
 }
 
-fun Fragment.setUpWithAppBarConfiguration(view: View): Toolbar? {
+fun Fragment.setUpWithAppBarConfiguration(view: View, fragmentId: Int? = null): Toolbar? {
     view.findViewById<Toolbar>(R.id.toolbar)?.let {
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_search,
-                R.id.navigation_new_post,
-                R.id.navigation_notifications,
-                R.id.navigation_profile
-            )
+        val set = mutableSetOf(
+            R.id.navigation_home,
+            R.id.navigation_search,
+            R.id.navigation_new_post,
+            R.id.navigation_notifications,
+            R.id.navigation_profile
         )
+        fragmentId?.let { id ->
+            set.add(id)
+        }
+        val appBarConfiguration = AppBarConfiguration(set)
 
         val navHostFragment = NavHostFragment.findNavController(this)
         NavigationUI.setupWithNavController(it, navHostFragment, appBarConfiguration)

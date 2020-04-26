@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.view.OnPostOptionsClickListener
@@ -51,6 +52,7 @@ class PostViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpToolbar(view)
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_post_view_rv.apply {

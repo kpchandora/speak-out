@@ -39,6 +39,7 @@ class CreateNewPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpToolbar(view)
         create_post_container_layout.addViewObserver {
             activity?.let {
                 it.getScreenSize().let {

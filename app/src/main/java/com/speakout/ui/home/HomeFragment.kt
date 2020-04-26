@@ -5,7 +5,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
@@ -23,9 +22,10 @@ import com.speakout.R
 import com.speakout.auth.Type
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.extensions.setUpWithAppBarConfiguration
 import com.speakout.extensions.showShortToast
+import com.speakout.extensions.visible
 import com.speakout.extensions.withDefaultSchedulers
-import com.speakout.posts.PostsService
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.view.PostRecyclerViewAdapter
@@ -37,10 +37,7 @@ import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -85,6 +82,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+        setUpWithAppBarConfiguration(view)?.let {
+            it.title = ""
+            view.toolbar_title_tv.visible()
+        }
 
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener

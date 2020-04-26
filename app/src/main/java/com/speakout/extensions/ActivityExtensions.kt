@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
@@ -15,7 +16,11 @@ import android.widget.Toast
 import androidx.annotation.IntDef
 import androidx.annotation.IntegerRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.DataSource
@@ -76,6 +81,33 @@ fun AppCompatActivity.addFragment(
         it.addToBackStack(backStackTag)
         it.commit()
     }
+}
+
+
+fun Fragment.setUpToolbar(view: View) {
+    view.findViewById<Toolbar>(R.id.toolbar)?.let {
+        val navHostFragment = NavHostFragment.findNavController(this)
+        NavigationUI.setupWithNavController(it, navHostFragment)
+    }
+}
+
+fun Fragment.setUpWithAppBarConfiguration(view: View): Toolbar? {
+    view.findViewById<Toolbar>(R.id.toolbar)?.let {
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home,
+                R.id.navigation_search,
+                R.id.navigation_new_post,
+                R.id.navigation_notifications,
+                R.id.navigation_profile
+            )
+        )
+
+        val navHostFragment = NavHostFragment.findNavController(this)
+        NavigationUI.setupWithNavController(it, navHostFragment, appBarConfiguration)
+        return it
+    }
+    return null
 }
 
 

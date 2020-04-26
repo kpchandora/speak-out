@@ -8,15 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
@@ -32,8 +30,6 @@ import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
-import java.lang.Error
-import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
@@ -69,7 +65,13 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             sharedElementEnterTransition =
                 TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        setUpWithAppBarConfiguration(view)?.let {
+            it.title = safeArgs.username
+//            view.toolbar_title_tv.visible()
+//            view.toolbar_title_tv.text = safeArgs.username
+        }
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

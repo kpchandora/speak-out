@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Result
+import com.speakout.extensions.setUpToolbar
 import kotlinx.android.synthetic.main.users_list_fragment.*
-import timber.log.Timber
 
 class UsersListFragment : Fragment() {
 
@@ -49,6 +49,7 @@ class UsersListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpToolbar(view)
         mAdapter.mListener = mUserClickListener
         users_list_rv.apply {
             setHasFixedSize(true)

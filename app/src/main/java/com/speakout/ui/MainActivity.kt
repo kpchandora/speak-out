@@ -6,6 +6,7 @@ import android.view.animation.AnimationUtils
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -18,7 +19,6 @@ import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
-    private val mainViewModel: MainViewModel by viewModels()
     private lateinit var navController: NavController
     private var currentFragmentId = 0
     private lateinit var bottomNavigationView: BottomNavigationView
@@ -41,8 +41,7 @@ class MainActivity : BaseActivity() {
                 R.id.navigation_profile
             )
         )
-
-        setupActionBarWithNavController(navController, appBarConfiguration)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
         bottomNavigationView.setupWithNavController(navController)
         bottomNavigationView.setOnNavigationItemSelectedListener {
             Timber.d("setOnNavigationItemSelectedListener: ${it.title}")

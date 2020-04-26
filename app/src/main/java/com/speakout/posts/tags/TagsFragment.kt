@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.extensions.gone
+import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.showShortToast
 import com.speakout.extensions.visible
 import com.speakout.posts.create.CreatePostViewModel
@@ -51,6 +52,11 @@ class TagsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.post {
+            setUpToolbar(view)?.let {
+                it.title = "Tags"
+            }
+        }
         fragment_post_tags_progress.visible()
         mAdapter.setHasStableIds(true)
         mAdapter.setListener(tagsListener)

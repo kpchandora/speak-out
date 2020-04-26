@@ -8,25 +8,35 @@
     android:clickable="true"
     tools:context=".posts.tags.TagsFragment">
 
+    <include
+        android:id="@+id/include2"
+        layout="@layout/layout_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ProgressBar
         android:id="@+id/fragment_post_tags_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
+        android:layout_marginTop="12dp"
         android:indeterminate="true"
         android:indeterminateBehavior="cycle"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/include2" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tags_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="8dp"
+        android:layout_marginTop="447dp"
         android:clipToPadding="false"
         app:layout_constraintBottom_toTopOf="@+id/selected_tags_rv"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include2"
         tools:itemCount="12"
         tools:layout_editor_absoluteX="8dp"
         tools:listitem="@layout/item_tag_layout"

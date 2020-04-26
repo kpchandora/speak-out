@@ -290,7 +290,6 @@
         <fragment
             android:id="@+id/tagsFragment"
             android:name="com.speakout.posts.tags.TagsFragment"
-            android:label="Tags"
             tools:layout="@layout/fragment_post_tags">
 
             <argument

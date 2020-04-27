@@ -96,14 +96,14 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun navAnimVisible() {
+    fun navAnimVisible() {
         if (bottomNavigationView.visibility == View.GONE) {
             bottomNavigationView.visibility = View.VISIBLE
             bottomNavigationView.animation = AnimationUtils.loadAnimation(this, R.anim.slide_up)
         }
     }
 
-    private fun navAnimGone() {
+    fun navAnimGone() {
         if (bottomNavigationView.visibility == View.VISIBLE) {
             bottomNavigationView.visibility = View.GONE
             bottomNavigationView.animation =

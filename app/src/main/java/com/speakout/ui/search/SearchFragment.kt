@@ -1,10 +1,9 @@
 package com.speakout.ui.search
 
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -17,8 +16,10 @@ import com.speakout.common.EventObserver
 import com.speakout.extensions.gone
 import com.speakout.extensions.isNotNullOrEmpty
 import com.speakout.extensions.visible
+import com.speakout.ui.MainActivity
 import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.fragment_search.users_list_rv
+import timber.log.Timber
 
 
 class SearchFragment : Fragment() {
@@ -87,6 +88,20 @@ class SearchFragment : Fragment() {
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        Timber.d("onStart")
+        fragment_search_root.viewTreeObserver.addOnGlobalLayoutListener(mKeyboardVisibilityListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.d("onStop")
+        fragment_search_root.viewTreeObserver.removeOnGlobalLayoutListener(
+            mKeyboardVisibilityListener
+        )
+    }
+
     private fun navigateToProfile(
         userMiniDetails: UserMiniDetails,
         profileImageView: ImageView
@@ -102,6 +117,29 @@ class SearchFragment : Fragment() {
             profileImageView to (userMiniDetails.name!!)
         )
         findNavController().navigate(action, extras)
+    }
+
+    private var mKeyboardVisible = false
+
+    private val mKeyboardVisibilityListener = ViewTreeObserver.OnGlobalLayoutListener {
+        val rect = Rect()
+        view?.getWindowVisibleDisplayFrame(rect)
+        val screenHeight = view?.rootView?.height ?: 0
+        val keypadHeight = screenHeight - rect.bottom
+
+        val isKeyboardVisible = keypadHeight > screenHeight * 0.15
+
+        if (mKeyboardVisible != isKeyboardVisible) {
+            Timber.d("IsKeyboardVisible: $isKeyboardVisible")
+            if (isKeyboardVisible) {
+                (activity as? MainActivity)?.navAnimGone()
+            } else {
+                (activity as? MainActivity)?.navAnimVisible()
+            }
+        }
+
+        mKeyboardVisible = isKeyboardVisible
+
     }
 
     private val mUserClickListener = object : OnSearchUserClickListener {

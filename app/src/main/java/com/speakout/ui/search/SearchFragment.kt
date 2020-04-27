@@ -18,7 +18,6 @@ import com.speakout.extensions.isNotNullOrEmpty
 import com.speakout.extensions.visible
 import com.speakout.ui.MainActivity
 import kotlinx.android.synthetic.main.fragment_search.*
-import kotlinx.android.synthetic.main.fragment_search.users_list_rv
 import timber.log.Timber
 
 
@@ -40,6 +39,7 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         lottie_search_user_animation.speed = 2f
         lottie_search_user_animation.gone()
+
         mAdapter.mListener = mUserClickListener
         users_list_rv.apply {
             setHasFixedSize(true)

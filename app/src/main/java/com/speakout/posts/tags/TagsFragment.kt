@@ -17,10 +17,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
-import com.speakout.extensions.gone
-import com.speakout.extensions.setUpToolbar
-import com.speakout.extensions.showShortToast
-import com.speakout.extensions.visible
+import com.speakout.extensions.*
 import com.speakout.posts.create.CreatePostViewModel
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -29,6 +26,7 @@ import kotlinx.android.synthetic.main.fragment_post_tags.*
 import timber.log.Timber
 import java.text.DateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class TagsFragment : Fragment() {
 
@@ -38,7 +36,7 @@ class TagsFragment : Fragment() {
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
     private val addTagQueue = LinkedList<Tag>()
     private val tagsViewModel: TagViewModel by viewModels()
-    private val tagRegex = "^([a-z0-9]+\\b)(?!;)\$".toRegex()
+    private val tagRegex = "^([A-Za-z0-9]+\\b)(?!;)\$".toRegex()
     private val createPostData = PostData()
     private val safeArgs: TagsFragmentArgs by navArgs()
 
@@ -171,28 +169,14 @@ class TagsFragment : Fragment() {
     private fun observeViewModels() {
         tagsViewModel.tags.observe(viewLifecycleOwner, Observer {
             fragment_post_tags_progress.gone()
-
-            val query = tag_search_view.query
-            if (query?.isNotEmpty() == true && it.isEmpty()) {
-                if (tagRegex.matches(query)) {
-                    mAdapter.setData(
-                        listOf(
-                            Tag(tag = query.toString(), id = System.nanoTime(), used = null)
-                        )
-                    )
-                }
-            } else {
-                mAdapter.setData(it)
-            }
+            mAdapter.setData(it)
             mAdapter.isLoading.set(false)
         })
 
         tagsViewModel.addTag.observe(viewLifecycleOwner, Observer {
-            if (addTagQueue.isNotEmpty()) {
-                addTagQueue.poll()?.let {
-                    it.uploading = null
-                    mAdapter.tagAdded(tag = it)
-                }
+            it?.let {
+                it.uploading = null
+                mAdapter.tagAdded(tag = it)
             }
         })
 
@@ -219,7 +203,6 @@ class TagsFragment : Fragment() {
         override fun onAddNewTag(tag: Tag) {
             super.onAddNewTag(tag)
             val newTag = tag.copy(used = 0)
-            addTagQueue.add(newTag)
             tagsViewModel.addTag(newTag)
         }
 

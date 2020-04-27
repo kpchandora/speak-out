@@ -1,20 +1,19 @@
 package com.speakout.posts.tags
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import kotlinx.coroutines.*
+import timber.log.Timber
 
 class TagViewModel : ViewModel() {
 
 
-    private val _tags = MutableLiveData<String>()
-    val tags: LiveData<List<Tag>> = Transformations.switchMap(_tags) {
-        TagsService.getTags(it)
-    }
+    private var searchJob: Job? = null
+
+    private val _tags = MutableLiveData<List<Tag>>()
+    val tags: LiveData<List<Tag>> = _tags
 
     private val _addTag = MutableLiveData<Tag>()
-    val addTag: LiveData<Boolean> = Transformations.switchMap(_addTag) {
+    val addTag: LiveData<Tag?> = Transformations.switchMap(_addTag) {
         TagsService.addTag(tag = it)
     }
 
@@ -23,7 +22,12 @@ class TagViewModel : ViewModel() {
     }
 
     fun searchTags(query: String) {
-        _tags.value = query
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(300)
+            Timber.d("launch")
+            _tags.value = TagsService.getTags(query)
+        }
     }
 
 }

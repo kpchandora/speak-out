@@ -31,7 +31,7 @@ class HomeViewModel : ViewModel() {
 
     fun getPosts(id: String) {
         viewModelScope.launch {
-            //            _posts.value = PostsService.getProfilePosts(id)
+//            _posts.value = PostsService.getProfilePosts(id)
         }
     }
 

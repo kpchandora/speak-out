@@ -51,20 +51,21 @@ exports.getProfilePosts = async function (data, context) {
             const promises = []
             posts.forEach(doc => {
                 var newDoc = doc.data()
-                promises.push(db.doc(`post_likes/${doc.id}`).get().then(value => {
-                    if (value.exists) {
-                        console.log(value.data().usersMap)
-                        if (value.data().usersMap) {
-                            console.log("Is likes by user: " + (data.userId in value.data().usersMap))
-                            newDoc['isLikedBySelf'] = data.userId in value.data().usersMap
-                        } else {
-                            console.log("Not liked by user")
-                            newDoc['isLikedBySelf'] = false
-                        }
-                    } else {
-                        console.log("Not exists")
-                        newDoc['isLikedBySelf'] = false
-                    }
+                promises.push(db.doc(`post_likes/${doc.id}/users/${newDoc.userId}`).get().then(value => {
+                    // if (value.exists) {
+                    //     console.log(value.data().usersMap)
+                    //     if (value.data().usersMap) {
+                    //         console.log("Is likes by user: " + (data.userId in value.data().usersMap))
+                    //         newDoc['isLikedBySelf'] = data.userId in value.data().usersMap
+                    //     } else {
+                    //         console.log("Not liked by user")
+                    //         newDoc['isLikedBySelf'] = false
+                    //     }
+                    // } else {
+                    //     console.log("Not exists")
+                    //     newDoc['isLikedBySelf'] = false
+                    // }
+                    newDoc['isLikedBySelf'] = value.exists
                     postsList.push(newDoc)
                 }))
             })

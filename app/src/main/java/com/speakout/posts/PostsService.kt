@@ -46,7 +46,6 @@ object PostsService {
             .document(postData.postId)
 
         val postCountRef = getUsersRef().document(postData.userId)
-        val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
 
         getRef().runBatch {
             it.set(
@@ -56,7 +55,6 @@ object PostsService {
             )
             it.set(postRef, postData)
             it.set(userPostsRef, mapOf("timeStamp" to System.currentTimeMillis()))
-            it.set(postLikesRef, mapOf("timeStamp" to FieldValue.serverTimestamp()))
         }.addOnCompleteListener {
             data.value = it.isSuccessful
         }
@@ -120,13 +118,15 @@ object PostsService {
         try {
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
-            val userToAddMap =
-                mapOf("usersMap.${AppPreference.getUserId()}" to FieldValue.serverTimestamp())
+            val postLikesRef =
+                getPostSingleLikeRef(postId = postData.postId, userId = AppPreference.getUserId())
 
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(1)), SetOptions.merge())
-                it.update(postLikesRef, userToAddMap)
+                it.set(
+                    postLikesRef,
+                    mapOf("timeStamp" to System.currentTimeMillis())
+                )
             }.await()
             Success(postData)
         } catch (e: Exception) {
@@ -139,13 +139,12 @@ object PostsService {
         try {
             val postRef = getSinglePostRef(postData.postId)
 
-            val postLikesRef = getPostSingleLikeRef(postId = postData.postId)
-            val userToRemoveMap =
-                mapOf("usersMap.${AppPreference.getUserId()}" to FieldValue.delete())
+            val postLikesRef =
+                getPostSingleLikeRef(postId = postData.postId, userId = AppPreference.getUserId())
 
             getRef().runBatch {
                 it.set(postRef, mapOf("likesCount" to FieldValue.increment(-1)), SetOptions.merge())
-                it.update(postLikesRef, userToRemoveMap)
+                it.delete(postLikesRef)
             }.await()
 
             Success(postData)
@@ -161,7 +160,6 @@ object PostsService {
                 val userPostRef = getUsersPostRef(postId = post.postId, userId = post.userId)
                 val userPostCountRef = getSingleUserRef(post.userId)
                 val singlePostRef = getSinglePostRef(post.postId)
-                val postLikesRef = getPostLikesRef(post.postId)
                 val postStorageRef = getPostsStorageRef().child("${post.postId}.jpg")
 
                 getRef().runBatch {
@@ -172,7 +170,6 @@ object PostsService {
                     )
                     it.delete(userPostRef)
                     it.delete(singlePostRef)
-                    it.delete(postLikesRef)
                 }.await()
 
                 postStorageRef.delete().await()

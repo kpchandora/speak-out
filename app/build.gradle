@@ -123,5 +123,14 @@ dependencies {
     // RxImagePicker
     implementation 'com.mlsdev.rximagepicker:library:2.2.1'
 
+    implementation 'com.squareup.okhttp3:okhttp:3.14.4'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
+
+    def retrofit2_version = "2.5.0"
+    //Retrofit2
+    implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
 }
 apply plugin: 'com.google.gms.google-services'

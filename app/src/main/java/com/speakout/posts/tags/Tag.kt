@@ -2,6 +2,7 @@ package com.speakout.posts.tags
 
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
+import com.google.gson.annotations.Expose
 
 @IgnoreExtraProperties
 data class Tag(
@@ -9,8 +10,6 @@ data class Tag(
     val tag: String = "",
     var used: Long? = 0
 ) {
-    @get:Exclude
-    @set:Exclude
+    @Expose(deserialize = false, serialize = false)
     var uploading: Boolean? = false
-
 }

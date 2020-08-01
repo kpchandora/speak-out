@@ -34,7 +34,6 @@ class TagsFragment : Fragment() {
     private val mSelectedTags = hashMapOf<Long, Tag>()
     private val mAdapter = TagsRecyclerViewAdapter()
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
-    private val addTagQueue = LinkedList<Tag>()
     private val tagsViewModel: TagViewModel by viewModels()
     private val tagRegex = "^([A-Za-z0-9]+\\b)(?!;)\$".toRegex()
     private val createPostData = PostData()

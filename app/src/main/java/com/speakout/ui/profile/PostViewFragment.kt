@@ -82,8 +82,7 @@ class PostViewFragment : Fragment() {
         })
     }
 
-    private val mPostEventsListener = object :
-        PostClickEventListener {
+    private val mPostEventsListener = object : PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             homeViewModel.likePost(postData)
         }

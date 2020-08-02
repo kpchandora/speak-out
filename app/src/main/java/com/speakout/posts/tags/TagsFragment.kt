@@ -26,9 +26,7 @@ import com.speakout.ui.MainActivity
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_post_tags.*
 import timber.log.Timber
-import java.text.DateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class TagsFragment : Fragment() {
 
@@ -123,7 +121,7 @@ class TagsFragment : Fragment() {
             (requireActivity() as MainActivity).showProgress()
             val postId = UUID.randomUUID().toString()
             createPostData.postId = postId
-            mCreatePostViewModel.uploadImage(Pair(bitmap, postId))
+            mCreatePostViewModel.uploadImage(bitmap, postId)
         } ?: kotlin.run {
             showShortToast("Failed to upload post")
         }
@@ -137,7 +135,7 @@ class TagsFragment : Fragment() {
                     postImageUrl = url
                     content = safeArgs.postContent
                     userId = pref.getUserId()
-                    userImageUrl = pref.getPhotoUrl()
+                    photoUrl = pref.getPhotoUrl()
                     username = pref.getUserUniqueName()
                 }
 

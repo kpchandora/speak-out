@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.extensions.getScreenSize
+import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_post_layout.view.*
@@ -56,7 +57,7 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     }
 
-    fun deletePost(postData: PostData) {
+    fun deletePost(postData: PostMiniDetails) {
         var matchedPost: PostData? = null
         mPostsList.forEachIndexed { index, post ->
             if (postData.postId == post.postId) {
@@ -70,10 +71,9 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         }
     }
 
-    fun likePostFail(postData: PostData) {
-        Timber.d("likePostFail Content: ${postData.content}")
+    fun likePostFail(postMiniDetails: PostMiniDetails) {
         mPostsList.forEachIndexed { index, postDataItem ->
-            if (postData.postId == postDataItem.postId) {
+            if (postMiniDetails.postId == postDataItem.postId) {
                 postDataItem.isLikedBySelf = false
                 postDataItem.likesCount--
                 notifyItemChanged(index, postDataItem)
@@ -81,10 +81,9 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         }
     }
 
-    fun unlikePostFail(postData: PostData) {
-        Timber.d("unlikePostFail Content: ${postData.content}")
+    fun unlikePostFail(postMiniDetails: PostMiniDetails) {
         mPostsList.forEachIndexed { index, postDataItem ->
-            if (postData.postId == postDataItem.postId) {
+            if (postMiniDetails.postId == postDataItem.postId) {
                 postDataItem.isLikedBySelf = true
                 postDataItem.likesCount++
                 notifyItemChanged(index, postDataItem)

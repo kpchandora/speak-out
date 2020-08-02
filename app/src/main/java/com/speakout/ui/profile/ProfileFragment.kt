@@ -96,7 +96,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
 
-        homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+        homeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
                 if (it is Result.Success) {
                     mPostsAdapter.updateData(it.data)

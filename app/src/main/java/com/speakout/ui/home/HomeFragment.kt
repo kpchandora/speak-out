@@ -14,7 +14,6 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -117,7 +116,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun observeViewModels() {
-        mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+        mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
             if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
                 if (it is Result.Success) {
                     mPostsAdapter.updatePosts(it.data)
@@ -163,7 +162,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     ) {
         val action = HomeFragmentDirections.actionHomeToProfileFragment(
             userId = postData.userId,
-            profileUrl = postData.userImageUrl,
+            profileUrl = postData.photoUrl,
             transitionTag = postData.postId,
             username = postData.username
         )

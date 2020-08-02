@@ -2,7 +2,6 @@ package com.speakout.posts.create
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.google.firebase.firestore.Exclude
 
 data class PostData(
     var postId: String = "",
@@ -12,7 +11,7 @@ data class PostData(
     var postImageUrl: String = "",
     var timeStamp: Long = 0,
     var username: String = "",
-    var userImageUrl: String = "",
+    var photoUrl: String = "",
     var likesCount: Long = 0,
     var isLikedBySelf: Boolean = false
 ) : Parcelable {
@@ -38,7 +37,7 @@ data class PostData(
         parcel.writeString(postImageUrl)
         parcel.writeLong(timeStamp)
         parcel.writeString(username)
-        parcel.writeString(userImageUrl)
+        parcel.writeString(photoUrl)
         parcel.writeLong(likesCount)
         parcel.writeByte(if (isLikedBySelf) 1 else 0)
     }

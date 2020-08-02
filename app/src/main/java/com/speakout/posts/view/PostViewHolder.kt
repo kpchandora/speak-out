@@ -20,7 +20,7 @@ class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         view.apply {
             item_post_profile_bg_iv.gone()
             item_post_profile_iv.transitionName = post.postId
-            item_post_profile_iv.loadImageWithCallback(post.userImageUrl,
+            item_post_profile_iv.loadImageWithCallback(post.photoUrl,
                 makeRound = true,
                 onSuccess = {
                     item_post_profile_bg_iv.visible()

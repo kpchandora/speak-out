@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Result
 import com.speakout.posts.create.PostData
-import com.speakout.posts.PostsService
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 

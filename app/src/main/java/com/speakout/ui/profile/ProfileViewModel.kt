@@ -8,7 +8,6 @@ import com.speakout.common.Event
 import com.speakout.common.Result
 import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
-import com.speakout.posts.PostsService
 import com.speakout.ui.observers.FollowersFollowingsLiveData
 import com.speakout.ui.observers.UserLiveData
 import com.speakout.utils.ImageUtils

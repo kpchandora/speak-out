@@ -5,14 +5,14 @@ import androidx.lifecycle.*
 import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Event
 import com.speakout.posts.PostsRepository
-import com.speakout.posts.PostsService
 import kotlinx.coroutines.launch
 import com.speakout.common.Result
+import com.speakout.utils.AppPreference
 
 class CreatePostViewModel : ViewModel() {
-
+    private val appPreference = AppPreference
     private val mPostsRepository: PostsRepository by lazy {
-        PostsRepository(RetrofitBuilder.apiService)
+        PostsRepository(RetrofitBuilder.apiService, appPreference)
     }
     private val _post = MutableLiveData<Event<Result<PostData>>>()
     val createPost: LiveData<Event<Result<PostData>>> = _post
@@ -27,9 +27,9 @@ class CreatePostViewModel : ViewModel() {
         }
     }
 
-    fun uploadImage(pair: Pair<Bitmap, String>) {
+    fun uploadImage(bitmap: Bitmap, postId: String) {
         viewModelScope.launch {
-            _uploadImage.value = Event(mPostsRepository.uploadImage(pair.first, pair.second))
+            _uploadImage.value = Event(mPostsRepository.uploadImage(bitmap, postId))
         }
     }
 

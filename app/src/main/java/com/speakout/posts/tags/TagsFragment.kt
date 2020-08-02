@@ -17,6 +17,8 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
+import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.posts.create.CreatePostViewModel
 import com.speakout.posts.create.PostData
@@ -126,7 +128,7 @@ class TagsFragment : Fragment() {
             showShortToast("Failed to upload post")
         }
 
-        mCreatePostViewModel.uploadImageObserver.observe(viewLifecycleOwner, Observer {
+        mCreatePostViewModel.uploadImage.observe(viewLifecycleOwner, EventObserver {
             it?.let { url ->
                 val pref = AppPreference
 
@@ -134,14 +136,12 @@ class TagsFragment : Fragment() {
                 createPostData.apply {
                     postImageUrl = url
                     content = safeArgs.postContent
-                    timeStamp = DateFormat.getDateTimeInstance().format(Date())
                     userId = pref.getUserId()
                     userImageUrl = pref.getPhotoUrl()
                     username = pref.getUserUniqueName()
-                    timeStampLong = System.currentTimeMillis()
                 }
 
-                mCreatePostViewModel.uploadPost(createPostData)
+                mCreatePostViewModel.createPost(createPostData)
 
             } ?: kotlin.run {
                 (requireActivity() as MainActivity).hideProgress()
@@ -149,9 +149,9 @@ class TagsFragment : Fragment() {
             }
         })
 
-        mCreatePostViewModel.postObserver.observe(viewLifecycleOwner, Observer {
+        mCreatePostViewModel.createPost.observe(viewLifecycleOwner, EventObserver {
             (requireActivity() as MainActivity).hideProgress()
-            if (it) {
+            if (it is Result.Success) {
                 showShortToast("Post uploaded successfully")
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
                     "isSuccess",

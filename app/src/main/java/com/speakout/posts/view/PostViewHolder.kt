@@ -39,7 +39,7 @@ class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
             setLikes(post)
 
-            item_post_time_tv.text = post.timeStamp
+            item_post_time_tv.text = post.timeStamp.toString()
 
             loadPost(post.postImageUrl)
 

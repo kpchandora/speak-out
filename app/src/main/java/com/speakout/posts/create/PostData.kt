@@ -10,10 +10,9 @@ data class PostData(
     var content: String = "",
     var tags: List<String> = emptyList(),
     var postImageUrl: String = "",
-    var timeStamp: String = "",
+    var timeStamp: Long = 0,
     var username: String = "",
     var userImageUrl: String = "",
-    var timeStampLong: Long = 0,
     var likesCount: Long = 0,
     var isLikedBySelf: Boolean = false
 ) : Parcelable {
@@ -23,11 +22,10 @@ data class PostData(
         parcel.readString() ?: "",
         parcel.createStringArrayList() ?: emptyList(),
         parcel.readString() ?: "",
+        parcel.readLong() ?: 0,
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readLong(),
-        parcel.readLong(),
+        parcel.readLong() ?: 0,
         parcel.readByte() != 0.toByte()
     ) {
     }
@@ -38,10 +36,9 @@ data class PostData(
         parcel.writeString(content)
         parcel.writeStringList(tags)
         parcel.writeString(postImageUrl)
-        parcel.writeString(timeStamp)
+        parcel.writeLong(timeStamp)
         parcel.writeString(username)
         parcel.writeString(userImageUrl)
-        parcel.writeLong(timeStampLong)
         parcel.writeLong(likesCount)
         parcel.writeByte(if (isLikedBySelf) 1 else 0)
     }

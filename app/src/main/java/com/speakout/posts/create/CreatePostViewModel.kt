@@ -1,33 +1,36 @@
 package com.speakout.posts.create
 
 import android.graphics.Bitmap
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.speakout.api.RetrofitBuilder
+import com.speakout.common.Event
+import com.speakout.posts.PostsRepository
 import com.speakout.posts.PostsService
+import kotlinx.coroutines.launch
+import com.speakout.common.Result
 
 class CreatePostViewModel : ViewModel() {
 
-    private val post = MutableLiveData<PostData>()
-    private val uploadImage = MutableLiveData<Pair<Bitmap, String>>()
+    private val mPostsRepository: PostsRepository by lazy {
+        PostsRepository(RetrofitBuilder.apiService)
+    }
+    private val _post = MutableLiveData<Event<Result<PostData>>>()
+    val createPost: LiveData<Event<Result<PostData>>> = _post
+    private val _uploadImage = MutableLiveData<Event<String?>>()
+    val uploadImage: LiveData<Event<String?>> = _uploadImage
     val tags = MutableLiveData<List<String>>()
     var imageBitmap: Bitmap? = null
 
-    val uploadImageObserver: LiveData<String?> = Transformations.switchMap(uploadImage) {
-        PostsService.uploadImage(bitmap = it.first, id = it.second)
-    }
-
-    val postObserver: LiveData<Boolean> = Transformations.switchMap(post) {
-        PostsService.createPost(postData = it)
+    fun createPost(postData: PostData) {
+        viewModelScope.launch {
+            _post.value = Event(mPostsRepository.createPost(postData))
+        }
     }
 
     fun uploadImage(pair: Pair<Bitmap, String>) {
-        uploadImage.value = pair
-    }
-
-    fun uploadPost(postData: PostData) {
-        post.value = postData
+        viewModelScope.launch {
+            _uploadImage.value = Event(mPostsRepository.uploadImage(pair.first, pair.second))
+        }
     }
 
 }

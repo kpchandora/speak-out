@@ -1,5 +1,6 @@
 package com.speakout.api
 
+import com.speakout.posts.create.PostData
 import com.speakout.posts.tags.Tag
 import retrofit2.Response
 import retrofit2.http.Body
@@ -17,4 +18,7 @@ public interface ApiService {
 
     @POST("tags/create")
     suspend fun createTag(@Body tag: Tag): Response<Tag>
+
+    @POST("posts/create")
+    suspend fun createPost(@Body post: PostData): Response<PostData>
 }

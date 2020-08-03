@@ -23,8 +23,10 @@ import com.mlsdev.rximagepicker.Sources
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.auth.Type
+import com.speakout.auth.UserMiniDetails
 import com.speakout.auth.UserViewModel
 import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
@@ -57,7 +59,6 @@ class ProfileEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         view.post {
             setUpToolbar(view)?.let {
                 it.title = getString(R.string.edit)
@@ -76,11 +77,9 @@ class ProfileEditFragment : Fragment() {
 
         profile_edit_update_btn.setOnClickListener {
             userViewModel.updateUserDetails(
-                mapOf(
-                    UserDetails.updatePhoto(mProfileUrl),
-                    UserDetails.updateName(profile_edit_full_name_et.text.toString().trim()),
-                    UserDetails.updateNumber(profile_edit_mobile_et.text.toString().trim()),
-                    UserDetails.updateTimeStamp(System.currentTimeMillis())
+                UserMiniDetails(
+                    userId = AppPreference.getUserId(), photoUrl = mProfileUrl,
+                    name = profile_edit_full_name_et.text.toString().trim()
                 )
             )
         }
@@ -154,8 +153,8 @@ class ProfileEditFragment : Fragment() {
             isUploading = false
             profile_edit_pb.gone()
             profile_edit_update_btn.enable()
-            if (it.isNotNullOrEmpty()) {
-                mProfileUrl = it!!
+            if (it is Result.Success) {
+                mProfileUrl = it.data
                 updatePicture(mProfileUrl)
             } else {
                 updatePicture(mProfileUrl)
@@ -167,12 +166,11 @@ class ProfileEditFragment : Fragment() {
             ?.observe(
                 viewLifecycleOwner
             ) {
-                Timber.d("Username Result: $it")
                 profile_edit_username_et.setText(it)
             }
 
-        userViewModel.updateDetailsObserver.observe(requireActivity(), EventObserver {
-            if (it) {
+        userViewModel.updateUserDetails.observe(requireActivity(), EventObserver {
+            if (it is Result.Success) {
                 findNavController().navigateUp()
             } else {
                 requireActivity().showShortToast("Failed to update details")

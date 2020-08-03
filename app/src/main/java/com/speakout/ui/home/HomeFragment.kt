@@ -65,7 +65,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 )
             }
             else -> {
-                mHomeViewModel.getPosts("I6BSfzDRIAccVU4VzflwXTOJIDN2")
+                mHomeViewModel.getPosts(mPreference.getUserId())
             }
         }
     }

@@ -1,6 +1,8 @@
 package com.speakout.api
 
 import com.google.gson.JsonObject
+import com.speakout.auth.UserDetails
+import com.speakout.auth.UserMiniDetails
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.create.PostData
 import com.speakout.posts.tags.Tag
@@ -38,4 +40,38 @@ public interface ApiService {
         @Header("userId") selfUserId: String,
         @Path("postId") postId: String
     ): Response<PostMiniDetails>
+
+    @POST("users/create")
+    suspend fun createUser(@Body userDetails: UserDetails): Response<UserDetails>
+
+    @GET("users/{userId}")
+    suspend fun getUser(
+        @Header("userId") selfUserId: String,
+        @Path("userId") userId: String
+    ): Response<UserDetails>
+
+    @GET("users/checkUsername/{username}")
+    suspend fun checkUserName(@Path("username") username: String): Response<JsonObject>
+
+    @POST("users/update")
+    suspend fun updateUserDetails(@Body userMiniDetails: UserMiniDetails): Response<UserDetails>
+
+    @POST("users/follow")
+    suspend fun followUser(@Body jsonObject: JsonObject): Response<JsonObject>
+
+    @POST("users/unfollow")
+    suspend fun unFollowUser(@Body jsonObject: JsonObject): Response<JsonObject>
+
+    @GET("users/followers/{userId}")
+    suspend fun getFollowers(
+        @Header("userId") selfUserId: String,
+        @Path("userId") userId: String
+    ): Response<List<UserMiniDetails>>
+
+    @GET("users/followings/{userId}")
+    suspend fun getFollowings(
+        @Header("userId") selfUserId: String,
+        @Path("userId") userId: String
+    ): Response<List<UserMiniDetails>>
+
 }

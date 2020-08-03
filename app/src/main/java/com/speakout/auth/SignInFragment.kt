@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 import com.speakout.R
+import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
@@ -51,10 +52,11 @@ class SignInFragment : Fragment() {
 
         mPreference = AppPreference
 
-        mUserViewModel.saveUserDetailsObserver.observe(requireActivity(), Observer {
-            if (it) {
+        mUserViewModel.saveUserDetails.observe(requireActivity(), Observer {
+            if (it is Result.Success) {
                 sign_in_progress.gone()
                 mPreference.setLoggedIn()
+                mPreference.saveUserDetails(it.data)
                 val action = SignInFragmentDirections.actionSignInFragmentToNavigationHome()
                 findNavController().navigate(action)
             } else {
@@ -64,25 +66,30 @@ class SignInFragment : Fragment() {
             }
         })
 
-        mUserViewModel.getUserDataObserver.observe(requireActivity(), Observer {
-            it?.apply {
-                sign_in_progress.gone()
-                mPreference.setLoggedIn()
-                mPreference.saveUserDetails(this)
-                if (username.isNotNullOrEmpty()) {
-                    mPreference.setUsernameProcessComplete()
-                    val action = SignInFragmentDirections.actionSignInFragmentToNavigationHome()
-                    findNavController().navigate(action)
-                } else {
-                    val action = SignInFragmentDirections.actionSignInFragmentToUserNameFragment(
-                        Type.Create,
-                        null
-                    )
-                    findNavController().navigate(action)
+        mUserViewModel.userDetails.observe(requireActivity(), Observer {
+            if (it is Result.Success) {
+                it.data.apply {
+                    sign_in_progress.gone()
+                    mPreference.setLoggedIn()
+                    mPreference.saveUserDetails(this)
+                    if (username.isNotNullOrEmpty() && username?.equals(userId) != true) {
+                        mPreference.setUsernameProcessComplete()
+                        val action = SignInFragmentDirections.actionSignInFragmentToNavigationHome()
+                        findNavController().navigate(action)
+                    } else {
+                        val action =
+                            SignInFragmentDirections.actionSignInFragmentToUserNameFragment(
+                                Type.Create,
+                                null
+                            )
+                        findNavController().navigate(action)
+                    }
                 }
-            } ?: FirebaseUtils.signOut().also {
-                hideProgress()
-                showShortToast("Something went wrong, please try again")
+            } else {
+                FirebaseUtils.signOut().also {
+                    hideProgress()
+                    showShortToast("Something went wrong, please try again")
+                }
             }
         })
 
@@ -144,7 +151,6 @@ class SignInFragment : Fragment() {
                                 creationTimeStamp = metadata?.creationTimestamp,
                                 lastSignInTimestamp = metadata?.lastSignInTimestamp
                             )
-                            mPreference.saveUserDetails(model)
                             mUserViewModel.saveUserDetails(model)
                         } else {
                             mUserViewModel.getUserData(uid = uid)

@@ -1,13 +1,17 @@
 package com.speakout.users
 
 import androidx.lifecycle.*
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Result
-import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
 class UsersListViewModel : ViewModel() {
+
+    private val mUsersRepository by lazy {
+        UsersRepository(RetrofitBuilder.apiService, AppPreference)
+    }
 
     private val _likesList = MutableLiveData<Result<List<UserMiniDetails>>>()
     val likesList: LiveData<Result<List<UserMiniDetails>>> = _likesList
@@ -20,19 +24,27 @@ class UsersListViewModel : ViewModel() {
 
     fun getLikesList(postId: String) {
         viewModelScope.launch {
-            _likesList.value = UsersService.getLikesList(postId)
+            _likesList.value = mUsersRepository.getUsersList(
+                userId = AppPreference.getUserId(),
+                postId = postId,
+                actionType = ActionType.Followings
+            )
         }
     }
 
     fun getFollowingsList(userId: String) {
         viewModelScope.launch {
-            _followingsList.value = UsersService.getFollowings(userId)
+            _followingsList.value = mUsersRepository.getUsersList(
+                userId = userId, actionType = ActionType.Followings
+            )
         }
     }
 
     fun getFollowersList(userId: String) {
         viewModelScope.launch {
-            _followersList.value = UsersService.getFollowers(userId)
+            _followersList.value = mUsersRepository.getUsersList(
+                userId = userId, actionType = ActionType.Followers
+            )
         }
     }
 

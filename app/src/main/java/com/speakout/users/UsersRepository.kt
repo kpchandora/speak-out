@@ -111,8 +111,8 @@ public class UsersRepository(
                 val result: Response<List<UserMiniDetails>>
                 when (actionType) {
                     ActionType.Likes -> {
-                        result = apiService.getFollowers(
-                            selfUserId = appPreference.getUserId(), userId = userId
+                        result = apiService.getLikes(
+                            selfUserId = appPreference.getUserId(), postId = postId
                         )
                     }
                     ActionType.Followers -> {
@@ -136,6 +136,17 @@ public class UsersRepository(
             }
         }
 
-
+    suspend fun searchUsers(username: String): Result<List<UserMiniDetails>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val result = apiService.searchUsers(username)
+                if (result.isSuccessful && result.body() != null) {
+                    return@withContext Result.Success(result.body()!!)
+                }
+                Result.Error(Exception("Failed to get users"), emptyList<UserMiniDetails>())
+            } catch (e: Exception) {
+                Result.Error(e, emptyList<UserMiniDetails>())
+            }
+        }
 
 }

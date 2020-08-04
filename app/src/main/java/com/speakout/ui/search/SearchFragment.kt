@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.gone
 import com.speakout.extensions.isNotNullOrEmpty
 import com.speakout.extensions.visible
@@ -25,7 +26,7 @@ class SearchFragment : Fragment() {
 
     private val searchViewModel: SearchViewModel by viewModels()
     private val mAdapter = SearchAdapter()
-    private var postsCount = 0
+    private var usersCount = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,12 +50,16 @@ class SearchFragment : Fragment() {
 
         search_view.setOnQueryTextListener(DebouncingQueryTextListener(
             runBefore = {
+                if (it.isNullOrEmpty()) {
+                    usersCount = 0
+                    mAdapter.updateData(emptyList())
+                }
                 if (lottie_search_empty_animation.isAnimating) {
                     lottie_search_empty_animation.pauseAnimation()
                     lottie_search_empty_animation.gone()
                 }
                 if (it.isNotNullOrEmpty()) {
-                    if (postsCount == 0 && !lottie_search_user_animation.isAnimating) {
+                    if (usersCount == 0 && !lottie_search_user_animation.isAnimating) {
                         lottie_search_user_animation.visible()
                         lottie_search_user_animation.progress = 0f
                         lottie_search_user_animation.playAnimation()
@@ -67,9 +72,6 @@ class SearchFragment : Fragment() {
             onDebouncingQueryTextChange = {
                 if (it.isNotNullOrEmpty()) {
                     searchViewModel.searchUsers(it!!)
-                } else {
-                    postsCount = 0
-                    mAdapter.updateData(emptyList())
                 }
             }
         ))
@@ -77,13 +79,17 @@ class SearchFragment : Fragment() {
         searchViewModel.searchUsers.observe(viewLifecycleOwner, EventObserver {
             lottie_search_user_animation.pauseAnimation()
             lottie_search_user_animation.gone()
-            postsCount = it.size
-            if (it.isEmpty()) {
-                lottie_search_empty_animation.visible()
-                lottie_search_empty_animation.playAnimation()
-                mAdapter.updateData(emptyList())
+            if (it is Result.Success) {
+                usersCount = it.data.size
+                if (it.data.isEmpty()) {
+                    lottie_search_empty_animation.visible()
+                    lottie_search_empty_animation.playAnimation()
+                    mAdapter.updateData(emptyList())
+                } else {
+                    mAdapter.updateData(it.data)
+                }
             } else {
-                mAdapter.updateData(it)
+                usersCount = 0
             }
         })
     }

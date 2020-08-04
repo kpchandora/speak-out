@@ -97,7 +97,7 @@ class PostViewFragment : Fragment() {
 
         override fun onLikedUsersClick(postData: PostData) {
             val action = PostViewFragmentDirections.actionPostViewFragmentToUsersListFragment(
-                postData.userId,
+                postData.postId,
                 ActionType.Likes
             )
             findNavController().navigate(action)

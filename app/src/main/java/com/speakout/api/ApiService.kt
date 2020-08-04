@@ -44,7 +44,7 @@ public interface ApiService {
     @POST("users/create")
     suspend fun createUser(@Body userDetails: UserDetails): Response<UserDetails>
 
-    @GET("users/{userId}")
+    @GET("users/get/{userId}")
     suspend fun getUser(
         @Header("userId") selfUserId: String,
         @Path("userId") userId: String
@@ -73,5 +73,14 @@ public interface ApiService {
         @Header("userId") selfUserId: String,
         @Path("userId") userId: String
     ): Response<List<UserMiniDetails>>
+
+    @GET("users/likes/{postId}")
+    suspend fun getLikes(
+        @Header("userId") selfUserId: String,
+        @Path("postId") postId: String
+    ): Response<List<UserMiniDetails>>
+
+    @GET("users/search")
+    suspend fun searchUsers(@Query("username") username: String): Response<List<UserMiniDetails>>
 
 }

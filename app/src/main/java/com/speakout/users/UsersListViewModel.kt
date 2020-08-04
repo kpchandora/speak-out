@@ -27,7 +27,7 @@ class UsersListViewModel : ViewModel() {
             _likesList.value = mUsersRepository.getUsersList(
                 userId = AppPreference.getUserId(),
                 postId = postId,
-                actionType = ActionType.Followings
+                actionType = ActionType.Likes
             )
         }
     }

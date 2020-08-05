@@ -11,17 +11,21 @@ import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
     private val userId = AppPreference.getUserId()
+    private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_post_layout, parent, false)
-        val holder = PostViewHolder(view)
+        val holder = PostViewHolder(view, simpleDateFormat)
         holder.userId = userId
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()

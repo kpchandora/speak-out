@@ -39,6 +39,12 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun getFeed() {
+        viewModelScope.launch {
+            _posts.value = Event(mPostsRepository.getFeed())
+        }
+    }
+
     fun likePost(postData: PostData) {
         viewModelScope.launch {
             _likePost.value = Event(

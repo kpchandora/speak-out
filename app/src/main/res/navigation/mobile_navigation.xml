@@ -209,6 +209,11 @@
             android:name="com.speakout.ui.profile.ProfileEditFragment"
             tools:layout="@layout/fragment_profile_edit">
 
+            <argument
+                android:name="userDetails"
+                app:argType="com.speakout.auth.UserDetails"
+                app:nullable="false" />
+
             <action
                 android:id="@+id/action_profileEditFragment_to_userNameFragment"
                 app:destination="@id/userNameFragment"

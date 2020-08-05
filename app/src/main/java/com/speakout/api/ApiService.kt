@@ -29,6 +29,9 @@ public interface ApiService {
         @Path("userId") userId: String
     ): Response<List<PostData>>
 
+    @GET("posts/getFeed/{userId}")
+    suspend fun getFeed(@Path("userId") userId: String): Response<List<PostData>>
+
     @POST("posts/like")
     suspend fun likePost(@Body postMiniDetails: PostMiniDetails): Response<PostMiniDetails>
 

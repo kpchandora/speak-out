@@ -3,7 +3,6 @@ package com.speakout.ui.profile
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.text.Editable
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,10 +11,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.get
+import androidx.navigation.fragment.navArgs
 import com.mlsdev.rximagepicker.RxImageConverters
 import com.mlsdev.rximagepicker.RxImagePicker
 import com.mlsdev.rximagepicker.Sources
@@ -42,10 +40,13 @@ class ProfileEditFragment : Fragment() {
     private var isUploading = false
     private val profileViewModel: ProfileViewModel by viewModels()
     private val userViewModel: UserViewModel by viewModels()
+    private val safeArgs: ProfileEditFragmentArgs by navArgs()
+    private lateinit var mUserDetails: UserDetails
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mProfileUrl = AppPreference.getPhotoUrl()
+        mUserDetails = safeArgs.userDetails!!
+        mProfileUrl = mUserDetails.photoUrl ?: ""
     }
 
     override fun onCreateView(
@@ -78,8 +79,10 @@ class ProfileEditFragment : Fragment() {
         profile_edit_update_btn.setOnClickListener {
             userViewModel.updateUserDetails(
                 UserMiniDetails(
-                    userId = AppPreference.getUserId(), photoUrl = mProfileUrl,
-                    name = profile_edit_full_name_et.text.toString().trim()
+                    userId = AppPreference.getUserId(),
+                    photoUrl = mProfileUrl,
+                    name = profile_edit_full_name_et.text.toString().trim(),
+                    phoneNumber = profile_edit_mobile_et.text.toString().trim()
                 )
             )
         }
@@ -123,10 +126,10 @@ class ProfileEditFragment : Fragment() {
 
         profile_edit_add_iv.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
-        profile_edit_username_et.setText(AppPreference.getUserUniqueName())
-        profile_edit_full_name_et.setText(AppPreference.getUserDisplayName())
-        profile_edit_full_name_et.setSelection(AppPreference.getUserDisplayName().length)
-        profile_edit_mobile_et.setText(AppPreference.getPhoneNumber())
+        profile_edit_username_et.setText(mUserDetails.username)
+        profile_edit_full_name_et.setText(mUserDetails.name)
+        profile_edit_full_name_et.setSelection(mUserDetails.name?.length ?: 0)
+        profile_edit_mobile_et.setText(mUserDetails.phoneNumber ?: "")
 
     }
 
@@ -171,6 +174,7 @@ class ProfileEditFragment : Fragment() {
 
         userViewModel.updateUserDetails.observe(requireActivity(), EventObserver {
             if (it is Result.Success) {
+
                 findNavController().navigateUp()
             } else {
                 requireActivity().showShortToast("Failed to update details")

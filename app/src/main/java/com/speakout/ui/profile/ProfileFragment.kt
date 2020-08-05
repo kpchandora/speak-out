@@ -44,7 +44,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         super.onCreate(savedInstanceState)
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
-        homeViewModel.getPosts(mUserId)
         screenSize = requireActivity().getScreenSize()
     }
 
@@ -67,7 +66,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         profileViewModel.getUser(mUserId)
-
+        homeViewModel.getPosts(mUserId)
         safeArgs.transitionTag?.let {
             layout_profile_iv.transitionName = it
             loadImage(safeArgs.profileUrl)
@@ -124,30 +123,15 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             layoutParams.width = screenSize.widthPixels / 2
             setOnClickListener {
                 //                activity!!.openActivity(ProfileEditActivity::class.java)
-                findNavController().navigate(ProfileFragmentDirections.actionNavigationProfileToProfileEditFragment())
+                mUserDetails?.let {
+                    findNavController().navigate(
+                        ProfileFragmentDirections.actionNavigationProfileToProfileEditFragment(it)
+                    )
+                }
             }
         }
 
         showEdit()
-
-//        profileViewModel.profileObserver.observe(viewLifecycleOwner, Observer {
-//            it?.apply {
-//                populateData(this)
-//                if (lastUpdatedAt ?: -1 > AppPreference.getLastUpdatedTime()) {
-//                    AppPreference.updateDataChangeTimeStamp(lastUpdatedAt ?: -1)
-//                    AppPreference.saveUserDetails(this)
-//                }
-//            } ?: kotlin.run {
-//                AppPreference.apply {
-//                    val userDetails = UserDetails(
-//                        name = getUserDisplayName(),
-//                        username = getUserUniqueName(),
-//                        photoUrl = getPhotoUrl()
-//                    )
-//                    populateData(userDetails)
-//                }
-//            }
-//        })
     }
 
 

@@ -10,8 +10,11 @@ import com.speakout.extensions.loadImageWithCallback
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_post_layout.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 
-class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFormat) :
+    RecyclerView.ViewHolder(view) {
 
     var mEventListener: PostClickEventListener? = null
     var userId = ""
@@ -39,7 +42,9 @@ class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
             setLikes(post)
 
-            item_post_time_tv.text = post.timeStamp.toString()
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = post.timeStamp
+            item_post_time_tv.text = simpleDateFormat.format(calendar.time)
 
             loadPost(post.postImageUrl)
 
@@ -73,7 +78,6 @@ class PostViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
             item_post_profile_iv.setOnClickListener {
                 mEventListener?.onProfileClick(post, item_post_profile_iv)
             }
-
 
             item_post_like_count_tv.setOnClickListener {
                 mEventListener?.onLikedUsersClick(post)

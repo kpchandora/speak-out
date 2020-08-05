@@ -67,6 +67,20 @@ public class PostsRepository(
             }
         }
 
+    suspend fun getFeed(): Result<List<PostData>> =
+        withContext(Dispatchers.IO) {
+            try {
+                val result = apiService.getFeed(appPreference.getUserId())
+                if (result.isSuccessful && result.body() != null) {
+                    return@withContext Result.Success(result.body()!!)
+                }
+                Result.Error(Exception("Something went wrong"), null)
+            } catch (e: Exception) {
+                Timber.e(e)
+                Result.Error(e, null)
+            }
+        }
+
     suspend fun likePost(postMiniDetails: PostMiniDetails): Result<PostMiniDetails> =
         withContext(Dispatchers.IO) {
             try {
@@ -100,7 +114,7 @@ public class PostsRepository(
             try {
                 FirebaseUtils.getPostsStorageRef()
                     .child("${postMiniDetails.postId}.jpg")
-                    .delete().await()
+                    .delete()
                 val result = apiService.deletePost(
                     selfUserId = postMiniDetails.userId,
                     postId = postMiniDetails.postId

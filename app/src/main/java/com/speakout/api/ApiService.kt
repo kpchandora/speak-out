@@ -57,10 +57,10 @@ public interface ApiService {
     suspend fun updateUserDetails(@Body userMiniDetails: UserMiniDetails): Response<UserDetails>
 
     @POST("users/follow")
-    suspend fun followUser(@Body jsonObject: JsonObject): Response<JsonObject>
+    suspend fun followUser(@Body jsonObject: JsonObject): Response<UserDetails>
 
     @POST("users/unfollow")
-    suspend fun unFollowUser(@Body jsonObject: JsonObject): Response<JsonObject>
+    suspend fun unFollowUser(@Body jsonObject: JsonObject): Response<UserDetails>
 
     @GET("users/followers/{userId}")
     suspend fun getFollowers(

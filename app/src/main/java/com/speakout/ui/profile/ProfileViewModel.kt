@@ -2,23 +2,15 @@ package com.speakout.ui.profile
 
 import androidx.lifecycle.*
 import com.speakout.api.RetrofitBuilder
-import com.speakout.auth.AuthService
 import com.speakout.auth.UserDetails
-import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Event
 import com.speakout.common.Result
-import com.speakout.extensions.withDefaultSchedulers
 import com.speakout.posts.create.PostData
-import com.speakout.ui.observers.FollowersFollowingsLiveData
-import com.speakout.ui.observers.UserLiveData
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.File
 
 class ProfileViewModel : ViewModel() {
@@ -36,12 +28,12 @@ class ProfileViewModel : ViewModel() {
     private val _userDetails = MutableLiveData<Result<UserDetails>>()
     val userDetails: LiveData<Result<UserDetails>> = _userDetails
 
-    private val _followUser = MutableLiveData<Event<Result<String>>>()
-    val followUser: LiveData<Event<Result<String>>>
+    private val _followUser = MutableLiveData<Event<Result<UserDetails>>>()
+    val followUser: LiveData<Event<Result<UserDetails>>>
         get() = _followUser
 
-    private val _unFollowUser = MutableLiveData<Event<Result<String>>>()
-    val unFollowUser: LiveData<Event<Result<String>>>
+    private val _unFollowUser = MutableLiveData<Event<Result<UserDetails>>>()
+    val unFollowUser: LiveData<Event<Result<UserDetails>>>
         get() = _unFollowUser
 
     private val _uploadProfilePicture = MutableLiveData<Event<Result<String>>>()
@@ -72,7 +64,7 @@ class ProfileViewModel : ViewModel() {
 
     fun unFollowUser(userId: String) {
         viewModelScope.launch {
-            _followUser.value = Event(mUsersRepository.unFollowUser(userId = userId))
+            _unFollowUser.value = Event(mUsersRepository.unFollowUser(userId = userId))
         }
     }
 

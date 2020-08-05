@@ -69,7 +69,7 @@ public class UsersRepository(
             }
         }
 
-    suspend fun followUser(userId: String): Result<String> =
+    suspend fun followUser(userId: String): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
                 val obj = JsonObject()
@@ -77,15 +77,15 @@ public class UsersRepository(
                 obj.addProperty("userId", userId)
                 val result = apiService.followUser(obj)
                 if (result.isSuccessful && result.body() != null) {
-                    return@withContext Result.Success(userId)
+                    return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to follow user"), userId)
+                Result.Error(Exception("Failed to follow user"), null)
             } catch (e: Exception) {
-                Result.Error(e, userId)
+                Result.Error(e, null)
             }
         }
 
-    suspend fun unFollowUser(userId: String): Result<String> =
+    suspend fun unFollowUser(userId: String): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
                 val obj = JsonObject()
@@ -93,11 +93,11 @@ public class UsersRepository(
                 obj.addProperty("userId", userId)
                 val result = apiService.unFollowUser(obj)
                 if (result.isSuccessful && result.body() != null) {
-                    return@withContext Result.Success(userId)
+                    return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to unfollow user"), userId)
+                Result.Error(Exception("Failed to unfollow user"), null)
             } catch (e: Exception) {
-                Result.Error(e, userId)
+                Result.Error(e, null)
             }
         }
 

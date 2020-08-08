@@ -1,14 +1,21 @@
 package com.speakout.api
 
+import com.google.firebase.auth.FirebaseAuth
 import retrofit2.Response
 import java.io.IOException
 import  com.speakout.common.Result
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
 /**
  * Created by Kalpesh on 29/07/20.
  */
 open class BaseRepository {
+
+    protected suspend fun getToken(): String {
+        val result = FirebaseAuth.getInstance().currentUser?.getIdToken(true)?.await()
+        return result?.token ?: ""
+    }
 
     suspend fun <T : Any> safeApiCall(call: suspend () -> Response<T>, errorMessage: String): T? {
 

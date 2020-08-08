@@ -7,6 +7,9 @@ import com.speakout.extensions.isNotNullOrEmpty
 
 object AppPreference {
 
+    const val FIREBASE_TOKEN = "firebase_token"
+    const val FIREBASE_TOKEN_TIME = "firebase_token_time"
+
     private val sharedPreferences by lazy {
         SpeakOutApp.appContext?.getSharedPreferences(
             "speak_out_pref", Context.MODE_PRIVATE
@@ -121,6 +124,20 @@ object AppPreference {
 
     fun isLoggedIn(): Boolean {
         return getBoolean(NameUtils.UserDetails.isLoggedIn)
+    }
+
+    fun updateFirebaseToken(token: String) {
+        putString(FIREBASE_TOKEN, token)
+        putLong(FIREBASE_TOKEN_TIME, System.currentTimeMillis())
+    }
+
+    fun getFirebaseTokenAndTime(): Pair<String, Long> {
+        return Pair(getString(FIREBASE_TOKEN) ?: "", getLong(FIREBASE_TOKEN_TIME))
+    }
+
+    fun clearFirebaseToken(){
+        remove(FIREBASE_TOKEN_TIME)
+        remove(FIREBASE_TOKEN)
     }
 
     fun clearUserDetails() {

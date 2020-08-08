@@ -33,7 +33,7 @@ public class UsersRepository(
     suspend fun getUser(userId: String): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getUser(appPreference.getUserId(), userId)
+                val result = apiService.getUser(userId)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -111,19 +111,13 @@ public class UsersRepository(
                 val result: Response<List<UserMiniDetails>>
                 when (actionType) {
                     ActionType.Likes -> {
-                        result = apiService.getLikes(
-                            selfUserId = appPreference.getUserId(), postId = postId
-                        )
+                        result = apiService.getLikes(postId = postId)
                     }
                     ActionType.Followers -> {
-                        result = apiService.getFollowers(
-                            selfUserId = appPreference.getUserId(), userId = userId
-                        )
+                        result = apiService.getFollowers(userId = userId)
                     }
                     ActionType.Followings -> {
-                        result = apiService.getFollowings(
-                            selfUserId = appPreference.getUserId(), userId = userId
-                        )
+                        result = apiService.getFollowings(userId = userId)
                     }
                 }
 

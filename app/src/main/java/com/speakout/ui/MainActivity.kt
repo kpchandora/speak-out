@@ -120,6 +120,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onDestroy() {
+        AppPreference.clearFirebaseToken()
+        super.onDestroy()
+    }
 
     interface BottomIconDoubleClick {
         fun doubleClick()

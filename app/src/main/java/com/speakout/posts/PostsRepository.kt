@@ -2,6 +2,7 @@ package com.speakout.posts
 
 import android.graphics.Bitmap
 import com.speakout.api.ApiService
+import com.speakout.api.BaseRepository
 import com.speakout.common.Result
 import com.speakout.posts.create.PostData
 import com.speakout.utils.AppPreference
@@ -18,7 +19,7 @@ import java.io.ByteArrayOutputStream
 public class PostsRepository(
     private val apiService: ApiService,
     private val appPreference: AppPreference
-) {
+) : BaseRepository() {
 
     suspend fun createPost(postData: PostData): Result<PostData> = withContext(Dispatchers.IO) {
         try {
@@ -56,7 +57,7 @@ public class PostsRepository(
     suspend fun getProfilePosts(userId: String): Result<List<PostData>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getProfilePosts(appPreference.getUserId(), userId)
+                val result = apiService.getProfilePosts(userId)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -70,7 +71,7 @@ public class PostsRepository(
     suspend fun getFeed(): Result<List<PostData>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getFeed(appPreference.getUserId())
+                val result = apiService.getFeed()
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -115,10 +116,7 @@ public class PostsRepository(
                 FirebaseUtils.getPostsStorageRef()
                     .child("${postMiniDetails.postId}.jpg")
                     .delete()
-                val result = apiService.deletePost(
-                    selfUserId = postMiniDetails.userId,
-                    postId = postMiniDetails.postId
-                )
+                val result = apiService.deletePost(postId = postMiniDetails.postId)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

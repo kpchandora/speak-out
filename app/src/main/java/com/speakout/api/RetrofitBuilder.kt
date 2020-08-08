@@ -15,7 +15,9 @@ object RetrofitBuilder {
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
-    private val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
+    private val client = OkHttpClient.Builder().addInterceptor(interceptor)
+        .addInterceptor(AuthTokenInterceptor())
+        .build()
     private const val BASE_URL = "http://192.168.43.138:3000/"
 
     private fun getRetrofit(): Retrofit {

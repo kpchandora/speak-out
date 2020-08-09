@@ -13,6 +13,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.iid.FirebaseInstanceId
 import com.speakout.*
 import com.speakout.utils.AppPreference
 import timber.log.Timber
@@ -82,6 +83,21 @@ class MainActivity : BaseActivity() {
                     currentFragment.doubleClick()
             }
         }
+
+//        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+//            if (!task.isSuccessful) {
+//                Timber.e("Failed")
+//            }
+//
+//            try {
+//                // Get new Instance ID token
+//                val token = task.result?.token
+//                Timber.d("Token: $token")
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+
     }
 
 

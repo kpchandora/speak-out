@@ -3,12 +3,12 @@ package com.speakout.fcm
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.speakout.R
@@ -19,6 +19,8 @@ import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.IOException
+import java.net.URL
 
 /**
  * Created by Kalpesh on 09/08/20.
@@ -33,8 +35,10 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         const val FOLLOW = "follow"
         const val UNFOLLOW = "unfollow"
         const val LIKE = "like"
-        const val REMOVE_LIKE = "remove_like"
+        const val REMOVE_LIKE = "removeLike"
         const val NOTIFICATION_ID = "notificationId"
+        const val USER_ID = "userId"
+        const val POST_IMAGE_URL = "postImageUrl"
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
@@ -52,9 +56,6 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
                     LIKE -> {
                         sendLikeNotification(it)
                     }
-                    REMOVE_LIKE -> {
-                        removeNotificationIfPresent(it)
-                    }
                 }
             }
         }
@@ -68,14 +69,16 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             "${map["username"]} started following you."
         )
 
-        val channelId = "speak_out"
-        val customNotification = NotificationCompat.Builder(this, "speak_out")
+        val channelId = "new_followers"
+        val customNotification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
 //            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 //            .setContentTitle("SpeakOut")
+            .setStyle(NotificationCompat.BigTextStyle())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentTitle("${map["username"]} started following you.")
 //            .setCustomContentView(notificationLayout)
+            .setAutoCancel(true)
             .build()
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -83,8 +86,8 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                "notification_follow",
-                NotificationManager.IMPORTANCE_HIGH
+                "New Followers",
+                NotificationManager.IMPORTANCE_DEFAULT
             )
             manager.createNotificationChannel(channel)
         }
@@ -101,28 +104,43 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             "${map["username"]}(${map["name"]}) liked your post."
         )
 
-        val channelId = "speak_out"
-        val customNotification = NotificationCompat.Builder(this, "speak_out")
+        val channelId = "likes"
+        val customNotification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher)
 //            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
 //            .setContentTitle("SpeakOut")
+            .setStyle(NotificationCompat.BigTextStyle())
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentText("${map["username"]}(${map["name"]}) liked your post.")
 //            .setCustomContentView(notificationLayout)
-            .build()
+            .setAutoCancel(true)
+            .setColor(ContextCompat.getColor(this, R.color.indigo_500))
+
+        try {
+            map[POST_IMAGE_URL]?.let {
+                val bitmap = BitmapFactory.decodeStream(URL(it).openConnection().getInputStream())
+                if (bitmap != null) {
+                    customNotification.setLargeIcon(bitmap)
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
-                "notification_follow",
+                "Likes",
                 NotificationManager.IMPORTANCE_HIGH
             )
+            channel.setShowBadge(true)
+            channel.importance = NotificationManager.IMPORTANCE_HIGH
             manager.createNotificationChannel(channel)
         }
 
-        manager.notify("${map[NOTIFICATION_ID]}", 0, customNotification)
+        manager.notify("${map[NOTIFICATION_ID]}", 0, customNotification.build())
 
         Timber.d("Notification sent")
     }

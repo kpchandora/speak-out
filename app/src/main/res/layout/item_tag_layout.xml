@@ -22,7 +22,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/dr_circle_bg_blue"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:text="@string/hash_text"
             android:textAlignment="center"
             android:textColor="@color/white"

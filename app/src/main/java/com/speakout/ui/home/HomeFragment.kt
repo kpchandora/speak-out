@@ -45,7 +45,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = PostRecyclerViewAdapter()
-    private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
 

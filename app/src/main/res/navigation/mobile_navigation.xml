@@ -58,7 +58,12 @@
         android:id="@+id/navigation_notifications"
         android:name="com.speakout.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_notifications">
+
+        <action
+            android:id="@+id/action_notifications_to_singlePostView"
+            app:destination="@id/singlePostViewFragment" />
+    </fragment>
 
 
     <fragment
@@ -102,6 +107,7 @@
         <argument
             android:name="transitionTag"
             app:argType="string"
+            android:defaultValue=""
             app:nullable="true" />
 
         <argument
@@ -304,8 +310,20 @@
 
         </fragment>
 
-
     </navigation>
+
+    <fragment
+        android:id="@+id/singlePostViewFragment"
+        android:name="com.speakout.SinglePostViewFragment"
+        android:label="fragment_single_post_view"
+        tools:layout="@layout/fragment_single_post_view">
+
+        <argument
+            android:name="postId"
+            app:argType="string"
+            app:nullable="false" />
+
+    </fragment>
 
 
 </navigation>

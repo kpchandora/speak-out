@@ -9,11 +9,13 @@ import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavDeepLinkBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.speakout.R
 import com.speakout.api.RetrofitBuilder
 import com.speakout.extensions.isNotNullOrEmpty
+import com.speakout.ui.MainActivity
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope
@@ -39,7 +41,10 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         const val NOTIFICATION_ID = "notificationId"
         const val USER_ID = "userId"
         const val OTHER = "other"
-        const val USER_IMAGE_URL = "userImageUrl"
+        const val USER_IMAGE_URL = "profileUrl"
+        const val POST_ID = "postId"
+        const val USERNAME = "username"
+
     }
 
     override fun onNewToken(token: String) {
@@ -73,10 +78,22 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendFollowNotification(map: MutableMap<String, String>) {
-        val bundle = Bundle()
-
         val channelId = "new_followers"
-        val notification = getNotificationBuilder(channelId = channelId)
+
+        val bundle = Bundle().apply {
+            putString(USER_ID, map[USER_ID])
+            putString(USERNAME, map[USERNAME])
+            putString(USER_IMAGE_URL, map[USER_IMAGE_URL])
+        }
+        val pendingIntent = NavDeepLinkBuilder(this)
+            .setComponentName(MainActivity::class.java)
+            .setGraph(R.navigation.mobile_navigation)
+            .setDestination(R.id.navigation_profile)
+            .setArguments(bundle)
+            .createPendingIntent()
+
+        val notification =
+            getNotificationBuilder(channelId = channelId, pendingIntent = pendingIntent)
         notification.setContentTitle("${map["username"]} started following you.")
 
         getUserImageBitmap(map)?.let {
@@ -93,7 +110,17 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
     private fun sendLikeNotification(map: MutableMap<String, String>) {
 
         val channelId = "likes"
-        val notification = getNotificationBuilder(channelId = channelId)
+        val bundle = Bundle().apply {
+            putString(POST_ID, map[POST_ID])
+        }
+        val pendingIntent = NavDeepLinkBuilder(this)
+            .setComponentName(MainActivity::class.java)
+            .setGraph(R.navigation.mobile_navigation)
+            .setDestination(R.id.singlePostViewFragment)
+            .setArguments(bundle)
+            .createPendingIntent()
+        val notification =
+            getNotificationBuilder(channelId = channelId, pendingIntent = pendingIntent)
         notification.setContentText("${map["username"]}(${map["name"]}) liked your post.")
 
         getUserImageBitmap(map)?.let {
@@ -134,7 +161,7 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setColor(ContextCompat.getColor(this, R.color.indigo_500))
-
+            .setContentIntent(pendingIntent)
     }
 
     private fun createChannel(

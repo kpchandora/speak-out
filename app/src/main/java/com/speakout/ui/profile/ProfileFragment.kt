@@ -38,10 +38,12 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
     private var mUserDetails: UserDetails? = null
-    private val safeArgs: ProfileFragmentArgs by navArgs()
+    private lateinit var safeArgs: ProfileFragmentArgs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("Details: ${arguments?.getString("userId")}")
+        safeArgs = ProfileFragmentArgs.fromBundle(arguments!!)
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         screenSize = requireActivity().getScreenSize()

@@ -22,7 +22,10 @@ class NotificationsFragment : Fragment() {
         safeArgs = NotificationsFragmentArgs.fromBundle(arguments!!)
         if (safeArgs.isFromDeepLink) {
             val action =
-                NotificationsFragmentDirections.actionNotificationsToSinglePostView(safeArgs.postId)
+                NotificationsFragmentDirections.actionNotificationToPostView(
+                    isFromNotification = true,
+                    postId = safeArgs.postId
+                )
             findNavController().navigate(action)
         }
     }

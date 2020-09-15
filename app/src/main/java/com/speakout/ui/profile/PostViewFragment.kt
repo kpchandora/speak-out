@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -19,9 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
-import com.speakout.extensions.setUpToolbar
-import com.speakout.extensions.showShortToast
-import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.extensions.*
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.create.PostData
@@ -38,13 +37,18 @@ class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
     private val mPostsAdapter = PostRecyclerViewAdapter()
-    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
+    private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
+    private val singleHomeViewModel: HomeViewModel by viewModels()
+    private lateinit var mHomeViewModel: HomeViewModel
     private lateinit var dialog: PostOptionsDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (safeArgs.isFromDeepLink) {
-//            homeViewModel.getSinglePost("")
+        if (safeArgs.isFromNotification) {
+            mHomeViewModel = singleHomeViewModel
+            mHomeViewModel.getSinglePost(safeArgs.postId)
+        } else {
+            mHomeViewModel = navHomeViewModel
         }
     }
 
@@ -52,7 +56,6 @@ class PostViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_post_view, container, false)
     }
 
@@ -67,13 +70,27 @@ class PostViewFragment : Fragment() {
             adapter = mPostsAdapter
         }
 
-        mPostsAdapter.updatePosts(homeViewModel.getPosts())
-        fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
+        mHomeViewModel.singlePost.observe(viewLifecycleOwner, EventObserver {
+            progressBar.gone()
+            if (it is Result.Success) {
+                mPostsAdapter.updatePosts(listOf(it.data))
+            }
+            if (it is Result.Error) {
+                showShortToast("Failed to fetch post")
+            }
+        })
+
+        if (!safeArgs.isFromNotification) {
+            mPostsAdapter.updatePosts(mHomeViewModel.getPosts())
+            fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
+        } else {
+            progressBar.visible()
+        }
         observeViewModels()
     }
 
     private fun observeViewModels() {
-        homeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
+        mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
                 Timber.d("Delete Success: ${it.data.postId}")
                 mPostsAdapter.deletePost(it.data)
@@ -89,11 +106,11 @@ class PostViewFragment : Fragment() {
 
     private val mPostEventsListener = object : PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
-            homeViewModel.likePost(postData)
+            mHomeViewModel.likePost(postData)
         }
 
         override fun onDislike(position: Int, postData: PostData) {
-            homeViewModel.unlikePost(postData)
+            mHomeViewModel.unlikePost(postData)
         }
 
         override fun onProfileClick(postData: PostData, profileImageView: ImageView) {
@@ -126,7 +143,7 @@ class PostViewFragment : Fragment() {
         }
 
         override fun onDelete(post: PostData) {
-            homeViewModel.deletePost(post)
+            mHomeViewModel.deletePost(post)
         }
 
         @SuppressLint("CheckResult")

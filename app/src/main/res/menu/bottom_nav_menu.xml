@@ -17,7 +17,7 @@
         android:title="@string/title_new_post" />
 
     <item
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/notificationFragment"
         android:icon="@drawable/ic_favorite"
         android:title="@string/title_notifications" />
 

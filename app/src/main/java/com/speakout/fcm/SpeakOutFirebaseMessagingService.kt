@@ -112,11 +112,12 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         val channelId = "likes"
         val bundle = Bundle().apply {
             putString(POST_ID, map[POST_ID])
+            putBoolean(applicationContext.getString(R.string.is_from_deep_link), true)
         }
         val pendingIntent = NavDeepLinkBuilder(this)
             .setComponentName(MainActivity::class.java)
             .setGraph(R.navigation.mobile_navigation)
-            .setDestination(R.id.singlePostViewFragment)
+            .setDestination(R.id.notificationFragment)
             .setArguments(bundle)
             .createPendingIntent()
         val notification =
@@ -181,6 +182,9 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         }
     }
 
+    /**
+     * This method converts the given bitmap to circular bitmap
+     */
     private fun getCircleBitmap(bitmap: Bitmap): Bitmap {
         val output: Bitmap
         val srcRect: Rect

@@ -41,6 +41,12 @@ class PostViewFragment : Fragment() {
     private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
     private lateinit var dialog: PostOptionsDialog
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (safeArgs.isFromDeepLink) {
+//            homeViewModel.getSinglePost("")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,7 +70,6 @@ class PostViewFragment : Fragment() {
         mPostsAdapter.updatePosts(homeViewModel.getPosts())
         fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
         observeViewModels()
-
     }
 
     private fun observeViewModels() {

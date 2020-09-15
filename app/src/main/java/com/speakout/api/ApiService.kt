@@ -70,4 +70,7 @@ public interface ApiService {
 
     @POST("users/updateToken")
     suspend fun updateFcmToken(@Body fcmToken: JsonObject): Response<JsonObject>
+
+    @GET("posts/getSinglePost/{postId}")
+    suspend fun getSinglePost(@Path("postId") postId: String): Response<PostData>
 }

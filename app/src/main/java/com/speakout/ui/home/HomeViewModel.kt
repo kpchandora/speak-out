@@ -17,7 +17,6 @@ class HomeViewModel : ViewModel() {
         PostsRepository(RetrofitBuilder.apiService, appPreference)
     }
 
-    private val compositeDisposable = CompositeDisposable()
     private val mPostList = ArrayList<PostData>()
 
     private val _unlikePost = MutableLiveData<Event<Result<PostMiniDetails>>>()
@@ -29,6 +28,8 @@ class HomeViewModel : ViewModel() {
     private val _deletePost = MutableLiveData<Event<Result<PostMiniDetails>>>()
     val deletePost: LiveData<Event<Result<PostMiniDetails>>> = _deletePost
 
+    private val _singlePost = MutableLiveData<Event<Result<PostData>>>()
+    val singlePost: LiveData<Event<Result<PostData>>> = _singlePost
 
     private val _posts = MutableLiveData<Event<Result<List<PostData>>>>()
     val posts: LiveData<Event<Result<List<PostData>>>> = _posts
@@ -81,9 +82,10 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-
-    override fun onCleared() {
-        compositeDisposable.dispose()
-        super.onCleared()
+    fun getSinglePost(postId: String) {
+        viewModelScope.launch {
+            _singlePost.value = Event(mPostsRepository.getSinglePost(postId))
+        }
     }
+
 }

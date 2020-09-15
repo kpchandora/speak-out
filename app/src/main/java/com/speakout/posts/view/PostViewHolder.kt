@@ -17,7 +17,6 @@ class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFor
     RecyclerView.ViewHolder(view) {
 
     var mEventListener: PostClickEventListener? = null
-    var userId = ""
 
     fun bind(post: PostData) {
         view.apply {

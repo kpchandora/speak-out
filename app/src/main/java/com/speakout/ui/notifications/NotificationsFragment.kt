@@ -8,11 +8,24 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.speakout.R
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.setUpWithAppBarConfiguration
 
 class NotificationsFragment : Fragment() {
+
+    private lateinit var safeArgs: NotificationsFragmentArgs
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        safeArgs = NotificationsFragmentArgs.fromBundle(arguments!!)
+        if (safeArgs.isFromDeepLink) {
+            val action =
+                NotificationsFragmentDirections.actionNotificationsToSinglePostView(safeArgs.postId)
+            findNavController().navigate(action)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -117,14 +117,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
-            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                if (it is Result.Success) {
-                    mPostsAdapter.updatePosts(it.data)
-                }
+            if (it is Result.Success) {
+                mPostsAdapter.updatePosts(it.data)
+            }
 
-                if (it is Result.Error) {
-                    Timber.d("Failed to fetch posts: ${it.error}")
-                }
+            if (it is Result.Error) {
+                Timber.d("Failed to fetch posts: ${it.error}")
             }
         })
 

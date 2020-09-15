@@ -126,4 +126,16 @@ public class PostsRepository(
             }
         }
 
+    suspend fun getSinglePost(postId: String): Result<PostData> = withContext(Dispatchers.IO) {
+        try {
+            val result = apiService.getSinglePost(postId)
+            if (result.isSuccessful && result.body() != null) {
+                return@withContext Result.Success(result.body()!!)
+            }
+            Result.Error(Exception("Something went wrong"), null)
+        } catch (e: Exception) {
+            Result.Error(e, null)
+        }
+    }
+
 }

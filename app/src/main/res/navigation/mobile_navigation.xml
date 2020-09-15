@@ -55,7 +55,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/notificationFragment"
         android:name="com.speakout.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications">
@@ -63,6 +63,19 @@
         <action
             android:id="@+id/action_notifications_to_singlePostView"
             app:destination="@id/singlePostViewFragment" />
+
+        <argument
+            android:name="isFromDeepLink"
+            android:defaultValue="false"
+            app:argType="boolean"
+            app:nullable="false" />
+
+        <argument
+            android:name="postId"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="false" />
+
     </fragment>
 
 
@@ -106,8 +119,8 @@
 
         <argument
             android:name="transitionTag"
-            app:argType="string"
             android:defaultValue=""
+            app:argType="string"
             app:nullable="true" />
 
         <argument
@@ -180,6 +193,18 @@
                 android:name="itemPosition"
                 android:defaultValue="0"
                 app:argType="integer"
+                app:nullable="false" />
+
+            <argument
+                android:name="isFromDeepLink"
+                android:defaultValue="false"
+                app:argType="boolean"
+                app:nullable="false" />
+
+            <argument
+                android:name="postId"
+                android:defaultValue=""
+                app:argType="string"
                 app:nullable="false" />
 
 
@@ -314,14 +339,31 @@
 
     <fragment
         android:id="@+id/singlePostViewFragment"
-        android:name="com.speakout.SinglePostViewFragment"
+        android:name="com.speakout.posts.view.SinglePostViewFragment"
         android:label="fragment_single_post_view"
         tools:layout="@layout/fragment_single_post_view">
 
         <argument
             android:name="postId"
+            android:defaultValue=""
             app:argType="string"
             app:nullable="false" />
+
+        <action
+            android:id="@+id/action_singlePost_to_profile_navigation"
+            app:destination="@id/profile_navigation"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_singlePost_to_usersListFragment"
+            app:destination="@id/usersListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
 

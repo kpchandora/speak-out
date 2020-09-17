@@ -1,7 +1,5 @@
 package com.speakout.ui.notifications
 
-import android.os.Build
-import android.text.Html
 import android.text.Spanned
 import android.view.View
 import androidx.core.text.HtmlCompat
@@ -13,7 +11,11 @@ import com.speakout.extensions.visible
 import com.speakout.notification.NotificationResponse
 import kotlinx.android.synthetic.main.item_notification_layout.view.*
 
-class NotificationsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
+class NotificationsViewHolder(
+    private val view: View,
+    private val listener: NotificationsClickListener
+) :
+    RecyclerView.ViewHolder(view) {
 
     fun bind(notification: NotificationResponse) {
         with(view) {
@@ -36,6 +38,15 @@ class NotificationsViewHolder(private val view: View) : RecyclerView.ViewHolder(
                 )
                 tv_notification_content.text =
                     getSpannable(R.string.like_post, notification.username)
+            }
+
+            iv_notification_profile.transitionName = notification.timestamp.toString()
+            iv_notification_profile.setOnClickListener {
+                listener.onProfileClick(notification, iv_notification_profile)
+            }
+
+            iv_notification_post.setOnClickListener {
+                listener.onPostClick(notification)
             }
 
         }

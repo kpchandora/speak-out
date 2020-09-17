@@ -88,7 +88,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
-            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
                 if (it is Result.Success) {
                     mPostsAdapter.updateData(it.data)
                     homeViewModel.addPosts(it.data)
@@ -97,7 +96,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 if (it is Result.Error) {
                     Timber.d("Failed to fetch posts: ${it.error}")
                 }
-            }
         })
 
         layout_profile_followers_container.setOnClickListener {

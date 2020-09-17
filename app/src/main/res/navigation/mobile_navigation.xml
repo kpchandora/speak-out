@@ -71,12 +71,18 @@
             android:defaultValue=""
             app:argType="string"
             app:nullable="false" />
+
         <action
             android:id="@+id/action_notification_to_postView"
             app:destination="@id/postViewFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_notification_to_profile_navigation"
+            app:destination="@id/profile_navigation"
             app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>

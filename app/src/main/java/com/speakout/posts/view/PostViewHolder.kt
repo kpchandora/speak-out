@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.extensions.gone
+import com.speakout.extensions.loadImage
 import com.speakout.extensions.loadImageWithCallback
 import com.speakout.extensions.visible
 import com.speakout.posts.create.PostData
@@ -20,23 +21,13 @@ class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFor
 
     fun bind(post: PostData) {
         view.apply {
-            item_post_profile_bg_iv.gone()
             item_post_profile_iv.transitionName = post.postId
-            item_post_profile_iv.loadImageWithCallback(post.photoUrl,
-                makeRound = true,
-                onSuccess = {
-                    item_post_profile_bg_iv.visible()
-                },
-                onFailed = {
-                    item_post_profile_iv.setImageDrawable(
-                        ContextCompat.getDrawable(
-                            view.context,
-                            R.drawable.ic_account_circle_grey
-                        )
-                    )
-                    item_post_profile_bg_iv.gone()
-                })
 
+            item_post_profile_iv.loadImage(
+                url = post.photoUrl,
+                placeholder = R.drawable.ic_account_circle_grey,
+                makeRound = true
+            )
             item_post_name_tv.text = post.username
 
             setLikes(post)

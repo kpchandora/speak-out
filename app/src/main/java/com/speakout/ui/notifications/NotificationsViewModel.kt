@@ -7,24 +7,23 @@ import androidx.lifecycle.viewModelScope
 import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Event
 import com.speakout.common.Result
-import com.speakout.posts.PostsRepository
-import com.speakout.posts.create.PostData
+import com.speakout.notification.NotificationRepository
+import com.speakout.notification.NotificationResponse
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
 class NotificationsViewModel : ViewModel() {
 
-    private val appPreference = AppPreference
-    private val mPostsRepository: PostsRepository by lazy {
-        PostsRepository(RetrofitBuilder.apiService, appPreference)
+    private val mRepository: NotificationRepository by lazy {
+        NotificationRepository(RetrofitBuilder.apiService)
     }
 
-    private val _singlePost = MutableLiveData<Event<Result<PostData>>>()
-    val singlePost: LiveData<Event<Result<PostData>>> = _singlePost
+    private val _notifications = MutableLiveData<Event<Result<List<NotificationResponse>>>>()
+    val notifications: LiveData<Event<Result<List<NotificationResponse>>>> = _notifications
 
-    fun getPost(postId: String) {
+    fun getNotifications() {
         viewModelScope.launch {
-            _singlePost.value = Event(mPostsRepository.getSinglePost(postId))
+            _notifications.value = Event(mRepository.getNotifications())
         }
     }
 

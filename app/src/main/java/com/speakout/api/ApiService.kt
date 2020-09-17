@@ -3,6 +3,7 @@ package com.speakout.api
 import com.google.gson.JsonObject
 import com.speakout.auth.UserDetails
 import com.speakout.auth.UserMiniDetails
+import com.speakout.notification.NotificationResponse
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.create.PostData
 import com.speakout.posts.tags.Tag
@@ -73,4 +74,7 @@ public interface ApiService {
 
     @GET("posts/getSinglePost/{postId}")
     suspend fun getSinglePost(@Path("postId") postId: String): Response<PostData>
+
+    @GET("notifications/all")
+    suspend fun getNotifications(): Response<List<NotificationResponse>>
 }

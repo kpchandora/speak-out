@@ -7,8 +7,10 @@ import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import timber.log.Timber
 
 /**
  * Created by Kalpesh on 02/08/20.
@@ -33,7 +35,7 @@ public class UsersRepository(
     suspend fun getUser(userId: String): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getUser(appPreference.getUserId(), userId)
+                val result = apiService.getUser(userId)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -108,22 +110,15 @@ public class UsersRepository(
     ): Result<List<UserMiniDetails>> =
         withContext(Dispatchers.IO) {
             try {
-                val result: Response<List<UserMiniDetails>>
-                when (actionType) {
+                val result: Response<List<UserMiniDetails>> = when (actionType) {
                     ActionType.Likes -> {
-                        result = apiService.getLikes(
-                            selfUserId = appPreference.getUserId(), postId = postId
-                        )
+                        apiService.getLikes(postId = postId)
                     }
                     ActionType.Followers -> {
-                        result = apiService.getFollowers(
-                            selfUserId = appPreference.getUserId(), userId = userId
-                        )
+                        apiService.getFollowers(userId = userId)
                     }
                     ActionType.Followings -> {
-                        result = apiService.getFollowings(
-                            selfUserId = appPreference.getUserId(), userId = userId
-                        )
+                        apiService.getFollowings(userId = userId)
                     }
                 }
 
@@ -148,5 +143,20 @@ public class UsersRepository(
                 Result.Error(e, emptyList<UserMiniDetails>())
             }
         }
+
+    suspend fun updateFcmToken(token: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val obj = JsonObject()
+                obj.addProperty("token", token)
+                val result = apiService.updateFcmToken(obj)
+                if (result.isSuccessful && result.body() != null) {
+                    return@withContext
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+        }
+    }
 
 }

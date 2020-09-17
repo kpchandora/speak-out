@@ -38,10 +38,12 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
     private var mUserDetails: UserDetails? = null
-    private val safeArgs: ProfileFragmentArgs by navArgs()
+    private lateinit var safeArgs: ProfileFragmentArgs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("Details: ${arguments?.getString("userId")}")
+        safeArgs = ProfileFragmentArgs.fromBundle(arguments!!)
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         screenSize = requireActivity().getScreenSize()
@@ -86,7 +88,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
-            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
                 if (it is Result.Success) {
                     mPostsAdapter.updateData(it.data)
                     homeViewModel.addPosts(it.data)
@@ -95,7 +96,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 if (it is Result.Error) {
                     Timber.d("Failed to fetch posts: ${it.error}")
                 }
-            }
         })
 
         layout_profile_followers_container.setOnClickListener {

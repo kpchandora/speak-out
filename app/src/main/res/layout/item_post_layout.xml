@@ -17,18 +17,7 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:padding="1dp">
-
-            <View
-                android:id="@+id/item_post_profile_bg_iv"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="4dp"
-                android:background="@drawable/dr_circle_stroke_black_grey500"
-                android:padding="4dp"
-                android:visibility="gone"
-                tools:visibility="visible" />
+            android:padding="4dp">
 
             <ImageView
                 android:id="@+id/item_post_profile_iv"
@@ -70,12 +59,13 @@
 
         <TextView
             android:id="@+id/item_post_layout_menu_tv"
-            android:layout_width="30dp"
+            android:layout_width="36dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:paddingEnd="8dp"
             android:text="@string/vertical_ellipse"
-            android:textColor="@color/grey_700"
-            android:textSize="24sp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
     </LinearLayout>

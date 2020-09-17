@@ -19,14 +19,12 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
-    private val userId = AppPreference.getUserId()
     private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_post_layout, parent, false)
         val holder = PostViewHolder(view, simpleDateFormat)
-        holder.userId = userId
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
         screenSize?.let {

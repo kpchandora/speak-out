@@ -7,6 +7,9 @@ import com.speakout.extensions.isNotNullOrEmpty
 
 object AppPreference {
 
+    const val FIREBASE_TOKEN = "firebase_token"
+    const val FIREBASE_TOKEN_TIME = "firebase_token_time"
+
     private val sharedPreferences by lazy {
         SpeakOutApp.appContext?.getSharedPreferences(
             "speak_out_pref", Context.MODE_PRIVATE
@@ -56,76 +59,90 @@ object AppPreference {
     fun saveUserDetails(userDetails: UserDetails) {
         userDetails.apply {
             if (userId.isNotEmpty()) {
-                putString(NameUtils.UserDetails.userId, userId)
+                putString(Constants.UserDetails.userId, userId)
             }
 
             if (email.isNotNullOrEmpty()) {
-                putString(NameUtils.UserDetails.email, email!!)
+                putString(Constants.UserDetails.email, email!!)
             }
 
             if (name.isNotNullOrEmpty()) {
-                putString(NameUtils.UserDetails.name, name!!)
+                putString(Constants.UserDetails.name, name!!)
             }
 
             if (username.isNotNullOrEmpty()) {
-                putString(NameUtils.UserDetails.username, username!!)
+                putString(Constants.UserDetails.username, username!!)
             }
 
             if (photoUrl != null)
-                putString(NameUtils.UserDetails.photoUrl, photoUrl)
+                putString(Constants.UserDetails.photoUrl, photoUrl)
 
             if (phoneNumber != null)
-                putString(NameUtils.UserDetails.phoneNumber, phoneNumber)
+                putString(Constants.UserDetails.phoneNumber, phoneNumber)
         }
     }
 
     fun getPhoneNumber(): String {
-        return getString(NameUtils.UserDetails.phoneNumber, "") ?: ""
+        return getString(Constants.UserDetails.phoneNumber, "") ?: ""
     }
 
     fun getUserUniqueName(): String {
-        return getString(NameUtils.UserDetails.username, "") ?: ""
+        return getString(Constants.UserDetails.username, "") ?: ""
     }
 
     fun getPhotoUrl(): String {
-        return getString(NameUtils.UserDetails.photoUrl, "") ?: ""
+        return getString(Constants.UserDetails.photoUrl, "") ?: ""
     }
 
     fun updateDataChangeTimeStamp(timeInLong: Long) {
-        putLong(NameUtils.UserDetails.lastUserDetailsUpdate, timeInLong)
+        putLong(Constants.UserDetails.lastUserDetailsUpdate, timeInLong)
     }
 
     fun getLastUpdatedTime(): Long {
-        return getLong(NameUtils.UserDetails.lastUserDetailsUpdate)
+        return getLong(Constants.UserDetails.lastUserDetailsUpdate)
     }
 
     fun getUserDisplayName(): String {
-        return getString(NameUtils.UserDetails.name, "") ?: ""
+        return getString(Constants.UserDetails.name, "") ?: ""
     }
 
     fun getUserId(): String {
-        return getString(NameUtils.UserDetails.userId, "") ?: ""
+        return getString(Constants.UserDetails.userId, "") ?: ""
     }
 
     fun setLoggedIn() {
-        putBoolean(NameUtils.UserDetails.isLoggedIn, true)
+        putBoolean(Constants.UserDetails.isLoggedIn, true)
     }
 
     fun setUsernameProcessComplete() {
-        putBoolean(NameUtils.UserDetails.usernameProcess, true)
+        putBoolean(Constants.UserDetails.usernameProcess, true)
     }
 
     fun isUsernameProcessComplete(): Boolean {
-        return getBoolean(NameUtils.UserDetails.usernameProcess)
+        return getBoolean(Constants.UserDetails.usernameProcess)
     }
 
     fun isLoggedIn(): Boolean {
-        return getBoolean(NameUtils.UserDetails.isLoggedIn)
+        return getBoolean(Constants.UserDetails.isLoggedIn)
+    }
+
+    fun updateFirebaseToken(token: String) {
+        putString(FIREBASE_TOKEN, token)
+        putLong(FIREBASE_TOKEN_TIME, System.currentTimeMillis())
+    }
+
+    fun getFirebaseTokenAndTime(): Pair<String, Long> {
+        return Pair(getString(FIREBASE_TOKEN) ?: "", getLong(FIREBASE_TOKEN_TIME))
+    }
+
+    fun clearFirebaseToken(){
+        remove(FIREBASE_TOKEN_TIME)
+        remove(FIREBASE_TOKEN)
     }
 
     fun clearUserDetails() {
         editor?.apply {
-            NameUtils.UserDetails?.apply {
+            Constants.UserDetails?.apply {
                 remove(userId)
                 remove(username)
                 remove(email)

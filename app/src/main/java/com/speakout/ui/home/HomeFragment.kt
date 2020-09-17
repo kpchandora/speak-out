@@ -17,6 +17,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.speakout.R
 import com.speakout.auth.Type
 import com.speakout.common.EventObserver
@@ -43,7 +45,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
     private val mPostsAdapter = PostRecyclerViewAdapter()
-    private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
 
@@ -82,7 +83,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         setUpWithAppBarConfiguration(view)?.let {
             it.title = ""
             view.toolbar_title_tv.visible()
@@ -117,14 +117,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
-            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                if (it is Result.Success) {
-                    mPostsAdapter.updatePosts(it.data)
-                }
+            if (it is Result.Success) {
+                mPostsAdapter.updatePosts(it.data)
+            }
 
-                if (it is Result.Error) {
-                    Timber.d("Failed to fetch posts: ${it.error}")
-                }
+            if (it is Result.Error) {
+                Timber.d("Failed to fetch posts: ${it.error}")
             }
         })
 

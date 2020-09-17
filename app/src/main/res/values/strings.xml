@@ -58,5 +58,10 @@
     <string name="full_name">Full Name</string>
 
     <string name="vertical_ellipse">⋮</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="is_from_deep_link">isFromDeepLink</string>
+
+    <string name="notification_follow"><![CDATA[<b>%s</b>]]> started following you.</string>
+    <string name="like_post"><![CDATA[<b>%s</b>]]> liked your post.</string>
 
 </resources>

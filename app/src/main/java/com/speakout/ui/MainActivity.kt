@@ -3,18 +3,19 @@ package com.speakout.ui
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
-import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.iid.FirebaseInstanceId
 import com.speakout.*
+import com.speakout.api.RetrofitBuilder
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainActivity : BaseActivity() {
@@ -37,7 +38,7 @@ class MainActivity : BaseActivity() {
                 R.id.navigation_home,
                 R.id.navigation_search,
                 R.id.navigation_new_post,
-                R.id.navigation_notifications,
+                R.id.notificationFragment,
                 R.id.navigation_profile
             )
         )
@@ -82,6 +83,27 @@ class MainActivity : BaseActivity() {
                     currentFragment.doubleClick()
             }
         }
+
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Timber.e("Failed")
+            }
+
+            try {
+                // Get new Instance ID token
+                val token = task.result?.token
+                Timber.d("Token: $token")
+
+                GlobalScope.launch {
+                    UsersRepository(RetrofitBuilder.apiService, AppPreference).updateFcmToken(
+                        token ?: ""
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
     }
 
 
@@ -120,6 +142,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onDestroy() {
+        AppPreference.clearFirebaseToken()
+        super.onDestroy()
+    }
 
     interface BottomIconDoubleClick {
         fun doubleClick()

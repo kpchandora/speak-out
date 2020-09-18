@@ -5,10 +5,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
-import com.speakout.extensions.gone
-import com.speakout.extensions.loadImage
-import com.speakout.extensions.loadImageWithCallback
-import com.speakout.extensions.visible
+import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_post_layout.view.*
 import java.text.SimpleDateFormat
@@ -32,9 +29,7 @@ class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFor
 
             setLikes(post)
 
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = post.timeStamp
-            item_post_time_tv.text = simpleDateFormat.format(calendar.time)
+            item_post_time_tv.text = post.timeStamp.toElapsedTime()
 
             loadPost(post.postImageUrl)
 

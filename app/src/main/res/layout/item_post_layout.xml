@@ -17,15 +17,25 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:padding="4dp">
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp">
 
             <ImageView
                 android:id="@+id/item_post_profile_iv"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp"
                 tools:src="@drawable/ic_account_circle_grey" />
+
+            <View
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/dr_circle_stroke_bg_grey500" />
+
+
         </FrameLayout>
 
 

@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
 import com.speakout.extensions.*
 import com.speakout.posts.create.CreatePostViewModel
 import com.speakout.posts.create.PostData
@@ -151,6 +153,7 @@ class TagsFragment : Fragment() {
             (requireActivity() as MainActivity).hideProgress()
             if (it is Result.Success) {
                 showShortToast("Post uploaded successfully")
+                PostEvents.sendEvent(requireContext(), PostEventTypes.CREATE, it.data.postId)
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
                     "isSuccess",
                     true

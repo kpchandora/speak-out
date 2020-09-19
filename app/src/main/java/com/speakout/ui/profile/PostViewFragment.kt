@@ -1,11 +1,7 @@
 package com.speakout.ui.profile
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
-import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.NotificationEvents
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
 import com.speakout.extensions.*
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
@@ -29,6 +28,7 @@ import com.speakout.ui.home.HomeViewModel
 import com.speakout.posts.view.PostClickEventListener
 import com.speakout.users.ActionType
 import com.speakout.utils.ImageUtils
+import com.speakout.utils.Utils
 import kotlinx.android.synthetic.main.fragment_post_view.*
 import timber.log.Timber
 
@@ -81,7 +81,7 @@ class PostViewFragment : Fragment() {
         })
 
         if (!safeArgs.isFromNotification) {
-            mPostsAdapter.updatePosts(mHomeViewModel.getPosts())
+            mPostsAdapter.updatePosts(mHomeViewModel.getProfilePosts())
             fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
         } else {
             progressBar.visible()
@@ -92,9 +92,14 @@ class PostViewFragment : Fragment() {
     private fun observeViewModels() {
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
+                sendPostEvents(it.data.postId, PostEventTypes.DELETE)
                 Timber.d("Delete Success: ${it.data.postId}")
-                mPostsAdapter.deletePost(it.data)
+                mPostsAdapter.deletePost(it.data.postId)
                 showShortToast("Deleted Successfully")
+                if (safeArgs.isFromNotification) {
+                    sendNotificationEvents()
+                    findNavController().navigateUp()
+                }
             }
 
             if (it is Result.Error) {
@@ -102,6 +107,25 @@ class PostViewFragment : Fragment() {
                 showShortToast("Failed to delete post")
             }
         })
+
+        mHomeViewModel.likePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data.postId, PostEventTypes.LIKE)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.removeLike(it.data?.postId ?: "")
+            }
+        })
+
+        mHomeViewModel.unlikePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data.postId, PostEventTypes.REMOVE_LIKE)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.addLike(it.data?.postId ?: "")
+            }
+        })
+
     }
 
     private val mPostEventsListener = object : PostClickEventListener {
@@ -109,7 +133,7 @@ class PostViewFragment : Fragment() {
             mHomeViewModel.likePost(postData)
         }
 
-        override fun onDislike(position: Int, postData: PostData) {
+        override fun onRemoveLike(position: Int, postData: PostData) {
             mHomeViewModel.unlikePost(postData)
         }
 
@@ -132,13 +156,22 @@ class PostViewFragment : Fragment() {
         }
     }
 
+    private fun sendPostEvents(postId: String, eventType: Int) {
+        PostEvents.sendEvent(
+            context = requireContext(),
+            postId = postId,
+            event = eventType
+        )
+    }
+
+    private fun sendNotificationEvents() {
+        NotificationEvents.sendEvent(requireContext())
+    }
+
     private val mPostsOptionsClickListener = object :
         OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
-            val clipboard =
-                requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("Content", post.content)
-            clipboard.setPrimaryClip(clip)
+            Utils.copyText(requireContext(), post.content)
             showShortToast("Copied Successfully")
         }
 
@@ -152,7 +185,6 @@ class PostViewFragment : Fragment() {
             ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
                 .withDefaultSchedulers()
                 .subscribe({
-                    Timber.d("Home Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
                     if (it)
                         showShortToast("Saved Successfully")
                     else
@@ -162,5 +194,4 @@ class PostViewFragment : Fragment() {
                 })
         }
     }
-
 }

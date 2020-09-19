@@ -9,16 +9,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -68,7 +68,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         profileViewModel.getUser(mUserId)
-        homeViewModel.getPosts(mUserId)
+        homeViewModel.getProfilePosts(mUserId)
         safeArgs.transitionTag?.let {
             layout_profile_iv.transitionName = it
             loadImage(safeArgs.profileUrl)
@@ -88,14 +88,14 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
-                if (it is Result.Success) {
-                    mPostsAdapter.updateData(it.data)
-                    homeViewModel.addPosts(it.data)
-                }
+            if (it is Result.Success) {
+                mPostsAdapter.updateData(it.data)
+                homeViewModel.addPosts(it.data)
+            }
 
-                if (it is Result.Error) {
-                    Timber.d("Failed to fetch posts: ${it.error}")
-                }
+            if (it is Result.Error) {
+                Timber.d("Failed to fetch posts: ${it.error}")
+            }
         })
 
         layout_profile_followers_container.setOnClickListener {
@@ -117,12 +117,10 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         )
     }
 
-    private fun initSelf(userDetails: UserDetails) {
-
+    private fun initSelf() {
         layout_profile_follow_unfollow_frame.apply {
             layoutParams.width = screenSize.widthPixels / 2
             setOnClickListener {
-                //                activity!!.openActivity(ProfileEditActivity::class.java)
                 mUserDetails?.let {
                     findNavController().navigate(
                         ProfileFragmentDirections.actionNavigationProfileToProfileEditFragment(it)
@@ -152,6 +150,10 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
+                PostEvents.sendEvent(
+                    context = requireContext(),
+                    event = PostEventTypes.FOLLOW
+                )
                 mUserDetails = it.data
                 populateFollowersAndFollowings(it.data)
             } else {
@@ -164,6 +166,10 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         profileViewModel.unFollowUser.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
+                PostEvents.sendEvent(
+                    context = requireContext(),
+                    event = PostEventTypes.UN_FOLLOW
+                )
                 mUserDetails = it.data
                 populateFollowersAndFollowings(it.data)
             } else {
@@ -219,7 +225,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         populateFollowersAndFollowings(userDetails)
 
         if (isSelf) {
-            initSelf(userDetails)
+            initSelf()
         } else {
             initOther(userDetails)
         }

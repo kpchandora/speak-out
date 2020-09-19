@@ -34,7 +34,7 @@ class HomeViewModel : ViewModel() {
     private val _posts = MutableLiveData<Event<Result<List<PostData>>>>()
     val posts: LiveData<Event<Result<List<PostData>>>> = _posts
 
-    fun getPosts(id: String) {
+    fun getProfilePosts(id: String) {
         viewModelScope.launch {
             _posts.value = Event(mPostsRepository.getProfilePosts(id))
         }
@@ -70,7 +70,7 @@ class HomeViewModel : ViewModel() {
         mPostList.addAll(list)
     }
 
-    fun getPosts() = mPostList
+    fun getProfilePosts() = mPostList
 
     fun deletePost(postData: PostData) {
         viewModelScope.launch {

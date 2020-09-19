@@ -2,19 +2,14 @@ package com.speakout.posts.view
 
 import android.annotation.SuppressLint
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_post_layout.view.*
-import java.text.SimpleDateFormat
-import java.util.*
 
-class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFormat) :
+class PostViewHolder(val view: View, private val mEventListener: PostClickEventListener?) :
     RecyclerView.ViewHolder(view) {
-
-    var mEventListener: PostClickEventListener? = null
 
     fun bind(post: PostData) {
         view.apply {
@@ -43,7 +38,7 @@ class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFor
                 } else {
                     post.isLikedBySelf = false
                     post.likesCount--
-                    mEventListener?.onDislike(adapterPosition, post)
+                    mEventListener?.onRemoveLike(adapterPosition, post)
                 }
                 setLikes(post)
             }

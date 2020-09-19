@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.gone
+import com.speakout.extensions.loadImage
 import com.speakout.extensions.loadImageWithCallback
 import com.speakout.extensions.visible
 import com.speakout.users.OnUserClickListener
@@ -44,22 +45,12 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
         var mListener: OnSearchUserClickListener? = null
         fun bind(user: UserMiniDetails) {
             view.apply {
-                item_user_list_bg.gone()
                 item_users_list_profile_iv.transitionName = user.userId
-                item_users_list_profile_iv.loadImageWithCallback(user.photoUrl ?: "",
-                    makeRound = true,
-                    onSuccess = {
-                        item_user_list_bg.visible()
-                    },
-                    onFailed = {
-                        item_users_list_profile_iv.setImageDrawable(
-                            ContextCompat.getDrawable(
-                                view.context,
-                                R.drawable.ic_account_circle_grey
-                            )
-                        )
-                        item_user_list_bg.visible()
-                    })
+                item_users_list_profile_iv.loadImage(
+                    user.photoUrl,
+                    placeholder = R.drawable.ic_account_circle_grey,
+                    makeRound = true
+                )
 
                 item_users_list_username_tv.text = user.username
                 item_users_list_name_tv.text = user.name

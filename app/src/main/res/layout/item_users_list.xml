@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="3dp"
-    android:layout_marginBottom="3dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:orientation="horizontal"
     android:paddingStart="12dp"
     android:paddingEnd="12dp">
@@ -13,25 +14,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-
         <ImageView
             android:id="@+id/item_users_list_profile_iv"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
             tools:src="@tools:sample/avatars" />
 
         <View
-            android:id="@+id/item_user_list_bg"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@drawable/dr_circle_stroke_black_grey500" />
+            android:layout_width="46dp"
+            android:background="@drawable/dr_circle_stroke_bg_grey500"
+            android:layout_height="46dp"/>
 
     </FrameLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="2dp">
@@ -41,8 +42,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="14sp"
             tools:text="@tools:sample/first_names" />
 
         <TextView
@@ -50,8 +53,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="1dp"
-            tools:text="@tools:sample/full_names" />
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="@tools:sample/lorem/random" />
 
     </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="100dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_vertical"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="4dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/dr_unfollow_bg"
+            android:gravity="center"
+            android:text="Following"
+            android:textSize="12sp"
+            android:textColor="@color/black" />
+
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

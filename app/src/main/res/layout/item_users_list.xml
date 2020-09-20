@@ -11,6 +11,7 @@
     android:paddingEnd="12dp">
 
     <FrameLayout
+        android:id="@+id/fl_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -22,12 +23,13 @@
 
         <View
             android:layout_width="46dp"
-            android:background="@drawable/dr_circle_stroke_bg_grey500"
-            android:layout_height="46dp"/>
+            android:layout_height="46dp"
+            android:background="@drawable/dr_circle_stroke_bg_grey500" />
 
     </FrameLayout>
 
     <LinearLayout
+        android:id="@+id/ll_details"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="12dp"
@@ -60,20 +62,22 @@
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cv_follow"
         android:layout_width="100dp"
-        android:layout_height="32dp"
+        android:layout_height="28dp"
         android:layout_gravity="center_vertical"
-        app:cardElevation="0dp"
-        app:cardCornerRadius="4dp">
+        app:cardCornerRadius="4dp"
+        app:cardElevation="0dp">
 
         <TextView
+            android:id="@+id/tv_follow"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/dr_unfollow_bg"
             android:gravity="center"
-            android:text="Following"
+            android:textColor="@color/black"
             android:textSize="12sp"
-            android:textColor="@color/black" />
+            tools:text="Following" />
 
     </androidx.cardview.widget.CardView>
 

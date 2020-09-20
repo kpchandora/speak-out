@@ -81,9 +81,9 @@ public class UsersRepository(
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to follow user"), null)
+                Result.Error(Exception("Failed to follow user"), UserDetails(userId = userId))
             } catch (e: Exception) {
-                Result.Error(e, null)
+                Result.Error(e, UserDetails(userId = userId))
             }
         }
 
@@ -97,9 +97,9 @@ public class UsersRepository(
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to unfollow user"), null)
+                Result.Error(Exception("Failed to unfollow user"), UserDetails(userId = userId))
             } catch (e: Exception) {
-                Result.Error(e, null)
+                Result.Error(e, UserDetails(userId = userId))
             }
         }
 

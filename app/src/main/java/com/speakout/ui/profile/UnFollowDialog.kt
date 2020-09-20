@@ -11,6 +11,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.speakout.R
 import com.speakout.auth.UserDetails
+import com.speakout.events.UserEventType
+import com.speakout.events.UserEvents
 import com.speakout.extensions.getScreenSize
 import com.speakout.extensions.loadImage
 import kotlinx.android.synthetic.main.dialog_unfollow.view.*
@@ -19,7 +21,6 @@ import timber.log.Timber
 class UnFollowDialog : AppCompatDialogFragment() {
 
     private val safeArgs: UnFollowDialogArgs by navArgs()
-    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +32,17 @@ class UnFollowDialog : AppCompatDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("onCreateView: $profileViewModel")
         val view = inflater.inflate(R.layout.dialog_unfollow, container, false)
         isCancelable = false
         view.dialog_unfollow_confirm.setOnClickListener {
-            profileViewModel.confirmUnfollow()
+            if (safeArgs.isFrom == "profile") {
+
+            } else if (safeArgs.isFrom == "userList") {
+                UserEvents.sendEvent(
+                    context = requireContext(),
+                    userId = safeArgs.userId, type = UserEventType.UN_FOLLOW
+                )
+            }
             dismiss()
         }
         view.dialog_unfollow_cancel.setOnClickListener {

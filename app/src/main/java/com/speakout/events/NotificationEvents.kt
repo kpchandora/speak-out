@@ -7,7 +7,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 
 class NotificationEvents(
     private val mContext: Context,
-    private val block: (intent: Intent) -> Unit
+    block: (intent: Intent) -> Unit
 ) : EventBroadcastManager(block) {
 
     companion object {

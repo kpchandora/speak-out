@@ -3,9 +3,7 @@ package com.speakout.events
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.annotation.IntDef
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import java.lang.annotation.ElementType
 
 class PostEvents(
     private val mContext: Context,

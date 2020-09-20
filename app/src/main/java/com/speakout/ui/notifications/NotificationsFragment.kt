@@ -29,7 +29,7 @@ class NotificationsFragment : Fragment() {
     private lateinit var safeArgs: NotificationsFragmentArgs
     private val notificationsViewModel: NotificationsViewModel by viewModels()
     private lateinit var adapter: NotificationsAdapter
-    private lateinit var mNotificationEvents: NotificationEvents
+    private var mNotificationEvents: NotificationEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +67,11 @@ class NotificationsFragment : Fragment() {
             }
         })
 
+    }
+
+    override fun onDestroy() {
+        mNotificationEvents?.dispose()
+        super.onDestroy()
     }
 
     private fun navigateToPostView(postId: String) {

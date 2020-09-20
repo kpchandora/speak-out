@@ -47,11 +47,10 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
             (payloads[0] as? PostData)?.let {
                 Timber.d("BindView Content: ${it.content}")
                 holder.bind(it)
-            } ?: super.onBindViewHolder(holder, position, payloads)
-        } else {
-            super.onBindViewHolder(holder, position, payloads)
+                return
+            }
         }
-
+        super.onBindViewHolder(holder, position, payloads)
     }
 
     fun deletePost(postId: String) {

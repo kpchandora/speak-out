@@ -3,15 +3,11 @@ package com.speakout.ui.search
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
-import com.speakout.extensions.loadImageWithCallback
-import com.speakout.extensions.visible
-import com.speakout.users.OnUserClickListener
 import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
@@ -52,6 +48,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
                     makeRound = true
                 )
 
+                cv_follow.gone()
                 item_users_list_username_tv.text = user.username
                 item_users_list_name_tv.text = user.name
 

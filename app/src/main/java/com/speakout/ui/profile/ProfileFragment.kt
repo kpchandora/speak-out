@@ -291,7 +291,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         findNavController().navigate(
             ProfileFragmentDirections.actionNavigationProfileToUnFollowDialog(
                 profileUrl = mUserDetails?.photoUrl,
-                username = mUserDetails?.username
+                username = mUserDetails?.username ?: "",
+                userId = mUserId,
+                isFrom = "profile"
             )
         )
     }

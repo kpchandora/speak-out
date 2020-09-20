@@ -6,5 +6,5 @@ data class UserMiniDetails(
     val photoUrl: String? = null,
     val username: String? = null,
     val phoneNumber: String? = null,
-    val isFollowedBySelf: Boolean? = null
+    var isFollowedBySelf: Boolean? = null
 )

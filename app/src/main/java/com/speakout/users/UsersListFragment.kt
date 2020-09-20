@@ -15,29 +15,43 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
+import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
+import com.speakout.events.UserEvents
 import com.speakout.extensions.setUpToolbar
+import com.speakout.ui.profile.ProfileViewModel
 import kotlinx.android.synthetic.main.users_list_fragment.*
 
 class UsersListFragment : Fragment() {
 
     private val safeArgs: UsersListFragmentArgs by navArgs()
     private val usersListViewModel: UsersListViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
     private val mAdapter = UsersListAdapter()
+    private var mUserEvents: UserEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         when (safeArgs.actionType) {
             ActionType.Likes -> {
-                usersListViewModel.getLikesList(safeArgs.id ?: "")
+                usersListViewModel.getLikesList(safeArgs.id!!)
             }
             ActionType.Followers -> {
-                usersListViewModel.getFollowersList(safeArgs.id ?: "")
+                usersListViewModel.getFollowersList(safeArgs.id!!)
             }
             ActionType.Followings -> {
-                usersListViewModel.getFollowingsList(safeArgs.id ?: "")
+                usersListViewModel.getFollowingsList(safeArgs.id!!)
             }
         }
+
+        mUserEvents = UserEvents(requireContext()) {
+            val userId = it.getStringExtra(UserEvents.USER_ID) ?: return@UserEvents
+            mAdapter.showFollow(userId)
+            profileViewModel.unFollowUser(userId)
+        }
+
     }
 
     override fun onCreateView(
@@ -56,29 +70,52 @@ class UsersListFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }
-
         observeViewModels()
-
     }
 
     private fun observeViewModels() {
         usersListViewModel.followersList.observe(viewLifecycleOwner, Observer {
             if (it is Result.Success) {
-                mAdapter.updateData(it.data)
+                mAdapter.addData(it.data)
             }
         })
 
         usersListViewModel.followingsList.observe(viewLifecycleOwner, Observer {
             if (it is Result.Success) {
-                mAdapter.updateData(it.data)
+                mAdapter.addData(it.data)
             }
         })
 
         usersListViewModel.likesList.observe(viewLifecycleOwner, Observer {
             if (it is Result.Success) {
-                mAdapter.updateData(it.data)
+                mAdapter.addData(it.data)
             }
         })
+
+        profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                PostEvents.sendEvent(
+                    context = requireContext(),
+                    event = PostEventTypes.FOLLOW
+                )
+            }
+            if (it is Result.Error) {
+                mAdapter.showFollow(it.data!!.userId)
+            }
+        })
+
+        profileViewModel.unFollowUser.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                PostEvents.sendEvent(
+                    context = requireContext(),
+                    event = PostEventTypes.UN_FOLLOW
+                )
+            }
+            if (it is Result.Error) {
+                mAdapter.showFollowing(it.data!!.userId)
+            }
+        })
+
     }
 
     private fun navigateToProfile(
@@ -98,9 +135,28 @@ class UsersListFragment : Fragment() {
         findNavController().navigate(action, extras)
     }
 
+    override fun onDestroy() {
+        mUserEvents?.dispose()
+        super.onDestroy()
+    }
+
     private val mUserClickListener = object : OnUserClickListener {
         override fun onUserClick(userMiniDetails: UserMiniDetails, profileImageView: ImageView) {
             navigateToProfile(userMiniDetails, profileImageView)
+        }
+
+        override fun onFollowClick(userMiniDetails: UserMiniDetails) {
+            profileViewModel.followUser(userMiniDetails.userId)
+        }
+
+        override fun onUnFollowClick(userMiniDetails: UserMiniDetails) {
+            val action = UsersListFragmentDirections.actionUsersListFragmentToUnFollowDialog(
+                profileUrl = userMiniDetails.photoUrl,
+                userId = userMiniDetails.userId,
+                isFrom = "userList",
+                username = userMiniDetails.username!!
+            )
+            findNavController().navigate(action)
         }
     }
 

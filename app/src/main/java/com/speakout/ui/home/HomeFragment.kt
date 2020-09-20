@@ -117,7 +117,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             startPostponedEnterTransition()
         }
 
-        Timber.d("User Id ${AppPreference.getUserId()}")
+        Timber.d("onViewCreated User Id ${AppPreference.getUserId()}")
 
         observeViewModels()
     }
@@ -135,11 +135,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
+                Timber.d("posts data")
                 mPostsAdapter.updatePosts(it.data)
             }
 
             if (it is Result.Error) {
-                Timber.d("Failed to fetch posts: ${it.error}")
+                Timber.e("Failed to fetch posts: ${it.error}")
             }
         })
 

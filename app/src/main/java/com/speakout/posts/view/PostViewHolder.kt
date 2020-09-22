@@ -29,6 +29,7 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
             loadPost(post.postImageUrl)
 
             item_post_like_cb.isChecked = post.isLikedBySelf
+            item_bookmark_cb.isChecked = post.isBookmarkedBySelf
 
             item_post_like_cb.setOnClickListener {
                 if (item_post_like_cb.isChecked) {
@@ -41,6 +42,16 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
                     mEventListener?.onRemoveLike(adapterPosition, post)
                 }
                 setLikes(post)
+            }
+
+            item_bookmark_cb.setOnClickListener {
+                if (item_bookmark_cb.isChecked) {
+                    post.isBookmarkedBySelf = true
+                    mEventListener?.onBookmarkAdd(postId = post.postId)
+                } else {
+                    post.isBookmarkedBySelf = false
+                    mEventListener?.onBookmarkRemove(postId = post.postId)
+                }
             }
 
             item_post_layout_menu_tv.setOnClickListener {

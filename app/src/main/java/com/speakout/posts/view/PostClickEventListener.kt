@@ -9,4 +9,6 @@ interface PostClickEventListener {
     fun onProfileClick(postData: PostData, profileImageView: ImageView)
     fun onLikedUsersClick(postData: PostData)
     fun onMenuClick(postData: PostData, position: Int)
+    fun onBookmarkAdd(postId: String)
+    fun onBookmarkRemove(postId: String)
 }

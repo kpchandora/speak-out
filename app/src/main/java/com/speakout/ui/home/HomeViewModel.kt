@@ -34,6 +34,12 @@ class HomeViewModel : ViewModel() {
     private val _posts = MutableLiveData<Result<List<PostData>>>()
     val posts: LiveData<Result<List<PostData>>> = _posts
 
+    private val _addBookmark = MutableLiveData<Event<Result<String>>>()
+    val addBookmark: LiveData<Event<Result<String>>> = _addBookmark
+
+    private val _removeBookmark = MutableLiveData<Event<Result<String>>>()
+    val removeBookmark: LiveData<Event<Result<String>>> = _removeBookmark
+
     fun getProfilePosts(id: String) {
         viewModelScope.launch {
             _posts.value = mPostsRepository.getProfilePosts(id)
@@ -85,6 +91,18 @@ class HomeViewModel : ViewModel() {
     fun getSinglePost(postId: String) {
         viewModelScope.launch {
             _singlePost.value = Event(mPostsRepository.getSinglePost(postId))
+        }
+    }
+
+    fun addBookmark(postId: String) {
+        viewModelScope.launch {
+            _addBookmark.value = Event(mPostsRepository.addBookmark(postId))
+        }
+    }
+
+    fun removeBookmark(postId: String) {
+        viewModelScope.launch {
+            _removeBookmark.value = Event(mPostsRepository.removeBookmark(postId))
         }
     }
 

@@ -77,4 +77,10 @@ public interface ApiService {
 
     @GET("notifications/all")
     suspend fun getNotifications(): Response<List<NotificationResponse>>
+
+    @POST("posts/addBookmark")
+    suspend fun addBookmark(@Body jsonObject: JsonObject): Response<JsonObject>
+
+    @POST("posts/removeBookmark")
+    suspend fun removeBookmark(@Body jsonObject: JsonObject): Response<JsonObject>
 }

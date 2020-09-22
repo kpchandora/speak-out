@@ -167,6 +167,18 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
         })
 
+        mHomeViewModel.removeBookmark.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                Timber.d("Remove bookmark Success: ${it.data}")
+            }
+        })
+
+        mHomeViewModel.addBookmark.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                Timber.d("Add bookmark Success: ${it.data}")
+            }
+        })
+
     }
 
     private fun navigateToProfile(
@@ -217,6 +229,15 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             dialog.show()
             dialog.setPost(postData)
         }
+
+        override fun onBookmarkAdd(postId: String) {
+            mHomeViewModel.addBookmark(postId)
+        }
+
+        override fun onBookmarkRemove(postId: String) {
+            mHomeViewModel.removeBookmark(postId)
+        }
+
     }
 
 

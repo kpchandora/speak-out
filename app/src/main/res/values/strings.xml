@@ -100,4 +100,6 @@
         <item quantity="other">%d years ago</item>
     </plurals>
 
+    <string name="hint_un_follow">You won\'t get updates from @%s</string>
+
 </resources>

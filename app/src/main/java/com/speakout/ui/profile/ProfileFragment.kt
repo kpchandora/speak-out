@@ -17,8 +17,7 @@ import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
-import com.speakout.events.PostEventTypes
-import com.speakout.events.PostEvents
+import com.speakout.events.*
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -31,6 +30,10 @@ import timber.log.Timber
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
+    companion object {
+        const val TAG = "ProfileFragment"
+    }
+
     private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
     private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
     private val mPostsAdapter = ProfilePostsAdapter()
@@ -39,6 +42,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private lateinit var screenSize: DisplayMetrics
     private var mUserDetails: UserDetails? = null
     private lateinit var safeArgs: ProfileFragmentArgs
+    private var mProfileEvents: ProfileEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +51,32 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         screenSize = requireActivity().getScreenSize()
+
+        mProfileEvents = ProfileEvents(requireContext()) {
+            val userId = it.getStringExtra(ProfileEvents.USER_ID) ?: return@ProfileEvents
+            when (it.getIntExtra(ProfileEvents.EVENT_TYPE, -1)) {
+                ProfileEventTypes.CREATE_POST,
+                ProfileEventTypes.DELETE_POST -> {
+                    if (userId == mUserId) {
+                        homeViewModel.getProfilePosts(mUserId)
+                    }
+                }
+                ProfileEventTypes.DIALOG_UN_FOLLOW -> {
+                    if (userId == mUserId) {
+                        profileViewModel.confirmUnfollow()
+                    }
+                }
+                ProfileEventTypes.FOLLOW,
+                ProfileEventTypes.UN_FOLLOW,
+                ProfileEventTypes.DETAILS_UPDATE -> {
+                    if (userId == mUserId || isSelf) {
+                        profileViewModel.getUser(mUserId)
+                    }
+                }
+            }
+        }
+        homeViewModel.getProfilePosts(mUserId)
+        profileViewModel.getUser(mUserId)
     }
 
     override fun onCreateView(
@@ -67,8 +97,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        profileViewModel.getUser(mUserId)
-        homeViewModel.getProfilePosts(mUserId)
         safeArgs.transitionTag?.let {
             layout_profile_iv.transitionName = it
             loadImage(safeArgs.profileUrl)
@@ -87,7 +115,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
         })
 
-        homeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
+        homeViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (it is Result.Success) {
                 mPostsAdapter.updateData(it.data)
                 homeViewModel.addPosts(it.data)
@@ -106,6 +134,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             navigateToUsersList(ActionType.Followings)
         }
 
+    }
+
+    override fun onDestroy() {
+        mProfileEvents?.dispose()
+        super.onDestroy()
     }
 
     private fun navigateToUsersList(actionType: ActionType) {
@@ -150,9 +183,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
-                PostEvents.sendEvent(
+                PostEvents.sendEvent(context = requireContext(), event = PostEventTypes.FOLLOW)
+                UserEvents.sendEvent(
                     context = requireContext(),
-                    event = PostEventTypes.FOLLOW
+                    userId = it.data.userId,
+                    type = UserEventType.FOLLOW
                 )
                 mUserDetails = it.data
                 populateFollowersAndFollowings(it.data)
@@ -166,11 +201,13 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         profileViewModel.unFollowUser.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
-                PostEvents.sendEvent(
-                    context = requireContext(),
-                    event = PostEventTypes.UN_FOLLOW
-                )
                 mUserDetails = it.data
+                PostEvents.sendEvent(context = requireContext(), event = PostEventTypes.UN_FOLLOW)
+                UserEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    type = UserEventType.UN_FOLLOW
+                )
                 populateFollowersAndFollowings(it.data)
             } else {
                 mUserDetails?.let { userDetails ->
@@ -293,10 +330,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 profileUrl = mUserDetails?.photoUrl,
                 username = mUserDetails?.username ?: "",
                 userId = mUserId,
-                isFrom = "profile"
+                isFrom = TAG
             )
         )
     }
+
 
     override fun doubleClick() {
         fragment_profile_scroll_view.smoothScrollTo(0, 0)

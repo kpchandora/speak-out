@@ -1,9 +1,6 @@
 package com.speakout.ui.home
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
@@ -13,6 +10,7 @@ import android.widget.ImageView
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -133,9 +131,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun observeViewModels() {
-        mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
+        mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (it is Result.Success) {
-                Timber.d("posts data")
+                Timber.d("posts data success")
                 mPostsAdapter.updatePosts(it.data)
             }
 
@@ -149,7 +147,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 mPostsAdapter.removeLike(it.data?.postId ?: "")
             }
         })
-
 
         mHomeViewModel.unlikePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Error) {

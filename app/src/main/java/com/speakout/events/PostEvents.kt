@@ -8,8 +8,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 class PostEvents(
     private val mContext: Context,
     block: (intent: Intent) -> Unit
-) :
-    EventBroadcastManager(block) {
+) : EventBroadcastManager(block) {
 
     companion object {
         const val POST_CREATION_EVENT = "event.post"

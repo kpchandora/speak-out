@@ -21,6 +21,8 @@ import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.PostEventTypes
 import com.speakout.events.PostEvents
+import com.speakout.events.ProfileEventTypes
+import com.speakout.events.ProfileEvents
 import com.speakout.extensions.*
 import com.speakout.posts.create.CreatePostViewModel
 import com.speakout.posts.create.PostData
@@ -153,7 +155,7 @@ class TagsFragment : Fragment() {
             (requireActivity() as MainActivity).hideProgress()
             if (it is Result.Success) {
                 showShortToast("Post uploaded successfully")
-                PostEvents.sendEvent(requireContext(), PostEventTypes.CREATE, it.data.postId)
+                sendEvents(userId = it.data.userId, postId = it.data.postId)
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
                     "isSuccess",
                     true
@@ -164,6 +166,11 @@ class TagsFragment : Fragment() {
             }
         })
 
+    }
+
+    private fun sendEvents(userId: String, postId: String) {
+        PostEvents.sendEvent(requireContext(), PostEventTypes.CREATE, postId)
+        ProfileEvents.sendEvent(requireContext(), userId, ProfileEventTypes.CREATE_POST)
     }
 
     private fun observeViewModels() {

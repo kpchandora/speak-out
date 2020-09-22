@@ -11,10 +11,13 @@ import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import com.speakout.R
 import com.speakout.auth.UserDetails
+import com.speakout.events.ProfileEventTypes
+import com.speakout.events.ProfileEvents
 import com.speakout.events.UserEventType
 import com.speakout.events.UserEvents
 import com.speakout.extensions.getScreenSize
 import com.speakout.extensions.loadImage
+import com.speakout.users.UsersListFragment
 import kotlinx.android.synthetic.main.dialog_unfollow.view.*
 import timber.log.Timber
 
@@ -35,12 +38,17 @@ class UnFollowDialog : AppCompatDialogFragment() {
         val view = inflater.inflate(R.layout.dialog_unfollow, container, false)
         isCancelable = false
         view.dialog_unfollow_confirm.setOnClickListener {
-            if (safeArgs.isFrom == "profile") {
-
-            } else if (safeArgs.isFrom == "userList") {
+            if (safeArgs.isFrom == ProfileFragment.TAG) {
+                ProfileEvents.sendEvent(
+                    context = requireContext(),
+                    userId = safeArgs.userId,
+                    eventType = ProfileEventTypes.DIALOG_UN_FOLLOW
+                )
+            } else if (safeArgs.isFrom == UsersListFragment.TAG) {
                 UserEvents.sendEvent(
                     context = requireContext(),
-                    userId = safeArgs.userId, type = UserEventType.UN_FOLLOW
+                    userId = safeArgs.userId,
+                    type = UserEventType.DIALOG_UN_FOLLOW
                 )
             }
             dismiss()
@@ -53,8 +61,7 @@ class UnFollowDialog : AppCompatDialogFragment() {
             safeArgs.profileUrl, makeRound = true,
             placeholder = R.drawable.ic_account_circle_grey
         )
-        view.dialog_unfollow_hint_tv.text =
-            "You won't get updates from @${safeArgs.username}"
+        view.dialog_unfollow_hint_tv.text = getString(R.string.hint_un_follow, safeArgs.username)
 
         return view
     }

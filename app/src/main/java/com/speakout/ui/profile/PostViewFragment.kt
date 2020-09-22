@@ -16,9 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
-import com.speakout.events.NotificationEvents
-import com.speakout.events.PostEventTypes
-import com.speakout.events.PostEvents
+import com.speakout.events.*
 import com.speakout.extensions.*
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
@@ -93,6 +91,11 @@ class PostViewFragment : Fragment() {
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
                 sendPostEvents(it.data.postId, PostEventTypes.DELETE)
+                ProfileEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    eventType = ProfileEventTypes.DELETE_POST
+                )
                 Timber.d("Delete Success: ${it.data.postId}")
                 mPostsAdapter.deletePost(it.data.postId)
                 showShortToast("Deleted Successfully")

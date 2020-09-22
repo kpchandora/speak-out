@@ -31,18 +31,18 @@ class HomeViewModel : ViewModel() {
     private val _singlePost = MutableLiveData<Event<Result<PostData>>>()
     val singlePost: LiveData<Event<Result<PostData>>> = _singlePost
 
-    private val _posts = MutableLiveData<Event<Result<List<PostData>>>>()
-    val posts: LiveData<Event<Result<List<PostData>>>> = _posts
+    private val _posts = MutableLiveData<Result<List<PostData>>>()
+    val posts: LiveData<Result<List<PostData>>> = _posts
 
     fun getProfilePosts(id: String) {
         viewModelScope.launch {
-            _posts.value = Event(mPostsRepository.getProfilePosts(id))
+            _posts.value = mPostsRepository.getProfilePosts(id)
         }
     }
 
     fun getFeed() {
         viewModelScope.launch {
-            _posts.value = Event(mPostsRepository.getFeed())
+            _posts.value = mPostsRepository.getFeed()
         }
     }
 

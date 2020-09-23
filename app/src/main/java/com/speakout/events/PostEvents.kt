@@ -22,7 +22,6 @@ class PostEvents(
             }
             LocalBroadcastManager.getInstance(context).sendBroadcast(data)
         }
-
     }
 
     init {
@@ -44,4 +43,6 @@ object PostEventTypes {
     const val FOLLOW = 4
     const val UN_FOLLOW = 5
     const val USER_DETAILS_UPDATE = 6
+    const val ADD_BOOKMARK = 7
+    const val REMOVE_BOOKMARK = 8
 }

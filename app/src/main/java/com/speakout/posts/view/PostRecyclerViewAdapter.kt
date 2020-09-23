@@ -40,9 +40,9 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     override fun onBindViewHolder(
         holder: PostViewHolder,
-        position: Int, payloads: MutableList<Any>
+        position: Int,
+        payloads: MutableList<Any>
     ) {
-
         if (payloads.isNotEmpty()) {
             (payloads[0] as? PostData)?.let {
                 Timber.d("BindView Content: ${it.content}")
@@ -82,6 +82,24 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
             if (postId == postDataItem.postId) {
                 postDataItem.isLikedBySelf = true
                 postDataItem.likesCount++
+                notifyItemChanged(index, postDataItem)
+            }
+        }
+    }
+
+    fun addBookmark(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isBookmarkedBySelf = true
+                notifyItemChanged(index, postDataItem)
+            }
+        }
+    }
+
+    fun removeBookmark(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isBookmarkedBySelf = false
                 notifyItemChanged(index, postDataItem)
             }
         }

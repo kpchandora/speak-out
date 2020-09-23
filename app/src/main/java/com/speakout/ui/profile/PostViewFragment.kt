@@ -129,6 +129,23 @@ class PostViewFragment : Fragment() {
             }
         })
 
+        mHomeViewModel.addBookmark.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data, PostEventTypes.ADD_BOOKMARK)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.removeBookmark(it.data!!)
+            }
+        })
+
+        mHomeViewModel.removeBookmark.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data, PostEventTypes.REMOVE_BOOKMARK)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.addBookmark(it.data!!)
+            }
+        })
     }
 
     private val mPostEventsListener = object : PostClickEventListener {
@@ -156,6 +173,14 @@ class PostViewFragment : Fragment() {
             dialog.setListener(mPostsOptionsClickListener)
             dialog.show()
             dialog.setPost(postData)
+        }
+
+        override fun onBookmarkAdd(postId: String) {
+            mHomeViewModel.addBookmark(postId)
+        }
+
+        override fun onBookmarkRemove(postId: String) {
+            mHomeViewModel.removeBookmark(postId)
         }
     }
 

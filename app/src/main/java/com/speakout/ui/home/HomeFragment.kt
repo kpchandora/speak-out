@@ -61,6 +61,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
                 PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
                 PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
+                PostEventTypes.ADD_BOOKMARK -> mPostsAdapter.addBookmark(postId)
+                PostEventTypes.REMOVE_BOOKMARK -> mPostsAdapter.removeBookmark(postId)
             }
         }
 

@@ -150,8 +150,8 @@
 
             <CheckBox
                 android:id="@+id/item_bookmark_cb"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="8dp"
                 android:background="@drawable/dr_bookmark_bg"

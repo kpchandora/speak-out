@@ -16,12 +16,15 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.speakout.common.Result
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
-import java.lang.Exception
+import kotlin.Exception
 
 object ImageUtils {
 
@@ -45,27 +48,27 @@ object ImageUtils {
         return Single.just(null)
     }
 
-    fun uploadImageFromFile(imageFile: File): Single<String?> {
-        return Single.create {
-            val file = Uri.fromFile(imageFile)
-            val ref =
-                FirebaseUtils.getProfilePictureStorageRef().child(imageFile.name)
-            ref.putFile(file).continueWithTask { task ->
-                if (!task.isSuccessful || task.isCanceled) {
-                    it.onError(task.exception as Throwable)
-                    return@continueWithTask null
-                }
-                ref.downloadUrl
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    it.onSuccess(task.result?.toString() ?: "")
+    suspend fun uploadImageFromFile(imageFile: File): Result<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val file = Uri.fromFile(imageFile)
+                val ref = FirebaseUtils.getProfilePictureStorageRef().child(imageFile.name)
+                val result = ref.putFile(file).continueWithTask { task ->
+                    if (!task.isSuccessful || task.isCanceled) {
+                        return@continueWithTask null
+                    }
+                    ref.downloadUrl
+                }.await()
+                if (result != null) {
+                    Result.Success(result.toString())
                 } else {
-                    it.onError(Exception("Failed"))
+                    Result.Error(Exception("Failed to upload image"), null)
                 }
+            } catch (e: Exception) {
+                Result.Error(Exception("Failed to upload image"), null)
             }
-
         }
-    }
+
 
     fun saveImageToDevice(url: String, context: Context): Single<Boolean> {
         return Single.create {
@@ -78,7 +81,6 @@ object ImageUtils {
                         transition: Transition<in Bitmap>?
                     ) {
                         Thread {
-                            Timber.d("Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
                             it.onSuccess(saveImage(resource, context))
                         }.start()
                     }

@@ -1,6 +1,6 @@
 package com.speakout.utils
 
-object NameUtils {
+object Constants {
 
     object UserDetails {
         const val userId = "user_id"
@@ -35,9 +35,6 @@ object NameUtils {
         object BottomDialogActivity {
             const val REQUEST_CODE = 150
         }
-
-
-
     }
 
 }

@@ -22,7 +22,7 @@
         android:layout_width="100dp"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/dr_circle_stroke_black_grey500"
+        android:background="@drawable/dr_circle_stroke_bg_grey500"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -163,17 +163,17 @@
             android:textSize="14sp" />
 
     </FrameLayout>
-    <!--    <Button-->
-    <!--        android:id="@+id/layout_profile_follow_unfollow_btn"-->
-    <!--        android:visibility="gone"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_marginTop="12dp"-->
-    <!--        android:text="@string/follow"-->
-    <!--        android:textAllCaps="false"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/layout_profile_full_name_tv" />-->
+
+    <ProgressBar
+        android:id="@+id/follow_unfollow_progress"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:visibility="visible"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/layout_profile_follow_unfollow_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/layout_profile_follow_unfollow_frame" />
 
     <View
         android:id="@+id/view"

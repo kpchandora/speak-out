@@ -1,29 +1,38 @@
 package com.speakout.posts.tags
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.speakout.api.RetrofitBuilder
+import com.speakout.posts.TagsRepository
+import kotlinx.coroutines.*
+import timber.log.Timber
 
 class TagViewModel : ViewModel() {
 
 
-    private val _tags = MutableLiveData<String>()
-    val tags: LiveData<List<Tag>> = Transformations.switchMap(_tags) {
-        TagsService.getTags(it)
+    private var searchJob: Job? = null
+    private val mTagsRepository: TagsRepository by lazy {
+        TagsRepository(RetrofitBuilder.apiService)
     }
 
-    private val _addTag = MutableLiveData<Tag>()
-    val addTag = Transformations.switchMap(_addTag) {
-        TagsService.addTag(tag = it)
-    }
+    private val _tags = MutableLiveData<List<Tag>>()
+    val tags: LiveData<List<Tag>> = _tags
+
+    private val _addTag = MutableLiveData<Tag?>()
+    val addTag: LiveData<Tag?> = _addTag
 
     fun addTag(tag: Tag) {
-        _addTag.value = tag
+        viewModelScope.launch {
+            _addTag.value = mTagsRepository.createTag(tag)
+        }
     }
 
     fun searchTags(query: String) {
-        _tags.value = query
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(300)
+            Timber.d("launch")
+            _tags.value = mTagsRepository.getTags(query)
+        }
     }
 
 }

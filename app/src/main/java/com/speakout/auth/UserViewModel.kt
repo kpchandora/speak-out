@@ -1,49 +1,52 @@
 package com.speakout.auth
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Event
-import com.speakout.utils.FirebaseUtils
+import com.speakout.users.UsersRepository
+import com.speakout.utils.AppPreference
+import com.speakout.common.Result
+import kotlinx.coroutines.launch
 
 class UserViewModel : ViewModel() {
 
-    private val username = MutableLiveData<String>()
-    private val updateUserDetails = MutableLiveData<Map<String, Any>>()
-    private val saveUserDetails = MutableLiveData<UserDetails>()
-    private val getUserData = MutableLiveData<String>()
-
-    val usernameObserver: LiveData<FirebaseUtils.Data> = Transformations.switchMap(username) {
-        AuthService.isUsernamePresent(key = it)
+    private val appPreference = AppPreference
+    private val mUsersRepository: UsersRepository by lazy {
+        UsersRepository(RetrofitBuilder.apiService, appPreference)
     }
 
-    val updateDetailsObserver: LiveData<Event<Boolean>> = Transformations.switchMap(updateUserDetails) {
-        AuthService.updateUserData(it)
-    }
+    private val _username = MutableLiveData<Result<Boolean>>()
+    val username: LiveData<Result<Boolean>> = _username
 
-    val saveUserDetailsObserver: LiveData<Boolean> = Transformations.switchMap(saveUserDetails) {
-        AuthService.saveUserData(it)
-    }
-
-    val getUserDataObserver: LiveData<UserDetails?> = Transformations.switchMap(getUserData) {
-        AuthService.getUserData(it)
-    }
+    private val _updateUserDetails = MutableLiveData<Event<Result<UserDetails>>>()
+    val updateUserDetails: LiveData<Event<Result<UserDetails>>> = _updateUserDetails
+    private val _saveUserDetails = MutableLiveData<Result<UserDetails>>()
+    val saveUserDetails: LiveData<Result<UserDetails>> = _saveUserDetails
+    private val _userDetails = MutableLiveData<Result<UserDetails>>()
+    val userDetails: LiveData<Result<UserDetails>> = _userDetails
 
     fun saveUserDetails(userDetails: UserDetails) {
-        saveUserDetails.value = userDetails
+        viewModelScope.launch {
+            _saveUserDetails.value = mUsersRepository.createUser(userDetails)
+        }
     }
 
-    fun updateUserDetails(detailsMap: Map<String, Any>) {
-        updateUserDetails.value = detailsMap
+    fun updateUserDetails(userMiniDetails: UserMiniDetails) {
+        viewModelScope.launch {
+            _updateUserDetails.value = Event(mUsersRepository.updateUserDetails(userMiniDetails))
+        }
     }
 
-    fun isUsernamePresent(key: String) {
-        username.value = key
+    fun isUsernamePresent(username: String) {
+        viewModelScope.launch {
+            _username.value = mUsersRepository.checkUsername(username)
+        }
     }
 
     fun getUserData(uid: String) {
-        getUserData.value = uid
+        viewModelScope.launch {
+            _userDetails.value = mUsersRepository.getUser(uid)
+        }
     }
 
 }

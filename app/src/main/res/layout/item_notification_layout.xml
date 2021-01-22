@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp">
+
+    <FrameLayout
+        android:id="@+id/fl_notification_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_notification_profile"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <View
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/dr_circle_stroke_bg_grey500" />
+
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/tv_notification_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="20dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toStartOf="@+id/cv_notification_post"
+        app:layout_constraintStart_toEndOf="@+id/fl_notification_profile"
+        app:layout_constraintTop_toTopOf="@+id/fl_notification_profile"
+        tools:text="@tools:sample/lorem/random" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/tv_notification_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_notification_content"
+        tools:text="@tools:sample/date/ddmmyy" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_notification_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_notification_post"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            tools:srcCompat="@tools:sample/avatars" />
+
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

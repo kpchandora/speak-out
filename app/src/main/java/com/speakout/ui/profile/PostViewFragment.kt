@@ -1,16 +1,13 @@
 package com.speakout.ui.profile
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.os.Bundle
-import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -19,8 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
-import com.speakout.extensions.showShortToast
-import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.events.*
+import com.speakout.extensions.*
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.create.PostData
@@ -29,6 +26,7 @@ import com.speakout.ui.home.HomeViewModel
 import com.speakout.posts.view.PostClickEventListener
 import com.speakout.users.ActionType
 import com.speakout.utils.ImageUtils
+import com.speakout.utils.Utils
 import kotlinx.android.synthetic.main.fragment_post_view.*
 import timber.log.Timber
 
@@ -37,20 +35,31 @@ class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
     private val mPostsAdapter = PostRecyclerViewAdapter()
-    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
+    private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
+    private val singleHomeViewModel: HomeViewModel by viewModels()
+    private lateinit var mHomeViewModel: HomeViewModel
     private lateinit var dialog: PostOptionsDialog
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (safeArgs.isFromNotification) {
+            mHomeViewModel = singleHomeViewModel
+            mHomeViewModel.getSinglePost(safeArgs.postId)
+        } else {
+            mHomeViewModel = navHomeViewModel
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_post_view, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpToolbar(view)
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_post_view_rv.apply {
@@ -59,18 +68,41 @@ class PostViewFragment : Fragment() {
             adapter = mPostsAdapter
         }
 
-        mPostsAdapter.updatePosts(homeViewModel.getPosts())
-        fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
-        observeViewModels()
+        mHomeViewModel.singlePost.observe(viewLifecycleOwner, EventObserver {
+            progressBar.gone()
+            if (it is Result.Success) {
+                mPostsAdapter.updatePosts(listOf(it.data))
+            }
+            if (it is Result.Error) {
+                showShortToast("Failed to fetch post")
+            }
+        })
 
+        if (!safeArgs.isFromNotification) {
+            mPostsAdapter.updatePosts(mHomeViewModel.getProfilePosts())
+            fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
+        } else {
+            progressBar.visible()
+        }
+        observeViewModels()
     }
 
     private fun observeViewModels() {
-        homeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
+        mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
+                sendPostEvents(it.data.postId, PostEventTypes.DELETE)
+                ProfileEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    eventType = ProfileEventTypes.DELETE_POST
+                )
                 Timber.d("Delete Success: ${it.data.postId}")
-                mPostsAdapter.deletePost(it.data)
+                mPostsAdapter.deletePost(it.data.postId)
                 showShortToast("Deleted Successfully")
+                if (safeArgs.isFromNotification) {
+                    sendNotificationEvents()
+                    findNavController().navigateUp()
+                }
             }
 
             if (it is Result.Error) {
@@ -78,16 +110,51 @@ class PostViewFragment : Fragment() {
                 showShortToast("Failed to delete post")
             }
         })
+
+        mHomeViewModel.likePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data.postId, PostEventTypes.LIKE)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.removeLike(it.data?.postId ?: "")
+            }
+        })
+
+        mHomeViewModel.unlikePost.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data.postId, PostEventTypes.REMOVE_LIKE)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.addLike(it.data?.postId ?: "")
+            }
+        })
+
+        mHomeViewModel.addBookmark.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data, PostEventTypes.ADD_BOOKMARK)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.removeBookmark(it.data!!)
+            }
+        })
+
+        mHomeViewModel.removeBookmark.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                sendPostEvents(it.data, PostEventTypes.REMOVE_BOOKMARK)
+            }
+            if (it is Result.Error) {
+                mPostsAdapter.addBookmark(it.data!!)
+            }
+        })
     }
 
-    private val mPostEventsListener = object :
-        PostClickEventListener {
+    private val mPostEventsListener = object : PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
-            homeViewModel.likePost(postData)
+            mHomeViewModel.likePost(postData)
         }
 
-        override fun onDislike(position: Int, postData: PostData) {
-            homeViewModel.unlikePost(postData)
+        override fun onRemoveLike(position: Int, postData: PostData) {
+            mHomeViewModel.unlikePost(postData)
         }
 
         override fun onProfileClick(postData: PostData, profileImageView: ImageView) {
@@ -96,7 +163,7 @@ class PostViewFragment : Fragment() {
 
         override fun onLikedUsersClick(postData: PostData) {
             val action = PostViewFragmentDirections.actionPostViewFragmentToUsersListFragment(
-                postData.userId,
+                postData.postId,
                 ActionType.Likes
             )
             findNavController().navigate(action)
@@ -107,20 +174,37 @@ class PostViewFragment : Fragment() {
             dialog.show()
             dialog.setPost(postData)
         }
+
+        override fun onBookmarkAdd(postId: String) {
+            mHomeViewModel.addBookmark(postId)
+        }
+
+        override fun onBookmarkRemove(postId: String) {
+            mHomeViewModel.removeBookmark(postId)
+        }
+    }
+
+    private fun sendPostEvents(postId: String, eventType: Int) {
+        PostEvents.sendEvent(
+            context = requireContext(),
+            postId = postId,
+            event = eventType
+        )
+    }
+
+    private fun sendNotificationEvents() {
+        NotificationEvents.sendEvent(requireContext())
     }
 
     private val mPostsOptionsClickListener = object :
         OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
-            val clipboard =
-                requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("Content", post.content)
-            clipboard.setPrimaryClip(clip)
+            Utils.copyText(requireContext(), post.content)
             showShortToast("Copied Successfully")
         }
 
         override fun onDelete(post: PostData) {
-            homeViewModel.deletePost(post)
+            mHomeViewModel.deletePost(post)
         }
 
         @SuppressLint("CheckResult")
@@ -129,7 +213,6 @@ class PostViewFragment : Fragment() {
             ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
                 .withDefaultSchedulers()
                 .subscribe({
-                    Timber.d("Home Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
                     if (it)
                         showShortToast("Saved Successfully")
                     else
@@ -139,5 +222,4 @@ class PostViewFragment : Fragment() {
                 })
         }
     }
-
 }

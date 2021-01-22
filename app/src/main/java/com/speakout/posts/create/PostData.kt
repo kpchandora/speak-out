@@ -2,7 +2,6 @@ package com.speakout.posts.create
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.google.firebase.firestore.Exclude
 
 data class PostData(
     var postId: String = "",
@@ -10,12 +9,12 @@ data class PostData(
     var content: String = "",
     var tags: List<String> = emptyList(),
     var postImageUrl: String = "",
-    var timeStamp: String = "",
+    var timeStamp: Long = 0,
     var username: String = "",
-    var userImageUrl: String = "",
-    var timeStampLong: Long = 0,
+    var photoUrl: String = "",
     var likesCount: Long = 0,
-    var isLikedBySelf: Boolean = false
+    var isLikedBySelf: Boolean = false,
+    var isBookmarkedBySelf: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -23,11 +22,11 @@ data class PostData(
         parcel.readString() ?: "",
         parcel.createStringArrayList() ?: emptyList(),
         parcel.readString() ?: "",
+        parcel.readLong() ?: 0,
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readString() ?: "",
-        parcel.readLong(),
-        parcel.readLong(),
+        parcel.readLong() ?: 0,
+        parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte()
     ) {
     }
@@ -38,12 +37,12 @@ data class PostData(
         parcel.writeString(content)
         parcel.writeStringList(tags)
         parcel.writeString(postImageUrl)
-        parcel.writeString(timeStamp)
+        parcel.writeLong(timeStamp)
         parcel.writeString(username)
-        parcel.writeString(userImageUrl)
-        parcel.writeLong(timeStampLong)
+        parcel.writeString(photoUrl)
         parcel.writeLong(likesCount)
         parcel.writeByte(if (isLikedBySelf) 1 else 0)
+        parcel.writeByte(if (isBookmarkedBySelf) 1 else 0)
     }
 
     override fun describeContents(): Int {

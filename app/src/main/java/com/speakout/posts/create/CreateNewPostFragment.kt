@@ -8,22 +8,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.speakout.R
 import com.speakout.extensions.*
 import com.speakout.ui.BottomDialogActivity
-import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
-import com.speakout.utils.NameUtils
+import com.speakout.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_create_new_post.*
-import timber.log.Timber
-import java.text.DateFormat
-import java.util.*
 
 class CreateNewPostFragment : Fragment() {
 
@@ -39,10 +34,13 @@ class CreateNewPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setUpToolbar(view)
         create_post_container_layout.addViewObserver {
-            requireActivity().getScreenSize().let {
-                create_post_container_layout.layoutParams.height = it.widthPixels
-                create_post_container_layout.requestLayout()
+            activity?.let {
+                it.getScreenSize().let {
+                    create_post_container_layout.layoutParams.height = it.widthPixels
+                    create_post_container_layout.requestLayout()
+                }
             }
         }
 
@@ -52,7 +50,7 @@ class CreateNewPostFragment : Fragment() {
             startActivityForResult(
                 Intent(requireContext(), BottomDialogActivity::class.java).putExtra(
                     BottomDialogActivity.CONTENT, create_post_content_tv.text.toString()
-                ), NameUtils.IntentStrings.CreatePost.REQUEST_CODE
+                ), Constants.IntentStrings.CreatePost.REQUEST_CODE
             )
         }
 
@@ -91,7 +89,7 @@ class CreateNewPostFragment : Fragment() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == NameUtils.IntentStrings.CreatePost.REQUEST_CODE) {
+        if (requestCode == Constants.IntentStrings.CreatePost.REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 data?.extras?.let {
                     it.getString(BottomDialogActivity.CONTENT)?.let { content ->

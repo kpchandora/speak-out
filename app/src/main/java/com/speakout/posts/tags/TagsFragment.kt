@@ -17,30 +17,29 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
-import com.speakout.extensions.gone
-import com.speakout.extensions.showShortToast
-import com.speakout.extensions.visible
+import com.speakout.common.EventObserver
+import com.speakout.common.Result
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
+import com.speakout.events.ProfileEventTypes
+import com.speakout.events.ProfileEvents
+import com.speakout.extensions.*
 import com.speakout.posts.create.CreatePostViewModel
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_post_tags.*
 import timber.log.Timber
-import java.text.DateFormat
 import java.util.*
 
-/**
- * A simple [Fragment] subclass.
- */
 class TagsFragment : Fragment() {
 
     private val mCreatePostViewModel: CreatePostViewModel by navGraphViewModels(R.id.create_post_navigation)
     private val mSelectedTags = hashMapOf<Long, Tag>()
     private val mAdapter = TagsRecyclerViewAdapter()
     private val mSelectedTagsAdapter = SelectedTagsRecyclerViewAdapter()
-    private val addTagQueue = LinkedList<Tag>()
     private val tagsViewModel: TagViewModel by viewModels()
-    private val tagRegex = "^([a-z0-9]+\\b)(?!;)\$".toRegex()
+    private val tagRegex = "^([A-Za-z0-9]+\\b)(?!;)\$".toRegex()
     private val createPostData = PostData()
     private val safeArgs: TagsFragmentArgs by navArgs()
 
@@ -49,12 +48,16 @@ class TagsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_post_tags, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        view.post {
+            setUpToolbar(view)?.let {
+                it.title = "Tags"
+            }
+        }
         fragment_post_tags_progress.visible()
         mAdapter.setHasStableIds(true)
         mAdapter.setListener(tagsListener)
@@ -122,12 +125,12 @@ class TagsFragment : Fragment() {
             (requireActivity() as MainActivity).showProgress()
             val postId = UUID.randomUUID().toString()
             createPostData.postId = postId
-            mCreatePostViewModel.uploadImage(Pair(bitmap, postId))
+            mCreatePostViewModel.uploadImage(bitmap, postId)
         } ?: kotlin.run {
             showShortToast("Failed to upload post")
         }
 
-        mCreatePostViewModel.uploadImageObserver.observe(viewLifecycleOwner, Observer {
+        mCreatePostViewModel.uploadImage.observe(viewLifecycleOwner, EventObserver {
             it?.let { url ->
                 val pref = AppPreference
 
@@ -135,14 +138,12 @@ class TagsFragment : Fragment() {
                 createPostData.apply {
                     postImageUrl = url
                     content = safeArgs.postContent
-                    timeStamp = DateFormat.getDateTimeInstance().format(Date())
                     userId = pref.getUserId()
-                    userImageUrl = pref.getPhotoUrl()
+                    photoUrl = pref.getPhotoUrl()
                     username = pref.getUserUniqueName()
-                    timeStampLong = System.currentTimeMillis()
                 }
 
-                mCreatePostViewModel.uploadPost(createPostData)
+                mCreatePostViewModel.createPost(createPostData)
 
             } ?: kotlin.run {
                 (requireActivity() as MainActivity).hideProgress()
@@ -150,10 +151,11 @@ class TagsFragment : Fragment() {
             }
         })
 
-        mCreatePostViewModel.postObserver.observe(viewLifecycleOwner, Observer {
+        mCreatePostViewModel.createPost.observe(viewLifecycleOwner, EventObserver {
             (requireActivity() as MainActivity).hideProgress()
-            if (it) {
+            if (it is Result.Success) {
                 showShortToast("Post uploaded successfully")
+                sendEvents(userId = it.data.userId, postId = it.data.postId)
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
                     "isSuccess",
                     true
@@ -166,31 +168,22 @@ class TagsFragment : Fragment() {
 
     }
 
+    private fun sendEvents(userId: String, postId: String) {
+        PostEvents.sendEvent(requireContext(), PostEventTypes.CREATE, postId)
+        ProfileEvents.sendEvent(requireContext(), userId, ProfileEventTypes.CREATE_POST)
+    }
+
     private fun observeViewModels() {
         tagsViewModel.tags.observe(viewLifecycleOwner, Observer {
             fragment_post_tags_progress.gone()
-
-            val query = tag_search_view.query
-            if (query?.isNotEmpty() == true && it.isEmpty()) {
-                if (tagRegex.matches(query)) {
-                    mAdapter.setData(
-                        listOf(
-                            Tag(tag = query.toString(), id = System.nanoTime(), used = null)
-                        )
-                    )
-                }
-            } else {
-                mAdapter.setData(it)
-            }
+            mAdapter.setData(it)
             mAdapter.isLoading.set(false)
         })
 
         tagsViewModel.addTag.observe(viewLifecycleOwner, Observer {
-            if (addTagQueue.isNotEmpty()) {
-                addTagQueue.poll()?.let {
-                    it.uploading = null
-                    mAdapter.tagAdded(tag = it)
-                }
+            it?.let {
+                it.uploading = null
+                mAdapter.tagAdded(tag = it)
             }
         })
 
@@ -217,7 +210,6 @@ class TagsFragment : Fragment() {
         override fun onAddNewTag(tag: Tag) {
             super.onAddNewTag(tag)
             val newTag = tag.copy(used = 0)
-            addTagQueue.add(newTag)
             tagsViewModel.addTag(newTag)
         }
 

@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.speakout.R
 import com.speakout.common.EventObserver
+import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.ui.MainActivity
 import com.speakout.utils.AppPreference
@@ -40,17 +41,25 @@ class UserNameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         username = safeArgs.username ?: ""
 
         if (safeArgs.type == Type.Edit) {
+            view.post {
+                setUpToolbar(view)?.let {
+                    it.title = "${safeArgs.type} Username"
+                }
+            }
             fragment_username_et.setText(username)
             fragment_username_et.setSelection(username.length)
             fragment_username_et.setDrawableEnd(R.drawable.ic_check)
             fragment_username_next_btn.text = getString(R.string.update)
         } else {
-            (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(
-                false
-            )
+            view.post {
+                setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.let {
+                    it.title = "${safeArgs.type} Username"
+                }
+            }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
@@ -62,27 +71,23 @@ class UserNameFragment : Fragment() {
 
         fragment_username_next_btn.isEnabled = false
 
-        mUserViewModel.usernameObserver.observe(viewLifecycleOwner, Observer {
-            it?.apply {
-                when (this) {
-                    FirebaseUtils.Data.PRESET -> {
-                        fragment_username_til.error = "Username is already taken"
-                    }
-                    FirebaseUtils.Data.ABSENT -> {
-                        fragment_username_et.setDrawableEnd(R.drawable.ic_check)
-                        fragment_username_next_btn.isEnabled = true
-                        fragment_username_til.error = null
-                    }
-                    FirebaseUtils.Data.CANCELLED -> {
-                        showShortToast(getString(R.string.error_something_went_wrong))
-                    }
+        mUserViewModel.username.observe(viewLifecycleOwner, Observer {
+            if (it is Result.Success) {
+                if (it.data) {
+                    fragment_username_et.setDrawableEnd(R.drawable.ic_check)
+                    fragment_username_next_btn.isEnabled = true
+                    fragment_username_til.error = null
+                } else {
+                    fragment_username_til.error = "Username is already taken"
                 }
+            } else {
+                showShortToast(getString(R.string.error_something_went_wrong))
             }
         })
 
-        mUserViewModel.updateDetailsObserver.observe(viewLifecycleOwner, EventObserver {
+        mUserViewModel.updateUserDetails.observe(viewLifecycleOwner, EventObserver {
             (requireActivity() as MainActivity).hideProgress()
-            if (it) {
+            if (it is Result.Success) {
                 AppPreference.saveUserDetails(UserDetails(username = username))
                 if (safeArgs.type == Type.Edit) {
                     findNavController().previousBackStackEntry?.savedStateHandle?.set(
@@ -126,7 +131,12 @@ class UserNameFragment : Fragment() {
 
         fragment_username_next_btn.setOnClickListener {
             (requireActivity() as MainActivity).showProgress()
-            mUserViewModel.updateUserDetails(mapOf(UserDetails.updateUsername(username)))
+            mUserViewModel.updateUserDetails(
+                UserMiniDetails(
+                    userId = AppPreference.getUserId(),
+                    username = username
+                )
+            )
         }
     }
 

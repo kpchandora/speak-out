@@ -8,21 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.speakout.R
 import com.speakout.auth.UserDetails
-import com.speakout.auth.UserMiniDetails
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.*
 import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -32,10 +27,12 @@ import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
 import timber.log.Timber
-import java.lang.Error
-import java.util.concurrent.TimeUnit
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
+
+    companion object {
+        const val TAG = "ProfileFragment"
+    }
 
     private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
     private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
@@ -44,22 +41,42 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
     private var mUserDetails: UserDetails? = null
-    private val safeArgs: ProfileFragmentArgs by navArgs()
+    private lateinit var safeArgs: ProfileFragmentArgs
+    private var mProfileEvents: ProfileEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.d("Details: ${arguments?.getString("userId")}")
+        safeArgs = ProfileFragmentArgs.fromBundle(arguments!!)
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
-        homeViewModel.getPosts(mUserId)
         screenSize = requireActivity().getScreenSize()
-        profileViewModel.addFFObserver(mUserId)
 
-        if (isSelf) {
-            profileViewModel.addProfileObserver()
-        } else {
-            profileViewModel.isFollowing(mUserId)
-            profileViewModel.getUser(mUserId)
+        mProfileEvents = ProfileEvents(requireContext()) {
+            val userId = it.getStringExtra(ProfileEvents.USER_ID) ?: return@ProfileEvents
+            when (it.getIntExtra(ProfileEvents.EVENT_TYPE, -1)) {
+                ProfileEventTypes.CREATE_POST,
+                ProfileEventTypes.DELETE_POST -> {
+                    if (userId == mUserId) {
+                        homeViewModel.getProfilePosts(mUserId)
+                    }
+                }
+                ProfileEventTypes.DIALOG_UN_FOLLOW -> {
+                    if (userId == mUserId) {
+                        profileViewModel.confirmUnfollow()
+                    }
+                }
+                ProfileEventTypes.FOLLOW,
+                ProfileEventTypes.UN_FOLLOW,
+                ProfileEventTypes.DETAILS_UPDATE -> {
+                    if (userId == mUserId || isSelf) {
+                        profileViewModel.getUser(mUserId)
+                    }
+                }
+            }
         }
+        homeViewModel.getProfilePosts(mUserId)
+        profileViewModel.getUser(mUserId)
     }
 
     override fun onCreateView(
@@ -69,21 +86,20 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             sharedElementEnterTransition =
                 TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
+        setUpWithAppBarConfiguration(view)?.let {
+            it.title = safeArgs.username
+//            view.toolbar_title_tv.visible()
+//            view.toolbar_title_tv.text = safeArgs.username
+        }
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         safeArgs.transitionTag?.let {
             layout_profile_iv.transitionName = it
             loadImage(safeArgs.profileUrl)
-        }
-
-        if (isSelf) {
-            initSelf()
-        } else {
-            initOther()
         }
 
         mPostsAdapter.mListener = mListener
@@ -93,53 +109,20 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             adapter = mPostsAdapter
         }
 
-
-        homeViewModel.posts.observe(viewLifecycleOwner, Observer {
-            if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                if (it is Result.Success) {
-                    mPostsAdapter.updateData(it.data)
-                    homeViewModel.addPosts(it.data)
-                }
-
-                if (it is Result.Error) {
-                    Timber.d("Failed to fetch posts: ${it.error}")
-                }
+        profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { result ->
+            if (result is Result.Success) {
+                populateData(result.data)
             }
         })
 
-        profileViewModel.followersFollowingsObserver.observe(viewLifecycleOwner, Observer {
-            layout_profile_followers_count_tv.text = if (it?.followersCount ?: 0 < 0) {
-                "0"
-            } else {
-                it?.followersCount?.toString() ?: "0"
-            }
-            layout_profile_followers_tv.text =
-                resources.getQuantityString(
-                    R.plurals.number_of_followers,
-                    it?.followersCount?.toInt() ?: 0
-                )
-
-            layout_profile_followings_count_tv.text = if (it?.followingsCount ?: 0 < 0) {
-                "0"
-            } else {
-                it?.followingsCount?.toString() ?: "0"
-            }
-            layout_profile_followings_tv.text =
-                resources.getQuantityString(
-                    R.plurals.number_of_followings,
-                    it?.followingsCount?.toInt() ?: 0
-                )
-
-            if (it?.followersCount ?: 0 <= 0L) {
-                layout_profile_followers_container.disable()
-            } else {
-                layout_profile_followers_container.enable()
+        homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            if (it is Result.Success) {
+                mPostsAdapter.updateData(it.data)
+                homeViewModel.addPosts(it.data)
             }
 
-            if (it?.followingsCount ?: 0 <= 0L) {
-                layout_profile_followings_container.disable()
-            } else {
-                layout_profile_followings_container.enable()
+            if (it is Result.Error) {
+                Timber.d("Failed to fetch posts: ${it.error}")
             }
         })
 
@@ -153,6 +136,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     }
 
+    override fun onDestroy() {
+        mProfileEvents?.dispose()
+        super.onDestroy()
+    }
+
     private fun navigateToUsersList(actionType: ActionType) {
         findNavController().navigate(
             ProfileFragmentDirections.actionNavigationProfileToUsersListFragment(
@@ -163,103 +151,90 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun initSelf() {
-
         layout_profile_follow_unfollow_frame.apply {
             layoutParams.width = screenSize.widthPixels / 2
             setOnClickListener {
-                //                activity!!.openActivity(ProfileEditActivity::class.java)
-                findNavController().navigate(ProfileFragmentDirections.actionNavigationProfileToProfileEditFragment())
+                mUserDetails?.let {
+                    findNavController().navigate(
+                        ProfileFragmentDirections.actionNavigationProfileToProfileEditFragment(it)
+                    )
+                }
             }
         }
 
         showEdit()
-
-        profileViewModel.profileObserver.observe(viewLifecycleOwner, Observer {
-            it?.apply {
-                populateData(this)
-                if (lastUpdated ?: -1 > AppPreference.getLastUpdatedTime()) {
-                    AppPreference.updateDataChangeTimeStamp(lastUpdated ?: -1)
-                    AppPreference.saveUserDetails(this)
-                }
-            } ?: kotlin.run {
-                AppPreference.apply {
-                    val userDetails = UserDetails(
-                        name = getUserDisplayName(),
-                        username = getUserUniqueName(),
-                        photoUrl = getPhotoUrl()
-                    )
-                    populateData(userDetails)
-                }
-            }
-        })
     }
 
 
-    private fun initOther() {
+    private fun initOther(userDetails: UserDetails) {
         layout_profile_follow_unfollow_frame.apply {
             layoutParams.width = screenSize.widthPixels / 2
-            setBackgroundResource(R.drawable.dr_follow_bg)
-
             setOnClickListener {
                 val text = follow_unfollow_tv.text
                 if (text == getString(R.string.follow)) {
-                    showFollowing()
-                    profileViewModel.followUser(UserMiniDetails(userId = mUserId))
+                    layout_profile_follow_unfollow_frame.invisible()
+                    follow_unfollow_progress.visible()
+                    profileViewModel.followUser(userDetails.userId)
                 } else if (text == getString(R.string.following)) {
                     showUnFollowAlertDialog()
                 }
             }
         }
 
-//        follow_unfollow_tv.text = getString(R.string.follow)
-//        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
-
-        profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { userDetails ->
-            userDetails?.let {
-                populateData(it)
-            }
-        })
-
         profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {
-            if (!it) {
-                showFollow()
-                activity!!.showShortToast("Failed to follow user")
+            if (it is Result.Success) {
+                PostEvents.sendEvent(context = requireContext(), event = PostEventTypes.FOLLOW)
+                UserEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    type = UserEventType.FOLLOW
+                )
+                mUserDetails = it.data
+                populateFollowersAndFollowings(it.data)
+            } else {
+                mUserDetails?.let { userDetails ->
+                    populateFollowersAndFollowings(userDetails)
+                }
+                requireActivity().showShortToast("Failed to follow user")
             }
         })
 
         profileViewModel.unFollowUser.observe(viewLifecycleOwner, EventObserver {
-            if (!it) {
-                showFollowing()
-                activity!!.showShortToast("Failed to unfollow user")
+            if (it is Result.Success) {
+                mUserDetails = it.data
+                PostEvents.sendEvent(context = requireContext(), event = PostEventTypes.UN_FOLLOW)
+                UserEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    type = UserEventType.UN_FOLLOW
+                )
+                populateFollowersAndFollowings(it.data)
+            } else {
+                mUserDetails?.let { userDetails ->
+                    populateFollowersAndFollowings(userDetails)
+                }
+                requireActivity().showShortToast("Failed to unfollow user")
             }
         })
 
-        profileViewModel.isFollowing.observe(viewLifecycleOwner, EventObserver {
-            it?.let {
-                if (it) {
-                    showFollowing()
-                } else {
-                    showFollow()
-                }
-            } ?: activity!!.showShortToast("Failed to load data")
-
-        })
-
         profileViewModel.confirmUnfollow.observe(viewLifecycleOwner, EventObserver {
-            showFollow()
-            profileViewModel.unFollowUser(UserMiniDetails(userId = mUserId))
+            layout_profile_follow_unfollow_frame.invisible()
+            follow_unfollow_progress.visible()
+            profileViewModel.unFollowUser(userDetails.userId)
         })
 
     }
 
     private fun showFollow() {
         layout_profile_follow_unfollow_frame.visible()
+        follow_unfollow_progress.gone()
         layout_profile_follow_unfollow_frame.setBackgroundResource(R.drawable.dr_follow_bg)
         follow_unfollow_tv.text = getString(R.string.follow)
         follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
     }
 
     private fun showFollowing() {
+        follow_unfollow_progress.gone()
         layout_profile_follow_unfollow_frame.visible()
         layout_profile_follow_unfollow_frame.setBackgroundResource(R.drawable.dr_unfollow_bg)
         follow_unfollow_tv.text = getString(R.string.following)
@@ -283,6 +258,50 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             if (userDetails.postsCount > 0) userDetails.postsCount.toString() else "0"
         layout_profile_posts_tv.text =
             resources.getQuantityString(R.plurals.number_of_posts, userDetails.postsCount.toInt())
+
+        populateFollowersAndFollowings(userDetails)
+
+        if (isSelf) {
+            initSelf()
+        } else {
+            initOther(userDetails)
+        }
+
+    }
+
+    private fun populateFollowersAndFollowings(userDetails: UserDetails) {
+        layout_profile_followers_count_tv.text = userDetails.followersCount.toString()
+        layout_profile_followers_tv.text =
+            resources.getQuantityString(
+                R.plurals.number_of_followers,
+                userDetails.followersCount.toInt()
+            )
+
+        layout_profile_followings_count_tv.text = userDetails.followingsCount.toString()
+        layout_profile_followings_tv.text =
+            resources.getQuantityString(
+                R.plurals.number_of_followings,
+                userDetails.followingsCount.toInt()
+            )
+
+        if (userDetails.followersCount <= 0L) {
+            layout_profile_followers_container.disable()
+        } else {
+            layout_profile_followers_container.enable()
+        }
+
+        if (userDetails.followingsCount <= 0L) {
+            layout_profile_followings_container.disable()
+        } else {
+            layout_profile_followings_container.enable()
+        }
+
+        if (userDetails.isFollowedBySelf) {
+            showFollowing()
+        } else {
+            showFollow()
+        }
+
     }
 
     private fun loadImage(photoUrl: String?) {
@@ -309,10 +328,13 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         findNavController().navigate(
             ProfileFragmentDirections.actionNavigationProfileToUnFollowDialog(
                 profileUrl = mUserDetails?.photoUrl,
-                username = mUserDetails?.username
+                username = mUserDetails?.username ?: "",
+                userId = mUserId,
+                isFrom = TAG
             )
         )
     }
+
 
     override fun doubleClick() {
         fragment_profile_scroll_view.smoothScrollTo(0, 0)

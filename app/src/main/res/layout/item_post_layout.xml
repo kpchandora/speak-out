@@ -113,7 +113,8 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp">
 
             <CheckBox
                 android:id="@+id/item_post_like_cb"
@@ -123,8 +124,7 @@
                 android:layout_margin="8dp"
                 android:background="@drawable/dr_like_bg"
                 android:button="@null"
-                android:checked="false"
-                android:stateListAnimator="@animator/like_animation" />
+                android:checked="false" />
 
         </FrameLayout>
 
@@ -146,7 +146,8 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp">
 
             <CheckBox
                 android:id="@+id/item_bookmark_cb"
@@ -158,6 +159,16 @@
                 android:button="@null"
                 android:checked="false"
                 android:stateListAnimator="@animator/like_animation" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_bookmark"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_fileName="bookmark.json"
+                app:lottie_loop="false" />
 
         </FrameLayout>
 

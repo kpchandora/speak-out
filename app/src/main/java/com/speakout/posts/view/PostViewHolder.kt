@@ -46,9 +46,12 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
 
             item_bookmark_cb.setOnClickListener {
                 if (item_bookmark_cb.isChecked) {
+                    lottie_bookmark.visible()
+                    lottie_bookmark.playAnimation()
                     post.isBookmarkedBySelf = true
                     mEventListener?.onBookmarkAdd(postId = post.postId)
                 } else {
+                    lottie_bookmark.gone()
                     post.isBookmarkedBySelf = false
                     mEventListener?.onBookmarkRemove(postId = post.postId)
                 }

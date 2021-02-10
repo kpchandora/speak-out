@@ -94,7 +94,6 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
     }
 
     fun updatePosts(list: List<PostData>) {
-        mPostsList.clear()
         mPostsList.addAll(list)
         notifyDataSetChanged()
     }

@@ -17,6 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.speakout.R
@@ -47,6 +48,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private val mPostsAdapter = PostRecyclerViewAdapter()
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
+    private var isLoading = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,6 +109,31 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         Timber.d("User Id ${AppPreference.getUserId()}")
 
+        fragment_home_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (isLoading) return
+                if (dy > 0) {
+                    (recyclerView.layoutManager as LinearLayoutManager).let {
+                        val visibleItems = it.childCount
+                        val totalItemsCount = it.itemCount
+                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                        val lastVisibleItemPosition = it.findLastVisibleItemPosition()
+                        Timber.d(
+                            "visibleItems: $visibleItems, totalItemsCount: $totalItemsCount, " +
+                                    "firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition"
+                        )
+                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                            mHomeViewModel.getFeed()
+                            isLoading = true
+                        }
+                        if (totalItemsCount - 1 == lastVisibleItemPosition) {
+                            Timber.d("Load more data new")
+                        }
+                    }
+                }
+            }
+        })
+
         observeViewModels()
     }
 
@@ -118,6 +145,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
+                isLoading = false
                 mPostsAdapter.updatePosts(it.data)
             }
 

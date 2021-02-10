@@ -17,6 +17,7 @@ class HomeViewModel : ViewModel() {
         PostsRepository(RetrofitBuilder.apiService, appPreference)
     }
 
+    private var feedPageCount = 0
     private val mPostList = ArrayList<PostData>()
 
     private val _unlikePost = MutableLiveData<Event<Result<PostMiniDetails>>>()
@@ -42,7 +43,8 @@ class HomeViewModel : ViewModel() {
 
     fun getFeed() {
         viewModelScope.launch {
-            _posts.value = Event(mPostsRepository.getFeed())
+            feedPageCount++
+            _posts.value = Event(mPostsRepository.getFeed(feedPageCount))
         }
     }
 

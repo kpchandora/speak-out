@@ -28,7 +28,10 @@ public interface ApiService {
     suspend fun getProfilePosts(@Path("userId") userId: String): Response<List<PostData>>
 
     @GET("posts/getFeed")
-    suspend fun getFeed(): Response<List<PostData>>
+    suspend fun getFeed(
+        @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<List<PostData>>
 
     @POST("posts/like")
     suspend fun likePost(@Body postMiniDetails: PostMiniDetails): Response<PostMiniDetails>

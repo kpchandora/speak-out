@@ -87,7 +87,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
         })
 
-        homeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
+        homeViewModel.posts.observe(viewLifecycleOwner, Observer {
                 if (it is Result.Success) {
                     mPostsAdapter.updateData(it.data)
                     homeViewModel.addPosts(it.data)

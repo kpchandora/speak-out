@@ -12,6 +12,11 @@ import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
+
+    companion object {
+        const val MAX_POSTS_COUNT = 10
+    }
+
     private val appPreference = AppPreference
     private val mPostsRepository: PostsRepository by lazy {
         PostsRepository(RetrofitBuilder.apiService, appPreference)
@@ -32,19 +37,26 @@ class HomeViewModel : ViewModel() {
     private val _singlePost = MutableLiveData<Event<Result<PostData>>>()
     val singlePost: LiveData<Event<Result<PostData>>> = _singlePost
 
-    private val _posts = MutableLiveData<Event<Result<List<PostData>>>>()
-    val posts: LiveData<Event<Result<List<PostData>>>> = _posts
+    private val _posts = MutableLiveData<Result<List<PostData>>>()
+    val posts: LiveData<Result<List<PostData>>> = _posts
 
     fun getPosts(id: String) {
         viewModelScope.launch {
-            _posts.value = Event(mPostsRepository.getProfilePosts(id))
+            _posts.value = mPostsRepository.getProfilePosts(id)
         }
     }
 
     fun getFeed() {
         viewModelScope.launch {
+            feedPageCount = 1
+            _posts.value = mPostsRepository.getFeed(feedPageCount)
+        }
+    }
+
+    fun loadMoreFeed() {
+        viewModelScope.launch {
             feedPageCount++
-            _posts.value = Event(mPostsRepository.getFeed(feedPageCount))
+            _posts.value = mPostsRepository.getFeed(feedPageCount)
         }
     }
 

@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -81,7 +82,15 @@ class PostViewFragment : Fragment() {
         })
 
         if (!safeArgs.isFromNotification) {
-            mPostsAdapter.updatePosts(mHomeViewModel.getPosts())
+            mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+                if (it is Result.Success) {
+                    mPostsAdapter.updatePosts(it.data)
+                }
+
+                if (it is Result.Error) {
+                    Timber.d("Failed to fetch posts: ${it.error}")
+                }
+            })
             fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
         } else {
             progressBar.visible()

@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.iid.FirebaseInstanceId
 import com.speakout.*
 import com.speakout.api.RetrofitBuilder
+import com.speakout.ui.home.HomeFragment
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope
@@ -23,6 +24,7 @@ class MainActivity : BaseActivity() {
     private lateinit var navController: NavController
     private var currentFragmentId = 0
     private lateinit var bottomNavigationView: BottomNavigationView
+    private var mHomeFragment: HomeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,25 +86,25 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Timber.e("Failed")
-            }
-
-            try {
-                // Get new Instance ID token
-                val token = task.result?.token
-                Timber.d("Token: $token")
-
-                GlobalScope.launch {
-                    UsersRepository(RetrofitBuilder.apiService, AppPreference).updateFcmToken(
-                        token ?: ""
-                    )
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+//        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+//            if (!task.isSuccessful) {
+//                Timber.e("Failed")
+//            }
+//
+//            try {
+//                // Get new Instance ID token
+//                val token = task.result?.token
+//                Timber.d("Token: $token")
+//
+//                GlobalScope.launch {
+//                    UsersRepository(RetrofitBuilder.apiService, AppPreference).updateFcmToken(
+//                        token ?: ""
+//                    )
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
 
     }
 

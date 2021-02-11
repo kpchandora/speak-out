@@ -14,6 +14,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -49,10 +50,11 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
     private var isLoading = false
+    private var hasMoreData = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("onCreate")
+        Timber.d("onCreate hasMoreData: $hasMoreData")
         mPreference = AppPreference
 
         when {
@@ -78,7 +80,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-//        sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -112,6 +113,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         fragment_home_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (isLoading) return
+                if (!hasMoreData) return
                 if (dy > 0) {
                     (recyclerView.layoutManager as LinearLayoutManager).let {
                         val visibleItems = it.childCount
@@ -123,11 +125,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                                     "firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition"
                         )
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            mHomeViewModel.getFeed()
+                            mHomeViewModel.loadMoreFeed()
                             isLoading = true
-                        }
-                        if (totalItemsCount - 1 == lastVisibleItemPosition) {
-                            Timber.d("Load more data new")
                         }
                     }
                 }
@@ -143,9 +142,10 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun observeViewModels() {
-        mHomeViewModel.posts.observe(viewLifecycleOwner, EventObserver {
+        mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            isLoading = false
             if (it is Result.Success) {
-                isLoading = false
+                hasMoreData = it.data.size == HomeViewModel.MAX_POSTS_COUNT
                 mPostsAdapter.updatePosts(it.data)
             }
 
@@ -233,8 +233,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
 
-    private val mPostsOptionsClickListener = object :
-        OnPostOptionsClickListener {
+    private val mPostsOptionsClickListener = object : OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
             val clipboard =
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

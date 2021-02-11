@@ -131,11 +131,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                         val visibleItems = it.childCount
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
-                        val lastVisibleItemPosition = it.findLastVisibleItemPosition()
-                        Timber.d(
-                            "visibleItems: $visibleItems, totalItemsCount: $totalItemsCount, " +
-                                    "firstVisibleItemPosition: $firstVisibleItemPosition, lastVisibleItemPosition: $lastVisibleItemPosition"
-                        )
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
                             mHomeViewModel.loadMoreFeed()
                             isLoading = true

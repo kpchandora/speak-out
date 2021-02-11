@@ -13,7 +13,8 @@ data class PostData(
     var username: String = "",
     var photoUrl: String = "",
     var likesCount: Long = 0,
-    var isLikedBySelf: Boolean = false
+    var isLikedBySelf: Boolean = false,
+    var isBookmarkedBySelf: Boolean = false
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -25,6 +26,7 @@ data class PostData(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readLong() ?: 0,
+        parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte()
     ) {
     }
@@ -40,6 +42,7 @@ data class PostData(
         parcel.writeString(photoUrl)
         parcel.writeLong(likesCount)
         parcel.writeByte(if (isLikedBySelf) 1 else 0)
+        parcel.writeByte(if (isBookmarkedBySelf) 1 else 0)
     }
 
     override fun describeContents(): Int {

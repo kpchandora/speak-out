@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.NotificationEvents
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.setUpWithAppBarConfiguration
 import com.speakout.extensions.showShortToast
@@ -28,6 +29,7 @@ class NotificationsFragment : Fragment() {
     private lateinit var safeArgs: NotificationsFragmentArgs
     private val notificationsViewModel: NotificationsViewModel by viewModels()
     private lateinit var adapter: NotificationsAdapter
+    private var mNotificationEvents: NotificationEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,9 @@ class NotificationsFragment : Fragment() {
         }
         notificationsViewModel.getNotifications()
         adapter = NotificationsAdapter(mNotificationListener)
+        mNotificationEvents = NotificationEvents(requireContext()) {
+            notificationsViewModel.getNotifications()
+        }
     }
 
     override fun onCreateView(
@@ -62,6 +67,11 @@ class NotificationsFragment : Fragment() {
             }
         })
 
+    }
+
+    override fun onDestroy() {
+        mNotificationEvents?.dispose()
+        super.onDestroy()
     }
 
     private fun navigateToPostView(postId: String) {

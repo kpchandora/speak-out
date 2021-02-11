@@ -21,12 +21,6 @@ class SpeakOutApp : Application() {
         appContext = applicationContext
         FirebaseApp.initializeApp(applicationContext)
 
-        startKoin {
-            androidLogger()
-            androidContext(this@SpeakOutApp)
-//            modules(listOf(appModule))
-        }
-
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }

@@ -64,4 +64,42 @@
     <string name="notification_follow"><![CDATA[<b>%s</b>]]> started following you.</string>
     <string name="like_post"><![CDATA[<b>%s</b>]]> liked your post.</string>
 
+    <!--Time related strings-->
+    <plurals name="plural_second">
+        <item quantity="one">%d second ago</item>
+        <item quantity="other">%d seconds ago</item>
+    </plurals>
+
+    <plurals name="plural_minute">
+        <item quantity="one">%d minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+
+    <plurals name="plural_hour">
+        <item quantity="one">%d hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+
+    <plurals name="plural_week">
+        <item quantity="one">%d week ago</item>
+        <item quantity="other">%d weeks ago</item>
+    </plurals>
+
+    <plurals name="plural_day">
+        <item quantity="one">%d day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+
+    <plurals name="plural_month">
+        <item quantity="one">%d month ago</item>
+        <item quantity="other">%d months ago</item>
+    </plurals>
+
+    <plurals name="plural_year">
+        <item quantity="one">%d year ago</item>
+        <item quantity="other">%d years ago</item>
+    </plurals>
+
+    <string name="hint_un_follow">You won\'t get updates from @%s</string>
+
 </resources>

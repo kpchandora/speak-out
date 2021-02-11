@@ -2,22 +2,14 @@ package com.speakout.posts.view
 
 import android.annotation.SuppressLint
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
-import com.speakout.extensions.gone
-import com.speakout.extensions.loadImage
-import com.speakout.extensions.loadImageWithCallback
-import com.speakout.extensions.visible
+import com.speakout.extensions.*
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_post_layout.view.*
-import java.text.SimpleDateFormat
-import java.util.*
 
-class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFormat) :
+class PostViewHolder(val view: View, private val mEventListener: PostClickEventListener?) :
     RecyclerView.ViewHolder(view) {
-
-    var mEventListener: PostClickEventListener? = null
 
     fun bind(post: PostData) {
         view.apply {
@@ -32,13 +24,12 @@ class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFor
 
             setLikes(post)
 
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = post.timeStamp
-            item_post_time_tv.text = simpleDateFormat.format(calendar.time)
+            item_post_time_tv.text = post.timeStamp.toElapsedTime()
 
             loadPost(post.postImageUrl)
 
             item_post_like_cb.isChecked = post.isLikedBySelf
+            item_bookmark_cb.isChecked = post.isBookmarkedBySelf
 
             item_post_like_cb.setOnClickListener {
                 if (item_post_like_cb.isChecked) {
@@ -48,9 +39,22 @@ class PostViewHolder(val view: View, private val simpleDateFormat: SimpleDateFor
                 } else {
                     post.isLikedBySelf = false
                     post.likesCount--
-                    mEventListener?.onDislike(adapterPosition, post)
+                    mEventListener?.onRemoveLike(adapterPosition, post)
                 }
                 setLikes(post)
+            }
+
+            item_bookmark_cb.setOnClickListener {
+                if (item_bookmark_cb.isChecked) {
+                    lottie_bookmark.visible()
+                    lottie_bookmark.playAnimation()
+                    post.isBookmarkedBySelf = true
+                    mEventListener?.onBookmarkAdd(postId = post.postId)
+                } else {
+                    lottie_bookmark.gone()
+                    post.isBookmarkedBySelf = false
+                    mEventListener?.onBookmarkRemove(postId = post.postId)
+                }
             }
 
             item_post_layout_menu_tv.setOnClickListener {

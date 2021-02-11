@@ -1,6 +1,7 @@
 package com.speakout.posts
 
 import android.graphics.Bitmap
+import com.google.gson.JsonObject
 import com.speakout.api.ApiService
 import com.speakout.api.BaseRepository
 import com.speakout.common.Result
@@ -135,6 +136,34 @@ public class PostsRepository(
             Result.Error(Exception("Something went wrong"), null)
         } catch (e: Exception) {
             Result.Error(e, null)
+        }
+    }
+
+    suspend fun addBookmark(postId: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val obj = JsonObject()
+            obj.addProperty("postId", postId)
+            val result = apiService.addBookmark(obj)
+            if (result.isSuccessful && result.body() != null) {
+                return@withContext Result.Success(postId)
+            }
+            Result.Error(Exception("Something went wrong"), postId)
+        } catch (e: Exception) {
+            Result.Error(e, postId)
+        }
+    }
+
+    suspend fun removeBookmark(postId: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            val obj = JsonObject()
+            obj.addProperty("postId", postId)
+            val result = apiService.removeBookmark(obj)
+            if (result.isSuccessful && result.body() != null) {
+                return@withContext Result.Success(postId)
+            }
+            Result.Error(Exception("Something went wrong"), postId)
+        } catch (e: Exception) {
+            Result.Error(e, postId)
         }
     }
 

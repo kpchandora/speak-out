@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
+import com.speakout.extensions.toFormattedTime
 import com.speakout.extensions.visible
 import com.speakout.notification.NotificationResponse
 import kotlinx.android.synthetic.main.item_notification_layout.view.*
@@ -25,7 +26,8 @@ class NotificationsViewHolder(
                 makeRound = true
             )
 
-            tv_time.text = notification.timestamp.toString()
+            tv_time.text = notification.timestamp.toFormattedTime()
+
             if (notification.type == "follow") {
                 iv_notification_post.gone()
                 tv_notification_content.text =

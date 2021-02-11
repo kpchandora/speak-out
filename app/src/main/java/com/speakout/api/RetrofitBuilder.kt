@@ -18,6 +18,11 @@ object RetrofitBuilder {
     private val client = OkHttpClient.Builder().addInterceptor(interceptor)
         .addInterceptor(AuthTokenInterceptor())
         .build()
+
+    /*
+    For testing purpose, replace the IP of your computer or laptop
+    if running on real device
+     */
     private const val BASE_URL = "http://192.168.101.8:3000/"
 
     private fun getRetrofit(): Retrofit {
@@ -29,6 +34,6 @@ object RetrofitBuilder {
             .build()
     }
 
-    val apiService = getRetrofit().create(ApiService::class.java)
+    val apiService: ApiService = getRetrofit().create(ApiService::class.java)
 
 }

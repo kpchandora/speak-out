@@ -17,15 +17,25 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:padding="4dp">
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp">
 
             <ImageView
                 android:id="@+id/item_post_profile_iv"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_width="46dp"
+                android:layout_height="46dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp"
                 tools:src="@drawable/ic_account_circle_grey" />
+
+            <View
+                android:layout_width="46dp"
+                android:layout_height="46dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/dr_circle_stroke_bg_grey500" />
+
+
         </FrameLayout>
 
 
@@ -103,7 +113,8 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp">
 
             <CheckBox
                 android:id="@+id/item_post_like_cb"
@@ -113,8 +124,7 @@
                 android:layout_margin="8dp"
                 android:background="@drawable/dr_like_bg"
                 android:button="@null"
-                android:checked="false"
-                android:stateListAnimator="@animator/like_animation" />
+                android:checked="false" />
 
         </FrameLayout>
 
@@ -127,6 +137,40 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/black"
             tools:text="@tools:sample/us_zipcodes" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp">
+
+            <CheckBox
+                android:id="@+id/item_bookmark_cb"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="8dp"
+                android:background="@drawable/dr_bookmark_bg"
+                android:button="@null"
+                android:checked="false"
+                android:stateListAnimator="@animator/like_animation" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottie_bookmark"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:lottie_autoPlay="false"
+                app:lottie_fileName="bookmark.json"
+                app:lottie_loop="false" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

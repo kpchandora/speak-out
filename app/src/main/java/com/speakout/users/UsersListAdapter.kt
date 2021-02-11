@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.gone
-import com.speakout.extensions.loadImageWithCallback
+import com.speakout.extensions.loadImage
 import com.speakout.extensions.visible
-import com.speakout.posts.create.PostData
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHolder>() {
@@ -33,11 +33,43 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
         }
     }
 
+    override fun onBindViewHolder(
+        holder: UsersListViewHolder,
+        position: Int,
+        payloads: MutableList<Any>
+    ) {
+        if (payloads.isNotEmpty()) {
+            (payloads[0] as UserMiniDetails).let {
+                holder.bind(it)
+                return
+            }
+        }
 
-    fun updateData(list: List<UserMiniDetails>) {
+        super.onBindViewHolder(holder, position, payloads)
+    }
+
+    fun addData(list: List<UserMiniDetails>) {
         usersList.clear()
         usersList.addAll(list)
         notifyDataSetChanged()
+    }
+
+    fun showFollowing(userId: String) {
+        usersList.forEachIndexed { index, userMiniDetails ->
+            if (userMiniDetails.userId == userId) {
+                userMiniDetails.isFollowedBySelf = true
+                notifyItemChanged(index, userMiniDetails)
+            }
+        }
+    }
+
+    fun showFollow(userId: String) {
+        usersList.forEachIndexed { index, userMiniDetails ->
+            if (userMiniDetails.userId == userId) {
+                userMiniDetails.isFollowedBySelf = false
+                notifyItemChanged(index, userMiniDetails)
+            }
+        }
     }
 
     class UsersListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -45,34 +77,59 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
 
         fun bind(user: UserMiniDetails) {
             view.apply {
-                item_user_list_bg.gone()
                 item_users_list_profile_iv.transitionName = user.userId
-                item_users_list_profile_iv.loadImageWithCallback(user.photoUrl ?: "",
-                    makeRound = true,
-                    onSuccess = {
-                        item_user_list_bg.visible()
-                    },
-                    onFailed = {
-                        item_users_list_profile_iv.setImageDrawable(
-                            ContextCompat.getDrawable(
-                                view.context,
-                                R.drawable.ic_account_circle_grey
-                            )
-                        )
-                        item_user_list_bg.visible()
-                    })
-
+                item_users_list_profile_iv.loadImage(
+                    user.photoUrl,
+                    placeholder = R.drawable.ic_account_circle_grey,
+                    makeRound = true
+                )
                 item_users_list_username_tv.text = user.username
                 item_users_list_name_tv.text = user.name
 
-                setOnClickListener {
-                    mListener?.onUserClick(
-                        user,
-                        item_users_list_profile_iv
-                    )
+                if (user.isFollowedBySelf == null || user.userId == AppPreference.getUserId()) {
+                    cv_follow.gone()
+                } else {
+                    cv_follow.visible()
+                    if (user.isFollowedBySelf!!) {
+                        showFollowing()
+                    } else {
+                        showFollow()
+                    }
+                    cv_follow.setOnClickListener {
+                        if (user.isFollowedBySelf!!) {
+                            mListener?.onUnFollowClick(user)
+                        } else {
+                            user.isFollowedBySelf = true
+                            showFollowing()
+                            mListener?.onFollowClick(user)
+                        }
+                    }
+                }
+
+                fl_profile.setOnClickListener {
+                    mListener?.onUserClick(user, item_users_list_profile_iv)
+                }
+
+                ll_details.setOnClickListener {
+                    mListener?.onUserClick(user, item_users_list_profile_iv)
                 }
 
             }
         }
+
+        private fun showFollow() {
+            view.tv_follow.text = view.context.getString(R.string.follow)
+            view.tv_follow.background =
+                ContextCompat.getDrawable(view.context, R.drawable.dr_follow_bg)
+            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+        }
+
+        private fun showFollowing() {
+            view.tv_follow.text = view.context.getString(R.string.following)
+            view.tv_follow.background =
+                ContextCompat.getDrawable(view.context, R.drawable.dr_unfollow_bg)
+            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.black))
+        }
+
     }
 }

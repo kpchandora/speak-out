@@ -25,6 +25,8 @@ import com.speakout.auth.UserMiniDetails
 import com.speakout.auth.UserViewModel
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
 import com.speakout.extensions.*
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
@@ -45,7 +47,7 @@ class ProfileEditFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mUserDetails = safeArgs.userDetails!!
+        mUserDetails = safeArgs.userDetails
         mProfileUrl = mUserDetails.photoUrl ?: ""
     }
 
@@ -122,7 +124,7 @@ class ProfileEditFragment : Fragment() {
         profile_edit_fragment_iv.layoutParams.width = screenSize.widthPixels / 3
         profile_edit_bg_view.layoutParams.width = screenSize.widthPixels / 3
 
-        updatePicture(mProfileUrl)
+        updatePicture()
 
         profile_edit_add_iv.layoutParams.width = screenSize.widthPixels / 10
         profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
@@ -133,21 +135,13 @@ class ProfileEditFragment : Fragment() {
 
     }
 
-    private fun updatePicture(url: String) {
+    private fun updatePicture() {
         profile_edit_bg_view.gone()
-        profile_edit_fragment_iv.loadImageWithCallback(url, makeRound = true,
-            onSuccess = {
-                profile_edit_bg_view.visible()
-            },
-            onFailed = {
-                profile_edit_bg_view.gone()
-                profile_edit_fragment_iv.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_account_circle_grey
-                    )
-                )
-            })
+        profile_edit_fragment_iv.loadImage(
+            url = mProfileUrl,
+            makeRound = true,
+            placeholder = R.drawable.ic_account_circle_grey
+        )
     }
 
     private fun observeViewModels() {
@@ -158,9 +152,9 @@ class ProfileEditFragment : Fragment() {
             profile_edit_update_btn.enable()
             if (it is Result.Success) {
                 mProfileUrl = it.data
-                updatePicture(mProfileUrl)
+                updatePicture()
             } else {
-                updatePicture(mProfileUrl)
+                updatePicture()
                 requireActivity().showShortToast("Failed to upload profile picture")
             }
         })
@@ -174,7 +168,10 @@ class ProfileEditFragment : Fragment() {
 
         userViewModel.updateUserDetails.observe(requireActivity(), EventObserver {
             if (it is Result.Success) {
-
+                PostEvents.sendEvent(
+                    context = requireContext(),
+                    event = PostEventTypes.USER_DETAILS_UPDATE
+                )
                 findNavController().navigateUp()
             } else {
                 requireActivity().showShortToast("Failed to update details")

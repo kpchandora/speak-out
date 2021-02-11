@@ -72,10 +72,4 @@ class ProfileViewModel : ViewModel() {
         _confirmUnfollow.value = Event(Unit)
     }
 
-    fun addPosts(list: List<PostData>) {
-        mPostList.addAll(list)
-    }
-
-    fun getPosts() = mPostList
-
 }

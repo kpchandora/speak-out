@@ -8,23 +8,19 @@ import com.speakout.R
 import com.speakout.extensions.getScreenSize
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.create.PostData
-import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
-    private val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_post_layout, parent, false)
-        val holder = PostViewHolder(view, simpleDateFormat)
+        val holder = PostViewHolder(view, mEventListener)
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
         screenSize?.let {
@@ -37,7 +33,6 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         holder.apply {
-            mEventListener = this@PostRecyclerViewAdapter.mEventListener
             bind(mPostsList[position])
         }
     }
@@ -45,24 +40,23 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
 
     override fun onBindViewHolder(
         holder: PostViewHolder,
-        position: Int, payloads: MutableList<Any>
+        position: Int,
+        payloads: MutableList<Any>
     ) {
-
         if (payloads.isNotEmpty()) {
             (payloads[0] as? PostData)?.let {
                 Timber.d("BindView Content: ${it.content}")
                 holder.bind(it)
-            } ?: super.onBindViewHolder(holder, position, payloads)
-        } else {
-            super.onBindViewHolder(holder, position, payloads)
+                return
+            }
         }
-
+        super.onBindViewHolder(holder, position, payloads)
     }
 
-    fun deletePost(postData: PostMiniDetails) {
+    fun deletePost(postId: String) {
         var matchedPost: PostData? = null
         mPostsList.forEachIndexed { index, post ->
-            if (postData.postId == post.postId) {
+            if (postId == post.postId) {
                 notifyItemRemoved(index)
                 matchedPost = post
                 return@forEachIndexed
@@ -73,9 +67,9 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         }
     }
 
-    fun likePostFail(postMiniDetails: PostMiniDetails) {
+    fun removeLike(postId: String) {
         mPostsList.forEachIndexed { index, postDataItem ->
-            if (postMiniDetails.postId == postDataItem.postId) {
+            if (postId == postDataItem.postId) {
                 postDataItem.isLikedBySelf = false
                 postDataItem.likesCount--
                 notifyItemChanged(index, postDataItem)
@@ -83,11 +77,29 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         }
     }
 
-    fun unlikePostFail(postMiniDetails: PostMiniDetails) {
+    fun addLike(postId: String) {
         mPostsList.forEachIndexed { index, postDataItem ->
-            if (postMiniDetails.postId == postDataItem.postId) {
+            if (postId == postDataItem.postId) {
                 postDataItem.isLikedBySelf = true
                 postDataItem.likesCount++
+                notifyItemChanged(index, postDataItem)
+            }
+        }
+    }
+
+    fun addBookmark(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isBookmarkedBySelf = true
+                notifyItemChanged(index, postDataItem)
+            }
+        }
+    }
+
+    fun removeBookmark(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isBookmarkedBySelf = false
                 notifyItemChanged(index, postDataItem)
             }
         }
@@ -97,5 +109,6 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         mPostsList.addAll(list)
         notifyDataSetChanged()
     }
+
 
 }

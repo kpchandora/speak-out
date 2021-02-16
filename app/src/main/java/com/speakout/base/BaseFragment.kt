@@ -10,7 +10,6 @@ import io.reactivex.subjects.PublishSubject
 class BaseFragment : Fragment() {
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

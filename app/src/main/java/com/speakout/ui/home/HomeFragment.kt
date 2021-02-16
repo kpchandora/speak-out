@@ -124,8 +124,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         fragment_home_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (isLoading) return
-                if (!hasMoreData) return
+                if (isLoading || !hasMoreData) return
                 if (dy > 0) {
                     (recyclerView.layoutManager as LinearLayoutManager).let {
                         val visibleItems = it.childCount
@@ -181,26 +180,23 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
-                Timber.d("Delete Success: ${it.data.postId}")
                 mPostsAdapter.deletePost(it.data.postId)
-                showShortToast("Deleted Successfully")
             }
 
             if (it is Result.Error) {
-                Timber.d("Delete Failed: ${it.data?.postId}")
                 showShortToast("Failed to delete post")
             }
         })
 
         mHomeViewModel.removeBookmark.observe(viewLifecycleOwner, EventObserver {
-            if (it is Result.Success) {
-                Timber.d("Remove bookmark Success: ${it.data}")
+            if (it is Result.Error) {
+                mPostsAdapter.addBookmark(it.data ?: "")
             }
         })
 
         mHomeViewModel.addBookmark.observe(viewLifecycleOwner, EventObserver {
-            if (it is Result.Success) {
-                Timber.d("Add bookmark Success: ${it.data}")
+            if (it is Result.Error) {
+                mPostsAdapter.removeBookmark(it.data ?: "")
             }
         })
 
@@ -231,8 +227,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         )
     }
 
-    private val mPostEventsListener = object :
-        PostClickEventListener {
+    private val mPostEventsListener = object : PostClickEventListener {
         override fun onLike(position: Int, postData: PostData) {
             mHomeViewModel.likePost(postData)
         }

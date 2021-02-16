@@ -205,8 +205,7 @@ class PostViewFragment : Fragment() {
         NotificationEvents.sendEvent(requireContext())
     }
 
-    private val mPostsOptionsClickListener = object :
-        OnPostOptionsClickListener {
+    private val mPostsOptionsClickListener = object : OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
             Utils.copyText(requireContext(), post.content)
             showShortToast("Copied Successfully")

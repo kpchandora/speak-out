@@ -106,19 +106,33 @@ public class UsersRepository(
     suspend fun getUsersList(
         userId: String,
         postId: String = "",
-        actionType: ActionType
+        actionType: ActionType,
+        pageNumber: Int,
+        pageSize: Int
     ): Result<List<UserMiniDetails>> =
         withContext(Dispatchers.IO) {
             try {
                 val result: Response<List<UserMiniDetails>> = when (actionType) {
                     ActionType.Likes -> {
-                        apiService.getLikes(postId = postId)
+                        apiService.getLikes(
+                            postId = postId,
+                            pageSize = pageSize,
+                            pageNumber = pageNumber
+                        )
                     }
                     ActionType.Followers -> {
-                        apiService.getFollowers(userId = userId)
+                        apiService.getFollowers(
+                            userId = userId,
+                            pageSize = pageSize,
+                            pageNumber = pageNumber
+                        )
                     }
                     ActionType.Followings -> {
-                        apiService.getFollowings(userId = userId)
+                        apiService.getFollowings(
+                            userId = userId,
+                            pageSize = pageSize,
+                            pageNumber = pageNumber
+                        )
                     }
                 }
 
@@ -131,10 +145,18 @@ public class UsersRepository(
             }
         }
 
-    suspend fun searchUsers(username: String): Result<List<UserMiniDetails>> =
+    suspend fun searchUsers(
+        username: String,
+        pageNumber: Int,
+        pageSize: Int
+    ): Result<List<UserMiniDetails>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.searchUsers(username)
+                val result = apiService.searchUsers(
+                    username = username,
+                    pageSize = pageSize,
+                    pageNumber = pageNumber
+                )
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

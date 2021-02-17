@@ -65,16 +65,28 @@ public interface ApiService {
     suspend fun unFollowUser(@Body jsonObject: JsonObject): Response<UserDetails>
 
     @GET("users/followers/{userId}")
-    suspend fun getFollowers(@Path("userId") userId: String): Response<List<UserMiniDetails>>
+    suspend fun getFollowers(
+        @Path("userId") userId: String, @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<List<UserMiniDetails>>
 
     @GET("users/followings/{userId}")
-    suspend fun getFollowings(@Path("userId") userId: String): Response<List<UserMiniDetails>>
+    suspend fun getFollowings(
+        @Path("userId") userId: String, @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<List<UserMiniDetails>>
 
     @GET("users/likes/{postId}")
-    suspend fun getLikes(@Path("postId") postId: String): Response<List<UserMiniDetails>>
+    suspend fun getLikes(
+        @Path("postId") postId: String, @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<List<UserMiniDetails>>
 
     @GET("users/search")
-    suspend fun searchUsers(@Query("username") username: String): Response<List<UserMiniDetails>>
+    suspend fun searchUsers(
+        @Query("username") username: String, @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<List<UserMiniDetails>>
 
     @POST("users/updateToken")
     suspend fun updateFcmToken(@Body fcmToken: JsonObject): Response<JsonObject>

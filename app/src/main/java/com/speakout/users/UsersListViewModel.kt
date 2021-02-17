@@ -7,7 +7,16 @@ import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class UsersListViewModel(private val mUsersRepository: UsersRepository) : ViewModel() {
+class UsersListViewModel(
+    private val appPreference: AppPreference,
+    private val mUsersRepository: UsersRepository
+) : ViewModel() {
+
+    companion object {
+        const val MAX_PAGE_SIZE = 20
+    }
+
+    private var pageNumber = 0
 
     private val _likesList = MutableLiveData<Result<List<UserMiniDetails>>>()
     val likesList: LiveData<Result<List<UserMiniDetails>>> = _likesList
@@ -21,9 +30,11 @@ class UsersListViewModel(private val mUsersRepository: UsersRepository) : ViewMo
     fun getLikesList(postId: String) {
         viewModelScope.launch {
             _likesList.value = mUsersRepository.getUsersList(
-                userId = AppPreference.getUserId(),
+                userId = appPreference.getUserId(),
                 postId = postId,
-                actionType = ActionType.Likes
+                actionType = ActionType.Likes,
+                pageNumber = ++pageNumber,
+                pageSize = MAX_PAGE_SIZE
             )
         }
     }
@@ -31,7 +42,9 @@ class UsersListViewModel(private val mUsersRepository: UsersRepository) : ViewMo
     fun getFollowingsList(userId: String) {
         viewModelScope.launch {
             _followingsList.value = mUsersRepository.getUsersList(
-                userId = userId, actionType = ActionType.Followings
+                userId = userId, actionType = ActionType.Followings,
+                pageNumber = ++pageNumber,
+                pageSize = MAX_PAGE_SIZE
             )
         }
     }
@@ -39,7 +52,9 @@ class UsersListViewModel(private val mUsersRepository: UsersRepository) : ViewMo
     fun getFollowersList(userId: String) {
         viewModelScope.launch {
             _followersList.value = mUsersRepository.getUsersList(
-                userId = userId, actionType = ActionType.Followers
+                userId = userId, actionType = ActionType.Followers,
+                pageNumber = ++pageNumber,
+                pageSize = MAX_PAGE_SIZE
             )
         }
     }

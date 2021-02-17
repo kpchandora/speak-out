@@ -12,6 +12,7 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import com.speakout.R
 import com.speakout.api.RetrofitBuilder
@@ -33,10 +34,12 @@ class UsersListFragment : Fragment() {
 
     private val safeArgs: UsersListFragmentArgs by navArgs()
     private val usersListViewModel: UsersListViewModel by viewModels() {
+        val appPreference = AppPreference
         UsersListViewModel(
+            appPreference,
             UsersRepository(
                 RetrofitBuilder.apiService,
-                AppPreference
+                appPreference
             )
         ).createFactory()
     }
@@ -49,20 +52,12 @@ class UsersListFragment : Fragment() {
     }
     private val mAdapter = UsersListAdapter()
     private var mUserEvents: UserEvents? = null
+    private var isLoading = false
+    private var hasMoreData = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when (safeArgs.actionType) {
-            ActionType.Likes -> {
-                usersListViewModel.getLikesList(safeArgs.id!!)
-            }
-            ActionType.Followers -> {
-                usersListViewModel.getFollowersList(safeArgs.id!!)
-            }
-            ActionType.Followings -> {
-                usersListViewModel.getFollowingsList(safeArgs.id!!)
-            }
-        }
+        loadData()
 
         mUserEvents = UserEvents(requireContext()) {
             val userId = it.getStringExtra(UserEvents.USER_ID) ?: return@UserEvents
@@ -77,6 +72,20 @@ class UsersListFragment : Fragment() {
                     mAdapter.showFollow(userId)
                     profileViewModel.unFollowUser(userId)
                 }
+            }
+        }
+    }
+
+    private fun loadData() {
+        when (safeArgs.actionType) {
+            ActionType.Likes -> {
+                usersListViewModel.getLikesList(safeArgs.id!!)
+            }
+            ActionType.Followers -> {
+                usersListViewModel.getFollowersList(safeArgs.id!!)
+            }
+            ActionType.Followings -> {
+                usersListViewModel.getFollowingsList(safeArgs.id!!)
             }
         }
     }
@@ -97,24 +106,46 @@ class UsersListFragment : Fragment() {
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }
+        users_list_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (isLoading || !hasMoreData) return
+                if (dy > 0) {
+                    (recyclerView.layoutManager as LinearLayoutManager).let {
+                        val visibleItems = it.childCount
+                        val totalItemsCount = it.itemCount
+                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                            loadData()
+                            isLoading = true
+                        }
+                    }
+                }
+            }
+        })
         observeViewModels()
     }
 
     private fun observeViewModels() {
         usersListViewModel.followersList.observe(viewLifecycleOwner, Observer {
+            isLoading = false
             if (it is Result.Success) {
+                hasMoreData = it.data.size == UsersListViewModel.MAX_PAGE_SIZE
                 mAdapter.addData(it.data)
             }
         })
 
         usersListViewModel.followingsList.observe(viewLifecycleOwner, Observer {
+            isLoading = false
             if (it is Result.Success) {
+                hasMoreData = it.data.size == UsersListViewModel.MAX_PAGE_SIZE
                 mAdapter.addData(it.data)
             }
         })
 
         usersListViewModel.likesList.observe(viewLifecycleOwner, Observer {
+            isLoading = false
             if (it is Result.Success) {
+                hasMoreData = it.data.size == UsersListViewModel.MAX_PAGE_SIZE
                 mAdapter.addData(it.data)
             }
         })

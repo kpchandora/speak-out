@@ -9,14 +9,17 @@ import com.speakout.auth.UserMiniDetails
 import com.speakout.common.Event
 import com.speakout.users.UsersRepository
 import com.speakout.common.Result
+import com.speakout.users.UsersListViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class SearchViewModel : ViewModel() {
+class SearchViewModel(private val mUsersRepository: UsersRepository) : ViewModel() {
 
-    private val mUsersRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, AppPreference)
+    companion object {
+        const val MAX_PAGE_SIZE = 20
     }
+
+    private var pageNumber = 0
 
     private val _searchUsers = MutableLiveData<Event<Result<List<UserMiniDetails>>>>()
     val searchUsers: LiveData<Event<Result<List<UserMiniDetails>>>> = _searchUsers
@@ -24,7 +27,13 @@ class SearchViewModel : ViewModel() {
 
     fun searchUsers(query: String) {
         viewModelScope.launch {
-            _searchUsers.value = Event(mUsersRepository.searchUsers(query))
+            _searchUsers.value = Event(
+                mUsersRepository.searchUsers(
+                    username = query,
+                    pageNumber = ++pageNumber,
+                    pageSize = MAX_PAGE_SIZE
+                )
+            )
         }
     }
 }

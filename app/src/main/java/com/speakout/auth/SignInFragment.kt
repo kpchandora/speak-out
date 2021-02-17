@@ -22,8 +22,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Result
 import com.speakout.extensions.*
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_sign_in.*
@@ -36,7 +38,9 @@ class SignInFragment : Fragment() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
-    private val mUserViewModel: UserViewModel by viewModels()
+    private val mUserViewModel: UserViewModel by viewModels() {
+        UserViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
     private lateinit var mPreference: AppPreference
 
     override fun onCreateView(

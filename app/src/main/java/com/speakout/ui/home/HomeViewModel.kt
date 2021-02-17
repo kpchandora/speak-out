@@ -10,16 +10,14 @@ import com.speakout.posts.PostsRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val appPreference: AppPreference,
+    private val postsRepository: PostsRepository
+) : ViewModel() {
 
     companion object {
         const val FEED_POSTS_COUNT = 10
         const val PROFILE_POSTS_COUNT = 20
-    }
-
-    private val appPreference = AppPreference
-    private val mPostsRepository: PostsRepository by lazy {
-        PostsRepository(RetrofitBuilder.apiService, appPreference)
     }
 
     private var feedPageCount = 0
@@ -50,7 +48,7 @@ class HomeViewModel : ViewModel() {
     fun getProfilePosts(id: String) {
         viewModelScope.launch {
             profilePageCount = 1
-            _posts.value = mPostsRepository.getProfilePosts(
+            _posts.value = postsRepository.getProfilePosts(
                 userId = id,
                 pageNumber = profilePageCount,
                 pageSize = PROFILE_POSTS_COUNT
@@ -58,10 +56,10 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun loadMoreProfilePosts(id: String){
+    fun loadMoreProfilePosts(id: String) {
         viewModelScope.launch {
             profilePageCount++
-            _posts.value = mPostsRepository.getProfilePosts(
+            _posts.value = postsRepository.getProfilePosts(
                 userId = id,
                 pageNumber = profilePageCount,
                 pageSize = PROFILE_POSTS_COUNT
@@ -72,21 +70,21 @@ class HomeViewModel : ViewModel() {
     fun getFeed() {
         viewModelScope.launch {
             feedPageCount = 1
-            _posts.value = mPostsRepository.getFeed(feedPageCount, FEED_POSTS_COUNT)
+            _posts.value = postsRepository.getFeed(feedPageCount, FEED_POSTS_COUNT)
         }
     }
 
     fun loadMoreFeed() {
         viewModelScope.launch {
             feedPageCount++
-            _posts.value = mPostsRepository.getFeed(feedPageCount, FEED_POSTS_COUNT)
+            _posts.value = postsRepository.getFeed(feedPageCount, FEED_POSTS_COUNT)
         }
     }
 
     fun likePost(postData: PostData) {
         viewModelScope.launch {
             _likePost.value = Event(
-                mPostsRepository.likePost(
+                postsRepository.likePost(
                     PostMiniDetails(postId = postData.postId, userId = appPreference.getUserId())
                 )
             )
@@ -96,7 +94,7 @@ class HomeViewModel : ViewModel() {
     fun unlikePost(postData: PostData) {
         viewModelScope.launch {
             _unlikePost.value = Event(
-                mPostsRepository.unLikePost(
+                postsRepository.unLikePost(
                     PostMiniDetails(postId = postData.postId, userId = appPreference.getUserId())
                 )
             )
@@ -112,7 +110,7 @@ class HomeViewModel : ViewModel() {
     fun deletePost(postData: PostData) {
         viewModelScope.launch {
             _deletePost.value = Event(
-                mPostsRepository.deletePost(
+                postsRepository.deletePost(
                     PostMiniDetails(postId = postData.postId, userId = appPreference.getUserId())
                 )
             )
@@ -121,19 +119,19 @@ class HomeViewModel : ViewModel() {
 
     fun getSinglePost(postId: String) {
         viewModelScope.launch {
-            _singlePost.value = Event(mPostsRepository.getSinglePost(postId))
+            _singlePost.value = Event(postsRepository.getSinglePost(postId))
         }
     }
 
     fun addBookmark(postId: String) {
         viewModelScope.launch {
-            _addBookmark.value = Event(mPostsRepository.addBookmark(postId))
+            _addBookmark.value = Event(postsRepository.addBookmark(postId))
         }
     }
 
     fun removeBookmark(postId: String) {
         viewModelScope.launch {
-            _removeBookmark.value = Event(mPostsRepository.removeBookmark(postId))
+            _removeBookmark.value = Event(postsRepository.removeBookmark(postId))
         }
     }
 

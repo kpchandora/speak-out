@@ -16,15 +16,18 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserDetails
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
 import com.speakout.extensions.*
+import com.speakout.posts.PostsRepository
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.users.ActionType
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
@@ -36,8 +39,20 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         const val TAG = "ProfileFragment"
     }
 
-    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
-    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
+    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation) {
+        val appPreference = AppPreference
+        ProfileViewModel(
+            appPreference,
+            UsersRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation) {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
     private val mPostsAdapter = ProfilePostsAdapter()
     private var mUserId = ""
     private var isSelf = false

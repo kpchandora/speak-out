@@ -12,11 +12,7 @@ import com.speakout.notification.NotificationResponse
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class NotificationsViewModel : ViewModel() {
-
-    private val mRepository: NotificationRepository by lazy {
-        NotificationRepository(RetrofitBuilder.apiService)
-    }
+class NotificationsViewModel(private val mRepository: NotificationRepository) : ViewModel() {
 
     private val _notifications = MutableLiveData<Event<Result<List<NotificationResponse>>>>()
     val notifications: LiveData<Event<Result<List<NotificationResponse>>>> = _notifications

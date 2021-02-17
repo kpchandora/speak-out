@@ -14,14 +14,16 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserMiniDetails
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
+import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
 import com.speakout.ui.profile.ProfileViewModel
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.users_list_fragment.*
-import timber.log.Timber
 
 class UsersListFragment : Fragment() {
 
@@ -30,8 +32,21 @@ class UsersListFragment : Fragment() {
     }
 
     private val safeArgs: UsersListFragmentArgs by navArgs()
-    private val usersListViewModel: UsersListViewModel by viewModels()
-    private val profileViewModel: ProfileViewModel by viewModels()
+    private val usersListViewModel: UsersListViewModel by viewModels() {
+        UsersListViewModel(
+            UsersRepository(
+                RetrofitBuilder.apiService,
+                AppPreference
+            )
+        ).createFactory()
+    }
+    private val profileViewModel: ProfileViewModel by viewModels() {
+        val appPreference = AppPreference
+        ProfileViewModel(
+            appPreference,
+            UsersRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
     private val mAdapter = UsersListAdapter()
     private var mUserEvents: UserEvents? = null
 

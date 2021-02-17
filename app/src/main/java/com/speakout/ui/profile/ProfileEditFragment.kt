@@ -19,6 +19,7 @@ import com.mlsdev.rximagepicker.RxImagePicker
 import com.mlsdev.rximagepicker.Sources
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserDetails
 import com.speakout.auth.Type
 import com.speakout.auth.UserMiniDetails
@@ -28,6 +29,7 @@ import com.speakout.common.Result
 import com.speakout.events.PostEventTypes
 import com.speakout.events.PostEvents
 import com.speakout.extensions.*
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
 import timber.log.Timber
@@ -40,8 +42,16 @@ class ProfileEditFragment : Fragment() {
 
     private var mProfileUrl = ""
     private var isUploading = false
-    private val profileViewModel: ProfileViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels() {
+        val appPreference = AppPreference
+        ProfileViewModel(
+            appPreference,
+            UsersRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private val userViewModel: UserViewModel by viewModels() {
+        UserViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
     private val safeArgs: ProfileEditFragmentArgs by navArgs()
     private lateinit var mUserDetails: UserDetails
 

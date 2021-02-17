@@ -14,10 +14,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.ui.MainActivity
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_user_name.*
@@ -26,7 +28,9 @@ import timber.log.Timber
 
 class UserNameFragment : Fragment() {
 
-    private val mUserViewModel: UserViewModel by viewModels()
+    private val mUserViewModel: UserViewModel by viewModels() {
+        UserViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
     private var username = ""
     private val userNameRegex = "^[a-z0-9_]{1,25}\$".toRegex()
     private val safeArgs: UserNameFragmentArgs by navArgs()

@@ -14,12 +14,15 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.NotificationEvents
+import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.setUpWithAppBarConfiguration
 import com.speakout.extensions.showShortToast
+import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationResponse
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import timber.log.Timber
@@ -27,7 +30,9 @@ import timber.log.Timber
 class NotificationsFragment : Fragment() {
 
     private lateinit var safeArgs: NotificationsFragmentArgs
-    private val notificationsViewModel: NotificationsViewModel by viewModels()
+    private val notificationsViewModel: NotificationsViewModel by viewModels {
+        NotificationsViewModel(NotificationRepository(RetrofitBuilder.apiService)).createFactory()
+    }
     private lateinit var adapter: NotificationsAdapter
     private var mNotificationEvents: NotificationEvents? = null
 

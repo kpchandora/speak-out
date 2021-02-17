@@ -7,11 +7,7 @@ import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class UsersListViewModel : ViewModel() {
-
-    private val mUsersRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, AppPreference)
-    }
+class UsersListViewModel(private val mUsersRepository: UsersRepository) : ViewModel() {
 
     private val _likesList = MutableLiveData<Result<List<UserMiniDetails>>>()
     val likesList: LiveData<Result<List<UserMiniDetails>>> = _likesList

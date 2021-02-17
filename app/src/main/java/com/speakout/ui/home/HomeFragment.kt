@@ -18,15 +18,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.Type
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.PostEventTypes
 import com.speakout.events.PostEvents
-import com.speakout.extensions.setUpWithAppBarConfiguration
-import com.speakout.extensions.showShortToast
-import com.speakout.extensions.visible
-import com.speakout.extensions.withDefaultSchedulers
+import com.speakout.extensions.*
+import com.speakout.posts.PostsRepository
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.view.PostRecyclerViewAdapter
@@ -43,7 +42,13 @@ import timber.log.Timber
 
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
-    private val mHomeViewModel: HomeViewModel by activityViewModels()
+    private val mHomeViewModel: HomeViewModel by activityViewModels {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
 
     private val mPostsAdapter = PostRecyclerViewAdapter()
     private lateinit var mPreference: AppPreference

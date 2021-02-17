@@ -15,10 +15,12 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
 import com.speakout.extensions.*
+import com.speakout.posts.PostsRepository
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.create.PostData
@@ -26,6 +28,7 @@ import com.speakout.posts.view.PostRecyclerViewAdapter
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.posts.view.PostClickEventListener
 import com.speakout.users.ActionType
+import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import com.speakout.utils.Utils
 import kotlinx.android.synthetic.main.fragment_post_view.*
@@ -36,8 +39,20 @@ class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
     private val mPostsAdapter = PostRecyclerViewAdapter()
-    private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
-    private val singleHomeViewModel: HomeViewModel by viewModels()
+    private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation) {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private val singleHomeViewModel: HomeViewModel by viewModels {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
     private lateinit var mHomeViewModel: HomeViewModel
     private lateinit var dialog: PostOptionsDialog
 

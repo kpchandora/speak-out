@@ -13,11 +13,8 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import java.io.File
 
-class ProfileViewModel : ViewModel() {
-    private val appPreference = AppPreference
-    private val mUsersRepository: UsersRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, appPreference)
-    }
+class ProfileViewModel(private val appPreference: AppPreference,
+                       private val mUsersRepository: UsersRepository) : ViewModel() {
 
     private val _confirmUnfollow = MutableLiveData<Event<Unit>>()
     val confirmUnfollow: LiveData<Event<Unit>> = _confirmUnfollow

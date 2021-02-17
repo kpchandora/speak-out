@@ -49,6 +49,9 @@ class MainActivity : BaseActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener {
             Timber.d("setOnNavigationItemSelectedListener: ${it.title}")
             when (it.itemId) {
+                R.id.navigation_home -> {
+                    navController.popBackStack(R.id.navigation_home, false)
+                }
                 R.id.navigation_new_post -> {
                     navController.navigate(R.id.create_post_navigation)
                     return@setOnNavigationItemSelectedListener false

@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.auth.UserDetails
 import com.speakout.common.EventObserver
@@ -43,6 +45,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var mUserDetails: UserDetails? = null
     private lateinit var safeArgs: ProfileFragmentArgs
     private var mProfileEvents: ProfileEvents? = null
+    private var isLoading = false
+    private var hasMoreData = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +113,23 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             adapter = mPostsAdapter
         }
 
+        profile_post_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (isLoading || !hasMoreData) return
+                if (dy > 0) {
+                    (recyclerView.layoutManager as LinearLayoutManager).let {
+                        val visibleItems = it.childCount
+                        val totalItemsCount = it.itemCount
+                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                            homeViewModel.loadMoreProfilePosts(mUserId)
+                            isLoading = true
+                        }
+                    }
+                }
+            }
+        })
+
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { result ->
             if (result is Result.Success) {
                 populateData(result.data)
@@ -116,7 +137,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            isLoading = false
             if (it is Result.Success) {
+                hasMoreData = it.data.size == HomeViewModel.PROFILE_POSTS_COUNT
                 mPostsAdapter.updateData(it.data)
                 homeViewModel.addPosts(it.data)
             }

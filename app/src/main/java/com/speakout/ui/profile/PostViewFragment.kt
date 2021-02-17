@@ -217,7 +217,6 @@ class PostViewFragment : Fragment() {
 
         @SuppressLint("CheckResult")
         override fun onSave(post: PostData) {
-            Timber.d("Save post")
             ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
                 .withDefaultSchedulers()
                 .subscribe({

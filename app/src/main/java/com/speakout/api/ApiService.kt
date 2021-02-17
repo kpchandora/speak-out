@@ -25,7 +25,11 @@ public interface ApiService {
     suspend fun createPost(@Body post: PostData): Response<PostData>
 
     @GET("posts/getProfilePosts/{userId}")
-    suspend fun getProfilePosts(@Path("userId") userId: String): Response<List<PostData>>
+    suspend fun getProfilePosts(
+        @Path("userId") userId: String,
+        @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<List<PostData>>
 
     @GET("posts/getFeed")
     suspend fun getFeed(

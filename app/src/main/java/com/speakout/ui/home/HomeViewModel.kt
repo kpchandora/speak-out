@@ -4,7 +4,6 @@ import androidx.lifecycle.*
 import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Event
 import com.speakout.posts.create.PostData
-import io.reactivex.disposables.CompositeDisposable
 import com.speakout.common.Result
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.PostsRepository
@@ -14,7 +13,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
 
     companion object {
-        const val MAX_POSTS_COUNT = 10
+        const val FEED_POSTS_COUNT = 10
+        const val PROFILE_POSTS_COUNT = 20
     }
 
     private val appPreference = AppPreference
@@ -23,6 +23,7 @@ class HomeViewModel : ViewModel() {
     }
 
     private var feedPageCount = 0
+    private var profilePageCount = 0
     private val mPostList = ArrayList<PostData>()
 
     private val _unlikePost = MutableLiveData<Event<Result<PostMiniDetails>>>()
@@ -48,21 +49,37 @@ class HomeViewModel : ViewModel() {
 
     fun getProfilePosts(id: String) {
         viewModelScope.launch {
-            _posts.value = mPostsRepository.getProfilePosts(id)
+            profilePageCount = 1
+            _posts.value = mPostsRepository.getProfilePosts(
+                userId = id,
+                pageNumber = profilePageCount,
+                pageSize = PROFILE_POSTS_COUNT
+            )
+        }
+    }
+
+    fun loadMoreProfilePosts(id: String){
+        viewModelScope.launch {
+            profilePageCount++
+            _posts.value = mPostsRepository.getProfilePosts(
+                userId = id,
+                pageNumber = profilePageCount,
+                pageSize = PROFILE_POSTS_COUNT
+            )
         }
     }
 
     fun getFeed() {
         viewModelScope.launch {
             feedPageCount = 1
-            _posts.value = mPostsRepository.getFeed(feedPageCount)
+            _posts.value = mPostsRepository.getFeed(feedPageCount, FEED_POSTS_COUNT)
         }
     }
 
     fun loadMoreFeed() {
         viewModelScope.launch {
             feedPageCount++
-            _posts.value = mPostsRepository.getFeed(feedPageCount)
+            _posts.value = mPostsRepository.getFeed(feedPageCount, FEED_POSTS_COUNT)
         }
     }
 

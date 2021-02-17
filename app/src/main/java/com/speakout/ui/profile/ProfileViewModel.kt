@@ -19,9 +19,6 @@ class ProfileViewModel : ViewModel() {
         UsersRepository(RetrofitBuilder.apiService, appPreference)
     }
 
-    private val compositeDisposable = CompositeDisposable()
-    private val mPostList = ArrayList<PostData>()
-
     private val _confirmUnfollow = MutableLiveData<Event<Unit>>()
     val confirmUnfollow: LiveData<Event<Unit>> = _confirmUnfollow
 

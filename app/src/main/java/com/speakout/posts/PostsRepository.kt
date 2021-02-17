@@ -55,10 +55,18 @@ public class PostsRepository(
         }
     }
 
-    suspend fun getProfilePosts(userId: String): Result<List<PostData>> =
+    suspend fun getProfilePosts(
+        userId: String,
+        pageNumber: Int,
+        pageSize: Int
+    ): Result<List<PostData>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getProfilePosts(userId)
+                val result = apiService.getProfilePosts(
+                    userId = userId,
+                    pageSize = pageSize,
+                    pageNumber = pageNumber
+                )
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -69,10 +77,10 @@ public class PostsRepository(
             }
         }
 
-    suspend fun getFeed(pageNumber: Int): Result<List<PostData>> =
+    suspend fun getFeed(pageNumber: Int, pageSize: Int): Result<List<PostData>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getFeed(pageSize = 10, pageNumber = pageNumber)
+                val result = apiService.getFeed(pageSize = pageSize, pageNumber = pageNumber)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

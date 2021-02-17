@@ -11,6 +11,8 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,6 +44,7 @@ import timber.log.Timber
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private val mHomeViewModel: HomeViewModel by activityViewModels()
+
     private val mPostsAdapter = PostRecyclerViewAdapter()
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
@@ -51,8 +54,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("onCreate hasMoreData: $hasMoreData")
         mPreference = AppPreference
+        Timber.d("HomeFragment onCreate")
 
         postEvents = PostEvents(requireContext()) {
             val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
@@ -120,8 +123,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             startPostponedEnterTransition()
         }
 
-        Timber.d("onViewCreated User Id ${AppPreference.getUserId()}")
-
         fragment_home_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (isLoading || !hasMoreData) return
@@ -156,8 +157,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             isLoading = false
             if (it is Result.Success) {
-                hasMoreData = it.data.size == HomeViewModel.MAX_POSTS_COUNT
-                Timber.d("posts data success")
+                hasMoreData = it.data.size == HomeViewModel.FEED_POSTS_COUNT
                 mPostsAdapter.updatePosts(it.data)
             }
 
@@ -273,7 +273,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         @SuppressLint("CheckResult")
         override fun onSave(post: PostData) {
-            Timber.d("Save post")
             ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
                 .withDefaultSchedulers()
                 .subscribe({

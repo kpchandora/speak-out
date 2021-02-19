@@ -15,25 +15,13 @@ import kotlinx.coroutines.launch
 
 class SearchViewModel(private val mUsersRepository: UsersRepository) : ViewModel() {
 
-    companion object {
-        const val MAX_PAGE_SIZE = 20
-    }
-
-    private var pageNumber = 0
-
     private val _searchUsers = MutableLiveData<Event<Result<List<UserMiniDetails>>>>()
     val searchUsers: LiveData<Event<Result<List<UserMiniDetails>>>> = _searchUsers
 
 
     fun searchUsers(query: String) {
         viewModelScope.launch {
-            _searchUsers.value = Event(
-                mUsersRepository.searchUsers(
-                    username = query,
-                    pageNumber = ++pageNumber,
-                    pageSize = MAX_PAGE_SIZE
-                )
-            )
+            _searchUsers.value = Event(mUsersRepository.searchUsers(username = query))
         }
     }
 }

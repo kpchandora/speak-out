@@ -83,10 +83,7 @@ public interface ApiService {
     ): Response<List<UserMiniDetails>>
 
     @GET("users/search")
-    suspend fun searchUsers(
-        @Query("username") username: String, @Query("pageNumber") pageNumber: Int,
-        @Query("pageSize") pageSize: Int
-    ): Response<List<UserMiniDetails>>
+    suspend fun searchUsers(@Query("username") username: String): Response<List<UserMiniDetails>>
 
     @POST("users/updateToken")
     suspend fun updateFcmToken(@Body fcmToken: JsonObject): Response<JsonObject>

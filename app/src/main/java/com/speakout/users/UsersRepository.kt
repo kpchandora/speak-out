@@ -145,18 +145,10 @@ public class UsersRepository(
             }
         }
 
-    suspend fun searchUsers(
-        username: String,
-        pageNumber: Int,
-        pageSize: Int
-    ): Result<List<UserMiniDetails>> =
+    suspend fun searchUsers(username: String): Result<List<UserMiniDetails>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.searchUsers(
-                    username = username,
-                    pageSize = pageSize,
-                    pageNumber = pageNumber
-                )
+                val result = apiService.searchUsers(username = username)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

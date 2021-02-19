@@ -9,6 +9,7 @@ import com.speakout.auth.UserMiniDetails
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
 import kotlinx.android.synthetic.main.item_users_list.view.*
+import timber.log.Timber
 
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
@@ -39,8 +40,19 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     class SearchViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         var mListener: OnSearchUserClickListener? = null
+
+        init {
+            view.setOnClickListener {
+                mListener?.onUserClick(
+                    view.tag as UserMiniDetails,
+                    view.item_users_list_profile_iv
+                )
+            }
+        }
+
         fun bind(user: UserMiniDetails) {
             view.apply {
+                tag = user
                 item_users_list_profile_iv.transitionName = user.userId
                 item_users_list_profile_iv.loadImage(
                     user.photoUrl,
@@ -51,17 +63,8 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
                 cv_follow.gone()
                 item_users_list_username_tv.text = user.username
                 item_users_list_name_tv.text = user.name
-
-                setOnClickListener {
-                    mListener?.onUserClick(
-                        user,
-                        item_users_list_profile_iv
-                    )
-                }
-
             }
         }
-
     }
 
 }

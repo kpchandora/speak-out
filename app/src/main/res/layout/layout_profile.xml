@@ -5,17 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <ImageView
-        android:id="@+id/layout_profile_iv"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
         android:layout_width="100dp"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="12dp"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/layout_profile_iv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            tools:src="@tools:sample/avatars" />
+
+    </androidx.cardview.widget.CardView>
+
 
     <View
         android:id="@+id/layout_profile_bg_view"
@@ -23,6 +33,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/dr_circle_stroke_bg_grey500"
+        android:visibility="gone"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -133,12 +144,12 @@
         android:id="@+id/layout_profile_full_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_marginTop="18dp"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_profile_iv"
+        app:layout_constraintTop_toBottomOf="@+id/card_view"
         tools:text="@tools:sample/full_names" />
 
     <FrameLayout
@@ -168,8 +179,8 @@
         android:id="@+id/follow_unfollow_progress"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:visibility="visible"
         android:layout_gravity="center"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/layout_profile_follow_unfollow_frame"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

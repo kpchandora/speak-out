@@ -343,13 +343,13 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun loadImage(photoUrl: String?) {
-        layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
+        card_view.layoutParams.width = screenSize.widthPixels / 3
         layout_profile_bg_view.layoutParams.width = screenSize.widthPixels / 3
 
         layout_profile_bg_view.gone()
-        layout_profile_iv.loadImageWithCallback(photoUrl ?: "", makeRound = true,
+        layout_profile_iv.loadImageWithCallback(photoUrl ?: "", centerCrop = true,
             onSuccess = {
-                layout_profile_bg_view.visible()
+//                layout_profile_bg_view.visible()
             },
             onFailed = {
                 layout_profile_bg_view.gone()

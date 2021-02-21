@@ -9,6 +9,7 @@ import com.speakout.common.Event
 import com.speakout.common.Result
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationResponse
+import com.speakout.notification.NotificationsItem
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
@@ -18,13 +19,26 @@ class NotificationsViewModel(private val mRepository: NotificationRepository) : 
         const val MAX_SIZE = 20
     }
 
-    private val _notifications = MutableLiveData<Event<Result<NotificationResponse>>>()
-    val notifications: LiveData<Event<Result<NotificationResponse>>> = _notifications
+    val mNotifications = ArrayList<NotificationsItem>()
+    private val _notifications = MutableLiveData<NotificationResponse>()
+    val notifications: LiveData<NotificationResponse> = _notifications
+
+    private val _error = MutableLiveData<Event<String>>()
+    val error: LiveData<Event<String>> = _error
 
     fun getNotifications(pageNumber: Int) {
         viewModelScope.launch {
-            _notifications.value =
-                Event(mRepository.getNotifications(pageNumber = pageNumber, pageSize = MAX_SIZE))
+            val response = mRepository.getNotifications(
+                pageNumber = pageNumber,
+                pageSize = MAX_SIZE
+            )
+            if (response is Result.Success) {
+                mNotifications.addAll(response.data.notifications)
+                _notifications.value = response.data
+            }
+            if (response is Result.Error) {
+                _error.value = Event(response.error.message!!)
+            }
         }
     }
 

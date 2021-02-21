@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
@@ -20,6 +22,7 @@ import com.speakout.extensions.setUpWithAppBarConfiguration
 import com.speakout.extensions.showShortToast
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationsItem
+import com.speakout.users.UsersListViewModel
 import kotlinx.android.synthetic.main.fragment_notifications.*
 
 class NotificationsFragment : Fragment() {
@@ -31,6 +34,8 @@ class NotificationsFragment : Fragment() {
     private lateinit var adapter: NotificationsAdapter
     private var mNotificationEvents: NotificationEvents? = null
     private var nextPageNumber = 1
+    private var isLoading = false
+    private var hasMoreData = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +43,11 @@ class NotificationsFragment : Fragment() {
         if (safeArgs.isFromDeepLink) {
             navigateToPostView(safeArgs.postId)
         }
+        adapter = NotificationsAdapter(
+            listener = mNotificationListener,
+            notifications = notificationsViewModel.mNotifications
+        )
         notificationsViewModel.getNotifications(nextPageNumber)
-        adapter = NotificationsAdapter(mNotificationListener)
         mNotificationEvents = NotificationEvents(requireContext()) {
             if (nextPageNumber > 1) nextPageNumber--
             notificationsViewModel.getNotifications(nextPageNumber)
@@ -60,15 +68,35 @@ class NotificationsFragment : Fragment() {
         rv_notification.setHasFixedSize(true)
         rv_notification.layoutManager = LinearLayoutManager(requireContext())
         rv_notification.adapter = adapter
-        notificationsViewModel.notifications.observe(viewLifecycleOwner, EventObserver {
-            if (it is Result.Success) {
-                adapter.updateData(it.data.notifications)
-            }
-            if (it is Result.Error) {
-                showShortToast("Failed")
-            }
+
+        notificationsViewModel.notifications.observe(viewLifecycleOwner, Observer {
+            isLoading = false
+            nextPageNumber = it.pageNumber + 1
+            hasMoreData = it.notifications.size == NotificationsViewModel.MAX_SIZE
+            adapter.notifyDataSetChanged()
         })
 
+        notificationsViewModel.error.observe(viewLifecycleOwner, EventObserver {
+            isLoading = false
+            showShortToast(it)
+        })
+
+        rv_notification.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (isLoading || !hasMoreData) return
+                if (dy > 0) {
+                    (recyclerView.layoutManager as LinearLayoutManager).let {
+                        val visibleItems = it.childCount
+                        val totalItemsCount = it.itemCount
+                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                            notificationsViewModel.getNotifications(nextPageNumber)
+                            isLoading = true
+                        }
+                    }
+                }
+            }
+        })
     }
 
     override fun onDestroy() {

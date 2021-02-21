@@ -41,15 +41,20 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
 
     class ProfilePostsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         var mListener: ProfilePostClickListener? = null
+
+        init {
+            view.setOnClickListener {
+                mListener?.onPostClick(view.tag as PostData, view.item_profile_post_iv, adapterPosition)
+            }
+        }
+
         fun bind(post: PostData) {
+            view.tag = post
             view.item_profile_post_iv.loadImage(
                 post.postImageUrl,
                 R.drawable.ic_waiting
             )
             view.item_profile_post_iv.transitionName = post.postId
-            view.setOnClickListener {
-                mListener?.onPostClick(post, view.item_profile_post_iv, adapterPosition)
-            }
         }
     }
 

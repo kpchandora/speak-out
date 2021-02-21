@@ -22,6 +22,7 @@ import com.speakout.common.Result
 import com.speakout.events.*
 import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
+import com.speakout.extensions.showShortToast
 import com.speakout.ui.profile.ProfileViewModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.users_list_fragment.*
@@ -50,7 +51,7 @@ class UsersListFragment : Fragment() {
             UsersRepository(RetrofitBuilder.apiService, appPreference)
         ).createFactory()
     }
-    private val mAdapter = UsersListAdapter()
+    private lateinit var mAdapter: UsersListAdapter
     private var mUserEvents: UserEvents? = null
     private var isLoading = false
     private var hasMoreData = true
@@ -58,8 +59,8 @@ class UsersListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mAdapter = UsersListAdapter(usersListViewModel.mUsersList)
         loadData()
-
         mUserEvents = UserEvents(requireContext()) {
             val userId = it.getStringExtra(UserEvents.USER_ID) ?: return@UserEvents
             when (it.getIntExtra(UserEvents.EVENT_TYPE, -1)) {
@@ -127,31 +128,16 @@ class UsersListFragment : Fragment() {
     }
 
     private fun observeViewModels() {
-        usersListViewModel.followersList.observe(viewLifecycleOwner, Observer {
+        usersListViewModel.usersList.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            if (it is Result.Success) {
-                nextPageNumber = it.data.pageNumber + 1
-                hasMoreData = it.data.users.size == UsersListViewModel.MAX_PAGE_SIZE
-                mAdapter.addData(it.data.users)
-            }
+            nextPageNumber = it.pageNumber + 1
+            hasMoreData = it.users.size == UsersListViewModel.MAX_PAGE_SIZE
+            mAdapter.notifyDataSetChanged()
         })
 
-        usersListViewModel.followingsList.observe(viewLifecycleOwner, Observer {
+        usersListViewModel.error.observe(viewLifecycleOwner, EventObserver {
             isLoading = false
-            if (it is Result.Success) {
-                nextPageNumber = it.data.pageNumber + 1
-                hasMoreData = it.data.users.size == UsersListViewModel.MAX_PAGE_SIZE
-                mAdapter.addData(it.data.users)
-            }
-        })
-
-        usersListViewModel.likesList.observe(viewLifecycleOwner, Observer {
-            isLoading = false
-            if (it is Result.Success) {
-                nextPageNumber = it.data.pageNumber + 1
-                hasMoreData = it.data.users.size == UsersListViewModel.MAX_PAGE_SIZE
-                mAdapter.addData(it.data.users)
-            }
+            showShortToast(it)
         })
 
         profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {

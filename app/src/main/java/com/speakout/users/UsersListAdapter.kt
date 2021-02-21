@@ -13,24 +13,23 @@ import com.speakout.extensions.visible
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.item_users_list.view.*
 
-class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHolder>() {
+class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
+    RecyclerView.Adapter<UsersListAdapter.UsersListViewHolder>() {
 
-    private val usersList = ArrayList<UsersItem>()
     var mListener: OnUserClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersListViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.item_users_list, parent, false)
-        return UsersListViewHolder(view)
+        return UsersListViewHolder(view).also {
+            it.mListener = mListener
+        }
     }
 
     override fun getItemCount() = usersList.size
 
     override fun onBindViewHolder(holder: UsersListViewHolder, position: Int) {
-        holder.apply {
-            mListener = this@UsersListAdapter.mListener
-            bind(usersList[position])
-        }
+        holder.bind(usersList[position])
     }
 
     override fun onBindViewHolder(
@@ -46,12 +45,6 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
         }
 
         super.onBindViewHolder(holder, position, payloads)
-    }
-
-    fun addData(list: List<UsersItem>) {
-        usersList.clear()
-        usersList.addAll(list)
-        notifyDataSetChanged()
     }
 
     fun showFollowing(userId: String) {
@@ -75,8 +68,32 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
     class UsersListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         var mListener: OnUserClickListener? = null
 
+        init {
+            view.cv_follow.setOnClickListener {
+                val user = view.tag as UsersItem
+                if (user.isFollowedBySelf!!) {
+                    mListener?.onUnFollowClick(user)
+                } else {
+                    user.isFollowedBySelf = true
+                    showFollowing()
+                    mListener?.onFollowClick(user)
+                }
+            }
+            view.fl_profile.setOnClickListener {
+                val user = view.tag as UsersItem
+                mListener?.onUserClick(user, view.item_users_list_profile_iv)
+            }
+
+            view.ll_details.setOnClickListener {
+                val user = view.tag as UsersItem
+                mListener?.onUserClick(user, view.item_users_list_profile_iv)
+            }
+
+        }
+
         fun bind(user: UsersItem) {
             view.apply {
+                tag = user
                 item_users_list_profile_iv.transitionName = user.userId
                 item_users_list_profile_iv.loadImage(
                     user.photoUrl,
@@ -95,25 +112,7 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
                     } else {
                         showFollow()
                     }
-                    cv_follow.setOnClickListener {
-                        if (user.isFollowedBySelf!!) {
-                            mListener?.onUnFollowClick(user)
-                        } else {
-                            user.isFollowedBySelf = true
-                            showFollowing()
-                            mListener?.onFollowClick(user)
-                        }
-                    }
                 }
-
-                fl_profile.setOnClickListener {
-                    mListener?.onUserClick(user, item_users_list_profile_iv)
-                }
-
-                ll_details.setOnClickListener {
-                    mListener?.onUserClick(user, item_users_list_profile_iv)
-                }
-
             }
         }
 

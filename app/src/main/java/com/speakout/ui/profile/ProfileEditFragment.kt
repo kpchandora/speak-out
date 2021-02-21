@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -22,8 +21,8 @@ import com.speakout.R
 import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserDetails
 import com.speakout.auth.Type
-import com.speakout.auth.UserMiniDetails
 import com.speakout.auth.UserViewModel
+import com.speakout.auth.UsersItem
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.PostEventTypes
@@ -90,7 +89,7 @@ class ProfileEditFragment : Fragment() {
 
         profile_edit_update_btn.setOnClickListener {
             userViewModel.updateUserDetails(
-                UserMiniDetails(
+                UsersItem(
                     userId = AppPreference.getUserId(),
                     photoUrl = mProfileUrl,
                     name = profile_edit_full_name_et.text.toString().trim(),

@@ -1,27 +1,43 @@
 package com.speakout.notification
 
-
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class NotificationResponse(
-    @SerializedName("photoUrl")
+
+    @field:SerializedName("pageNumber")
+    val pageNumber: Int = 0,
+
+    @field:SerializedName("pageSize")
+    val pageSize: Int = 0,
+
+    @field:SerializedName("notifications")
+    val notifications: List<NotificationsItem> = emptyList()
+) : Parcelable
+
+@Parcelize
+data class NotificationsItem(
+
+    @field:SerializedName("photoUrl")
     val photoUrl: String?,
 
-    @SerializedName("postId")
+    @field:SerializedName("postId")
     val postId: String?,
 
-    @SerializedName("postImageUrl")
+    @field:SerializedName("postImageUrl")
     val postImageUrl: String?,
 
-    @SerializedName("timestamp")
-    val timestamp: Long,
+    @field:SerializedName("type")
+    val type: String?,
 
-    @SerializedName("type")
-    val type: String,
-
-    @SerializedName("userId")
+    @field:SerializedName("userId")
     val userId: String,
 
-    @SerializedName("username")
+    @field:SerializedName("timestamp")
+    val timestamp: Long,
+
+    @field:SerializedName("username")
     val username: String
-)
+) : Parcelable

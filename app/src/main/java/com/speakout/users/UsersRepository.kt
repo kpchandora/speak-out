@@ -3,11 +3,11 @@ package com.speakout.users
 import com.google.gson.JsonObject
 import com.speakout.api.ApiService
 import com.speakout.auth.UserDetails
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UserResponse
+import com.speakout.auth.UsersItem
 import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
@@ -58,7 +58,7 @@ public class UsersRepository(
             }
         }
 
-    suspend fun updateUserDetails(userMiniDetails: UserMiniDetails): Result<UserDetails> =
+    suspend fun updateUserDetails(userMiniDetails: UsersItem): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
                 val result = apiService.updateUserDetails(userMiniDetails)
@@ -109,10 +109,10 @@ public class UsersRepository(
         actionType: ActionType,
         pageNumber: Int,
         pageSize: Int
-    ): Result<List<UserMiniDetails>> =
+    ): Result<UserResponse> =
         withContext(Dispatchers.IO) {
             try {
-                val result: Response<List<UserMiniDetails>> = when (actionType) {
+                val result: Response<UserResponse> = when (actionType) {
                     ActionType.Likes -> {
                         apiService.getLikes(
                             postId = postId,
@@ -139,22 +139,22 @@ public class UsersRepository(
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to get data"), emptyList<UserMiniDetails>())
+                Result.Error(Exception("Failed to get data"), null)
             } catch (e: Exception) {
-                Result.Error(e, emptyList<UserMiniDetails>())
+                Result.Error(e, null)
             }
         }
 
-    suspend fun searchUsers(username: String): Result<List<UserMiniDetails>> =
+    suspend fun searchUsers(username: String): Result<List<UsersItem>> =
         withContext(Dispatchers.IO) {
             try {
                 val result = apiService.searchUsers(username = username)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to get users"), emptyList<UserMiniDetails>())
+                Result.Error(Exception("Failed to get users"), emptyList<UsersItem>())
             } catch (e: Exception) {
-                Result.Error(e, emptyList<UserMiniDetails>())
+                Result.Error(e, emptyList<UsersItem>())
             }
         }
 

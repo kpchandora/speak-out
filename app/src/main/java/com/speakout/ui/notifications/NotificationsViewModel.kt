@@ -14,12 +14,17 @@ import kotlinx.coroutines.launch
 
 class NotificationsViewModel(private val mRepository: NotificationRepository) : ViewModel() {
 
-    private val _notifications = MutableLiveData<Event<Result<List<NotificationResponse>>>>()
-    val notifications: LiveData<Event<Result<List<NotificationResponse>>>> = _notifications
+    companion object {
+        const val MAX_SIZE = 20
+    }
 
-    fun getNotifications() {
+    private val _notifications = MutableLiveData<Event<Result<NotificationResponse>>>()
+    val notifications: LiveData<Event<Result<NotificationResponse>>> = _notifications
+
+    fun getNotifications(pageNumber: Int) {
         viewModelScope.launch {
-            _notifications.value = Event(mRepository.getNotifications())
+            _notifications.value =
+                Event(mRepository.getNotifications(pageNumber = pageNumber, pageSize = MAX_SIZE))
         }
     }
 

@@ -2,7 +2,8 @@ package com.speakout.api
 
 import com.google.gson.JsonObject
 import com.speakout.auth.UserDetails
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UserResponse
+import com.speakout.auth.UsersItem
 import com.speakout.notification.NotificationResponse
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.create.PostData
@@ -56,7 +57,7 @@ public interface ApiService {
     suspend fun checkUserName(@Path("username") username: String): Response<JsonObject>
 
     @POST("users/update")
-    suspend fun updateUserDetails(@Body userMiniDetails: UserMiniDetails): Response<UserDetails>
+    suspend fun updateUserDetails(@Body userMiniDetails: UsersItem): Response<UserDetails>
 
     @POST("users/follow")
     suspend fun followUser(@Body jsonObject: JsonObject): Response<UserDetails>
@@ -68,22 +69,24 @@ public interface ApiService {
     suspend fun getFollowers(
         @Path("userId") userId: String, @Query("pageNumber") pageNumber: Int,
         @Query("pageSize") pageSize: Int
-    ): Response<List<UserMiniDetails>>
+    ): Response<UserResponse>
 
     @GET("users/followings/{userId}")
     suspend fun getFollowings(
-        @Path("userId") userId: String, @Query("pageNumber") pageNumber: Int,
+        @Path("userId") userId: String,
+        @Query("pageNumber") pageNumber: Int,
         @Query("pageSize") pageSize: Int
-    ): Response<List<UserMiniDetails>>
+    ): Response<UserResponse>
 
     @GET("users/likes/{postId}")
     suspend fun getLikes(
-        @Path("postId") postId: String, @Query("pageNumber") pageNumber: Int,
+        @Path("postId") postId: String,
+        @Query("pageNumber") pageNumber: Int,
         @Query("pageSize") pageSize: Int
-    ): Response<List<UserMiniDetails>>
+    ): Response<UserResponse>
 
     @GET("users/search")
-    suspend fun searchUsers(@Query("username") username: String): Response<List<UserMiniDetails>>
+    suspend fun searchUsers(@Query("username") username: String): Response<List<UsersItem>>
 
     @POST("users/updateToken")
     suspend fun updateFcmToken(@Body fcmToken: JsonObject): Response<JsonObject>
@@ -92,7 +95,10 @@ public interface ApiService {
     suspend fun getSinglePost(@Path("postId") postId: String): Response<PostData>
 
     @GET("notifications/all")
-    suspend fun getNotifications(): Response<List<NotificationResponse>>
+    suspend fun getNotifications(
+        @Query("pageNumber") pageNumber: Int,
+        @Query("pageSize") pageSize: Int
+    ): Response<NotificationResponse>
 
     @POST("posts/addBookmark")
     suspend fun addBookmark(@Body jsonObject: JsonObject): Response<JsonObject>

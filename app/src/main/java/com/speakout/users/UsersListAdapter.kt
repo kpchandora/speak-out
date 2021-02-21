@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UsersItem
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
 import com.speakout.extensions.visible
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHolder>() {
 
-    private val usersList = ArrayList<UserMiniDetails>()
+    private val usersList = ArrayList<UsersItem>()
     var mListener: OnUserClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersListViewHolder {
@@ -39,7 +39,7 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
         payloads: MutableList<Any>
     ) {
         if (payloads.isNotEmpty()) {
-            (payloads[0] as UserMiniDetails).let {
+            (payloads[0] as UsersItem).let {
                 holder.bind(it)
                 return
             }
@@ -48,7 +48,7 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
         super.onBindViewHolder(holder, position, payloads)
     }
 
-    fun addData(list: List<UserMiniDetails>) {
+    fun addData(list: List<UsersItem>) {
         usersList.clear()
         usersList.addAll(list)
         notifyDataSetChanged()
@@ -75,7 +75,7 @@ class UsersListAdapter : RecyclerView.Adapter<UsersListAdapter.UsersListViewHold
     class UsersListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         var mListener: OnUserClickListener? = null
 
-        fun bind(user: UserMiniDetails) {
+        fun bind(user: UsersItem) {
             view.apply {
                 item_users_list_profile_iv.transitionName = user.userId
                 item_users_list_profile_iv.loadImage(

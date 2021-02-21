@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
 import com.speakout.api.RetrofitBuilder
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UsersItem
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.createFactory
@@ -115,7 +115,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun navigateToProfile(
-        userMiniDetails: UserMiniDetails,
+        userMiniDetails: UsersItem,
         profileImageView: ImageView
     ) {
         val action = SearchFragmentDirections.actionSearchFragmentToNavigationProfile(
@@ -155,7 +155,7 @@ class SearchFragment : Fragment() {
     }
 
     private val mUserClickListener = object : OnSearchUserClickListener {
-        override fun onUserClick(userMiniDetails: UserMiniDetails, profileImageView: ImageView) {
+        override fun onUserClick(userMiniDetails: UsersItem, profileImageView: ImageView) {
             navigateToProfile(userMiniDetails, profileImageView)
         }
     }

@@ -26,7 +26,7 @@ class UserViewModel(private val mUsersRepository: UsersRepository) : ViewModel()
         }
     }
 
-    fun updateUserDetails(userMiniDetails: UserMiniDetails) {
+    fun updateUserDetails(userMiniDetails: UsersItem) {
         viewModelScope.launch {
             _updateUserDetails.value = Event(mUsersRepository.updateUserDetails(userMiniDetails))
         }

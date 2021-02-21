@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 import com.speakout.R
 import com.speakout.api.RetrofitBuilder
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UsersItem
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
@@ -54,6 +54,7 @@ class UsersListFragment : Fragment() {
     private var mUserEvents: UserEvents? = null
     private var isLoading = false
     private var hasMoreData = true
+    private var nextPageNumber = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,13 +80,13 @@ class UsersListFragment : Fragment() {
     private fun loadData() {
         when (safeArgs.actionType) {
             ActionType.Likes -> {
-                usersListViewModel.getLikesList(safeArgs.id!!)
+                usersListViewModel.getLikesList(safeArgs.id!!, nextPageNumber)
             }
             ActionType.Followers -> {
-                usersListViewModel.getFollowersList(safeArgs.id!!)
+                usersListViewModel.getFollowersList(safeArgs.id!!, nextPageNumber)
             }
             ActionType.Followings -> {
-                usersListViewModel.getFollowingsList(safeArgs.id!!)
+                usersListViewModel.getFollowingsList(safeArgs.id!!, nextPageNumber)
             }
         }
     }
@@ -129,24 +130,27 @@ class UsersListFragment : Fragment() {
         usersListViewModel.followersList.observe(viewLifecycleOwner, Observer {
             isLoading = false
             if (it is Result.Success) {
-                hasMoreData = it.data.size == UsersListViewModel.MAX_PAGE_SIZE
-                mAdapter.addData(it.data)
+                nextPageNumber = it.data.pageNumber + 1
+                hasMoreData = it.data.users.size == UsersListViewModel.MAX_PAGE_SIZE
+                mAdapter.addData(it.data.users)
             }
         })
 
         usersListViewModel.followingsList.observe(viewLifecycleOwner, Observer {
             isLoading = false
             if (it is Result.Success) {
-                hasMoreData = it.data.size == UsersListViewModel.MAX_PAGE_SIZE
-                mAdapter.addData(it.data)
+                nextPageNumber = it.data.pageNumber + 1
+                hasMoreData = it.data.users.size == UsersListViewModel.MAX_PAGE_SIZE
+                mAdapter.addData(it.data.users)
             }
         })
 
         usersListViewModel.likesList.observe(viewLifecycleOwner, Observer {
             isLoading = false
             if (it is Result.Success) {
-                hasMoreData = it.data.size == UsersListViewModel.MAX_PAGE_SIZE
-                mAdapter.addData(it.data)
+                nextPageNumber = it.data.pageNumber + 1
+                hasMoreData = it.data.users.size == UsersListViewModel.MAX_PAGE_SIZE
+                mAdapter.addData(it.data.users)
             }
         })
 
@@ -179,7 +183,7 @@ class UsersListFragment : Fragment() {
     }
 
     private fun navigateToProfile(
-        userMiniDetails: UserMiniDetails,
+        userMiniDetails: UsersItem,
         profileImageView: ImageView
     ) {
         val action = UsersListFragmentDirections.actionUsersListFragmentToNavigationProfile(
@@ -209,15 +213,15 @@ class UsersListFragment : Fragment() {
     }
 
     private val mUserClickListener = object : OnUserClickListener {
-        override fun onUserClick(userMiniDetails: UserMiniDetails, profileImageView: ImageView) {
+        override fun onUserClick(userMiniDetails: UsersItem, profileImageView: ImageView) {
             navigateToProfile(userMiniDetails, profileImageView)
         }
 
-        override fun onFollowClick(userMiniDetails: UserMiniDetails) {
+        override fun onFollowClick(userMiniDetails: UsersItem) {
             profileViewModel.followUser(userMiniDetails.userId)
         }
 
-        override fun onUnFollowClick(userMiniDetails: UserMiniDetails) {
+        override fun onUnFollowClick(userMiniDetails: UsersItem) {
             val action = UsersListFragmentDirections.actionUsersListFragmentToUnFollowDialog(
                 profileUrl = userMiniDetails.photoUrl,
                 userId = userMiniDetails.userId,

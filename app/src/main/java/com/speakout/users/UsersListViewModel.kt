@@ -1,8 +1,7 @@
 package com.speakout.users
 
 import androidx.lifecycle.*
-import com.speakout.api.RetrofitBuilder
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UserResponse
 import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
@@ -16,44 +15,42 @@ class UsersListViewModel(
         const val MAX_PAGE_SIZE = 20
     }
 
-    private var pageNumber = 0
+    private val _likesList = MutableLiveData<Result<UserResponse>>()
+    val likesList: LiveData<Result<UserResponse>> = _likesList
 
-    private val _likesList = MutableLiveData<Result<List<UserMiniDetails>>>()
-    val likesList: LiveData<Result<List<UserMiniDetails>>> = _likesList
+    private val _followersList = MutableLiveData<Result<UserResponse>>()
+    val followersList: LiveData<Result<UserResponse>> = _followersList
 
-    private val _followersList = MutableLiveData<Result<List<UserMiniDetails>>>()
-    val followersList: LiveData<Result<List<UserMiniDetails>>> = _followersList
+    private val _followingsList = MutableLiveData<Result<UserResponse>>()
+    val followingsList: LiveData<Result<UserResponse>> = _followingsList
 
-    private val _followingsList = MutableLiveData<Result<List<UserMiniDetails>>>()
-    val followingsList: LiveData<Result<List<UserMiniDetails>>> = _followingsList
-
-    fun getLikesList(postId: String) {
+    fun getLikesList(postId: String, pageNumber: Int) {
         viewModelScope.launch {
             _likesList.value = mUsersRepository.getUsersList(
                 userId = appPreference.getUserId(),
                 postId = postId,
                 actionType = ActionType.Likes,
-                pageNumber = ++pageNumber,
+                pageNumber = pageNumber,
                 pageSize = MAX_PAGE_SIZE
             )
         }
     }
 
-    fun getFollowingsList(userId: String) {
+    fun getFollowingsList(userId: String, pageNumber: Int) {
         viewModelScope.launch {
             _followingsList.value = mUsersRepository.getUsersList(
                 userId = userId, actionType = ActionType.Followings,
-                pageNumber = ++pageNumber,
+                pageNumber = pageNumber,
                 pageSize = MAX_PAGE_SIZE
             )
         }
     }
 
-    fun getFollowersList(userId: String) {
+    fun getFollowersList(userId: String, pageNumber: Int) {
         viewModelScope.launch {
             _followersList.value = mUsersRepository.getUsersList(
                 userId = userId, actionType = ActionType.Followers,
-                pageNumber = ++pageNumber,
+                pageNumber = pageNumber,
                 pageSize = MAX_PAGE_SIZE
             )
         }

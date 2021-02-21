@@ -5,11 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,13 +16,11 @@ import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.NotificationEvents
 import com.speakout.extensions.createFactory
-import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.setUpWithAppBarConfiguration
 import com.speakout.extensions.showShortToast
 import com.speakout.notification.NotificationRepository
-import com.speakout.notification.NotificationResponse
+import com.speakout.notification.NotificationsItem
 import kotlinx.android.synthetic.main.fragment_notifications.*
-import timber.log.Timber
 
 class NotificationsFragment : Fragment() {
 
@@ -35,6 +30,7 @@ class NotificationsFragment : Fragment() {
     }
     private lateinit var adapter: NotificationsAdapter
     private var mNotificationEvents: NotificationEvents? = null
+    private var nextPageNumber = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +38,11 @@ class NotificationsFragment : Fragment() {
         if (safeArgs.isFromDeepLink) {
             navigateToPostView(safeArgs.postId)
         }
-        notificationsViewModel.getNotifications()
+        notificationsViewModel.getNotifications(nextPageNumber)
         adapter = NotificationsAdapter(mNotificationListener)
         mNotificationEvents = NotificationEvents(requireContext()) {
-            notificationsViewModel.getNotifications()
+            if (nextPageNumber > 1) nextPageNumber--
+            notificationsViewModel.getNotifications(nextPageNumber)
         }
     }
 
@@ -65,7 +62,7 @@ class NotificationsFragment : Fragment() {
         rv_notification.adapter = adapter
         notificationsViewModel.notifications.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
-                adapter.updateData(it.data)
+                adapter.updateData(it.data.notifications)
             }
             if (it is Result.Error) {
                 showShortToast("Failed")
@@ -89,11 +86,11 @@ class NotificationsFragment : Fragment() {
     }
 
     private val mNotificationListener = object : NotificationsClickListener {
-        override fun onPostClick(notification: NotificationResponse) {
+        override fun onPostClick(notification: NotificationsItem) {
             navigateToPostView(notification.postId ?: "")
         }
 
-        override fun onProfileClick(notification: NotificationResponse, imageView: ImageView) {
+        override fun onProfileClick(notification: NotificationsItem, imageView: ImageView) {
             val action = NotificationsFragmentDirections.actionNotificationToProfileNavigation(
                 userId = notification.userId,
                 profileUrl = notification.photoUrl ?: "",

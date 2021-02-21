@@ -136,7 +136,7 @@ class UserNameFragment : Fragment() {
         fragment_username_next_btn.setOnClickListener {
             (requireActivity() as MainActivity).showProgress()
             mUserViewModel.updateUserDetails(
-                UserMiniDetails(
+                UsersItem(
                     userId = AppPreference.getUserId(),
                     username = username
                 )

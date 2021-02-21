@@ -96,13 +96,7 @@ class PostViewFragment : Fragment() {
 
         if (!safeArgs.isFromNotification) {
             mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
-                if (it is Result.Success) {
-                    mPostsAdapter.updatePosts(it.data)
-                }
-
-                if (it is Result.Error) {
-                    Timber.d("Failed to fetch posts: ${it.error}")
-                }
+                mPostsAdapter.notifyDataSetChanged()
             })
             fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
         } else {

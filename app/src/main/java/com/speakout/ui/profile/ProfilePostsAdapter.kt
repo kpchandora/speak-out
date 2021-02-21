@@ -11,9 +11,9 @@ import com.speakout.extensions.loadImage
 import com.speakout.posts.create.PostData
 import kotlinx.android.synthetic.main.item_profile_post_layout.view.*
 
-class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePostsViewHolder>() {
+class ProfilePostsAdapter(private val mPostsList: ArrayList<PostData>) :
+    RecyclerView.Adapter<ProfilePostsAdapter.ProfilePostsViewHolder>() {
 
-    private val mPostsList = ArrayList<PostData>()
     var mListener: ProfilePostClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfilePostsViewHolder {
@@ -23,6 +23,7 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
         (parent.context as? Activity)?.getScreenSize()?.let {
             holder.view.item_profile_post_iv.layoutParams.height = it.widthPixels / 3
         }
+        holder.mListener = this.mListener
         return holder
     }
 
@@ -30,7 +31,6 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
 
     override fun onBindViewHolder(holder: ProfilePostsViewHolder, position: Int) {
         holder.bind(mPostsList[position])
-        holder.mListener = this.mListener
     }
 
     fun updateData(list: List<PostData>) {
@@ -44,7 +44,11 @@ class ProfilePostsAdapter : RecyclerView.Adapter<ProfilePostsAdapter.ProfilePost
 
         init {
             view.setOnClickListener {
-                mListener?.onPostClick(view.tag as PostData, view.item_profile_post_iv, adapterPosition)
+                mListener?.onPostClick(
+                    view.tag as PostData,
+                    view.item_profile_post_iv,
+                    adapterPosition
+                )
             }
         }
 

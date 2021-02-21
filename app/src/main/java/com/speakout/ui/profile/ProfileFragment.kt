@@ -53,7 +53,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             PostsRepository(RetrofitBuilder.apiService, appPreference)
         ).createFactory()
     }
-    private val mPostsAdapter = ProfilePostsAdapter()
+    private lateinit var mPostsAdapter: ProfilePostsAdapter
     private var mUserId = ""
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
@@ -62,14 +62,16 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var mProfileEvents: ProfileEvents? = null
     private var isLoading = false
     private var hasMoreData = true
+    private var nextPageNumber = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("Details: ${arguments?.getString("userId")}")
         safeArgs = ProfileFragmentArgs.fromBundle(arguments!!)
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         screenSize = requireActivity().getScreenSize()
+
+        mPostsAdapter = ProfilePostsAdapter(homeViewModel.mPostList)
 
         mProfileEvents = ProfileEvents(requireContext()) {
             val userId = it.getStringExtra(ProfileEvents.USER_ID) ?: return@ProfileEvents
@@ -77,7 +79,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 ProfileEventTypes.CREATE_POST,
                 ProfileEventTypes.DELETE_POST -> {
                     if (userId == mUserId) {
-                        homeViewModel.getProfilePosts(mUserId)
+                        homeViewModel.getProfilePosts(mUserId, nextPageNumber)
                     }
                 }
                 ProfileEventTypes.DIALOG_UN_FOLLOW -> {
@@ -94,7 +96,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 }
             }
         }
-        homeViewModel.getProfilePosts(mUserId)
+        homeViewModel.getProfilePosts(mUserId, nextPageNumber)
         profileViewModel.getUser(mUserId)
     }
 
@@ -137,7 +139,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            homeViewModel.loadMoreProfilePosts(mUserId)
+                            homeViewModel.getFeed(nextPageNumber)
                             isLoading = true
                         }
                     }
@@ -153,15 +155,14 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            if (it is Result.Success) {
-                hasMoreData = it.data.size == HomeViewModel.PROFILE_POSTS_COUNT
-                mPostsAdapter.updateData(it.data)
-                homeViewModel.addPosts(it.data)
-            }
+            hasMoreData = it.posts.size == HomeViewModel.PROFILE_POSTS_COUNT
+            nextPageNumber = it.pageNumber + 1
+            mPostsAdapter.notifyDataSetChanged()
+        })
 
-            if (it is Result.Error) {
-                Timber.d("Failed to fetch posts: ${it.error}")
-            }
+        homeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
+            isLoading = false
+            showShortToast(it)
         })
 
         layout_profile_followers_container.setOnClickListener {

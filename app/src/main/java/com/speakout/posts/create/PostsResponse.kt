@@ -3,11 +3,45 @@ package com.speakout.posts.create
 import android.os.Parcel
 import android.os.Parcelable
 
+data class PostsResponse(
+    val pageNumber: Int = 0,
+    val pageSize: Int = 0,
+    //TODO Make a type converter/deserializer for this
+    val posts: List<PostData> = emptyList()
+) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readInt(),
+        parcel.readInt(),
+        parcel.createTypedArrayList(PostData) ?: emptyList()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(pageNumber)
+        parcel.writeInt(pageSize)
+        parcel.writeTypedList(posts)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<PostsResponse> {
+        override fun createFromParcel(parcel: Parcel): PostsResponse {
+            return PostsResponse(parcel)
+        }
+
+        override fun newArray(size: Int): Array<PostsResponse?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
 data class PostData(
     var postId: String = "",
     var userId: String = "",
     var content: String = "",
-    var tags: List<String> = emptyList(),
+    var tags: List<String> = ArrayList(),
     var postImageUrl: String = "",
     var timeStamp: Long = 0,
     var username: String = "",
@@ -20,12 +54,12 @@ data class PostData(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.createStringArrayList() ?: emptyList(),
+        parcel.createStringArrayList() ?: ArrayList(),
         parcel.readString() ?: "",
-        parcel.readLong() ?: 0,
+        parcel.readLong(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readLong() ?: 0,
+        parcel.readLong(),
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte()
     ) {
@@ -58,4 +92,5 @@ data class PostData(
             return arrayOfNulls(size)
         }
     }
+
 }

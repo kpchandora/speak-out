@@ -55,6 +55,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private lateinit var dialog: PostOptionsDialog
     private var isLoading = false
     private var hasMoreData = true
+    private var nextPageNumber = 1
     private var postEvents: PostEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +69,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 PostEventTypes.CREATE,
                 PostEventTypes.FOLLOW,
                 PostEventTypes.UN_FOLLOW,
-                PostEventTypes.USER_DETAILS_UPDATE -> mHomeViewModel.getFeed()
+                PostEventTypes.USER_DETAILS_UPDATE -> mHomeViewModel.getFeed(nextPageNumber)
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
                 PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
                 PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
@@ -90,7 +91,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 )
             }
             else -> {
-                mHomeViewModel.getFeed()
+                mHomeViewModel.getFeed(nextPageNumber)
             }
         }
     }
@@ -137,7 +138,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            mHomeViewModel.loadMoreFeed()
+                            mHomeViewModel.getFeed(nextPageNumber)
                             isLoading = true
                         }
                     }
@@ -161,14 +162,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            if (it is Result.Success) {
-                hasMoreData = it.data.size == HomeViewModel.FEED_POSTS_COUNT
-                mPostsAdapter.updatePosts(it.data)
-            }
+            hasMoreData = it.posts.size == HomeViewModel.FEED_POSTS_COUNT
+            mPostsAdapter.notifyDataSetChanged()
+        })
 
-            if (it is Result.Error) {
-                Timber.e("Failed to fetch posts: ${it.error}")
-            }
+        mHomeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
+            showShortToast(it)
         })
 
         mHomeViewModel.likePost.observe(viewLifecycleOwner, EventObserver {

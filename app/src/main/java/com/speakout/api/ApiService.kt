@@ -7,6 +7,7 @@ import com.speakout.auth.UsersItem
 import com.speakout.notification.NotificationResponse
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.create.PostData
+import com.speakout.posts.create.PostsResponse
 import com.speakout.posts.tags.Tag
 import retrofit2.Response
 import retrofit2.http.*
@@ -30,13 +31,13 @@ public interface ApiService {
         @Path("userId") userId: String,
         @Query("pageNumber") pageNumber: Int,
         @Query("pageSize") pageSize: Int
-    ): Response<List<PostData>>
+    ): Response<PostsResponse>
 
     @GET("posts/getFeed")
     suspend fun getFeed(
         @Query("pageNumber") pageNumber: Int,
         @Query("pageSize") pageSize: Int
-    ): Response<List<PostData>>
+    ): Response<PostsResponse>
 
     @POST("posts/like")
     suspend fun likePost(@Body postMiniDetails: PostMiniDetails): Response<PostMiniDetails>

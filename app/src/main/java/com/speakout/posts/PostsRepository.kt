@@ -6,6 +6,7 @@ import com.speakout.api.ApiService
 import com.speakout.api.BaseRepository
 import com.speakout.common.Result
 import com.speakout.posts.create.PostData
+import com.speakout.posts.create.PostsResponse
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ import java.io.ByteArrayOutputStream
 /**
  * Created by Kalpesh on 01/08/20.
  */
-public class PostsRepository(
+class PostsRepository(
     private val apiService: ApiService,
     private val appPreference: AppPreference
 ) : BaseRepository() {
@@ -59,7 +60,7 @@ public class PostsRepository(
         userId: String,
         pageNumber: Int,
         pageSize: Int
-    ): Result<List<PostData>> =
+    ): Result<PostsResponse> =
         withContext(Dispatchers.IO) {
             try {
                 val result = apiService.getProfilePosts(
@@ -77,7 +78,7 @@ public class PostsRepository(
             }
         }
 
-    suspend fun getFeed(pageNumber: Int, pageSize: Int): Result<List<PostData>> =
+    suspend fun getFeed(pageNumber: Int, pageSize: Int): Result<PostsResponse> =
         withContext(Dispatchers.IO) {
             try {
                 val result = apiService.getFeed(pageSize = pageSize, pageNumber = pageNumber)

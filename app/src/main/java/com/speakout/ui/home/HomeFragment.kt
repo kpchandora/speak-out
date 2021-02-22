@@ -71,6 +71,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 PostEventTypes.UN_FOLLOW,
                 PostEventTypes.USER_DETAILS_UPDATE -> {
                     nextPageNumber = 1
+                    mHomeViewModel.mPostList.clear()
                     mHomeViewModel.getFeed(nextPageNumber)
                 }
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)

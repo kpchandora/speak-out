@@ -80,6 +80,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 ProfileEventTypes.DELETE_POST -> {
                     if (userId == mUserId) {
                         nextPageNumber = 1
+                        homeViewModel.mPostList.clear()
                         homeViewModel.getProfilePosts(mUserId, nextPageNumber)
                     }
                 }

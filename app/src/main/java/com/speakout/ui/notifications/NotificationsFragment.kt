@@ -50,6 +50,7 @@ class NotificationsFragment : Fragment() {
         notificationsViewModel.getNotifications(nextPageNumber)
         mNotificationEvents = NotificationEvents(requireContext()) {
             nextPageNumber = 1
+            notificationsViewModel.mNotifications.clear()
             notificationsViewModel.getNotifications(nextPageNumber)
         }
     }

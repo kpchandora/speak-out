@@ -50,7 +50,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         ).createFactory()
     }
 
-    private val mPostsAdapter = PostRecyclerViewAdapter()
+    private lateinit var mPostsAdapter: PostRecyclerViewAdapter
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
     private var isLoading = false
@@ -62,14 +62,17 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         super.onCreate(savedInstanceState)
         mPreference = AppPreference
         Timber.d("HomeFragment onCreate")
-
+        mPostsAdapter = PostRecyclerViewAdapter(mHomeViewModel.mPostList)
         postEvents = PostEvents(requireContext()) {
             val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
             when (it.extras?.getInt(PostEvents.EVENT_TYPE)) {
                 PostEventTypes.CREATE,
                 PostEventTypes.FOLLOW,
                 PostEventTypes.UN_FOLLOW,
-                PostEventTypes.USER_DETAILS_UPDATE -> mHomeViewModel.getFeed(nextPageNumber)
+                PostEventTypes.USER_DETAILS_UPDATE -> {
+                    nextPageNumber = 1
+                    mHomeViewModel.getFeed(nextPageNumber)
+                }
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
                 PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
                 PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
@@ -163,6 +166,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             isLoading = false
             hasMoreData = it.posts.size == HomeViewModel.FEED_POSTS_COUNT
+            nextPageNumber = it.pageNumber + 1
             mPostsAdapter.notifyDataSetChanged()
         })
 

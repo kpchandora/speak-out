@@ -49,7 +49,7 @@ class NotificationsFragment : Fragment() {
         )
         notificationsViewModel.getNotifications(nextPageNumber)
         mNotificationEvents = NotificationEvents(requireContext()) {
-            if (nextPageNumber > 1) nextPageNumber--
+            nextPageNumber = 1
             notificationsViewModel.getNotifications(nextPageNumber)
         }
     }

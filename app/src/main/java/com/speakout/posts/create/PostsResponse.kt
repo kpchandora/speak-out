@@ -6,7 +6,6 @@ import android.os.Parcelable
 data class PostsResponse(
     val pageNumber: Int = 0,
     val pageSize: Int = 0,
-    //TODO Make a type converter/deserializer for this
     val posts: List<PostData> = emptyList()
 ) : Parcelable {
     constructor(parcel: Parcel) : this(

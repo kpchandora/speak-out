@@ -15,7 +15,7 @@ import retrofit2.http.*
 /**
  * Created by Kalpesh on 29/07/20.
  */
-public interface ApiService {
+interface ApiService {
 
     @GET("tags")
     suspend fun getTags(@Query("tag") tag: String): Response<List<Tag>>

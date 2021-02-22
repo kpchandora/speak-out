@@ -79,6 +79,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 ProfileEventTypes.CREATE_POST,
                 ProfileEventTypes.DELETE_POST -> {
                     if (userId == mUserId) {
+                        nextPageNumber = 1
                         homeViewModel.getProfilePosts(mUserId, nextPageNumber)
                     }
                 }

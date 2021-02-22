@@ -38,7 +38,7 @@ import timber.log.Timber
 class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
-    private val mPostsAdapter = PostRecyclerViewAdapter()
+    private lateinit var mPostsAdapter: PostRecyclerViewAdapter
     private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation) {
         val appPreference = AppPreference
         HomeViewModel(
@@ -64,6 +64,7 @@ class PostViewFragment : Fragment() {
         } else {
             mHomeViewModel = navHomeViewModel
         }
+        mPostsAdapter = PostRecyclerViewAdapter(mHomeViewModel.mPostList)
     }
 
     override fun onCreateView(

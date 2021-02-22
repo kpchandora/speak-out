@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
 import kotlin.collections.ArrayList
 
-class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
+class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
+    RecyclerView.Adapter<PostViewHolder>() {
 
-    private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {

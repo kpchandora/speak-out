@@ -23,7 +23,7 @@ object RetrofitBuilder {
     For testing purpose, replace the IP of your computer or laptop
     if running on real device
      */
-    private const val BASE_URL = "http://192.168.101.6:3000/"
+    private const val BASE_URL = ""
 
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()

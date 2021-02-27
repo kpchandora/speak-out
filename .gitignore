@@ -8,3 +8,5 @@
 .externalNativeBuild
 .cxx
 app/google-services.json
+app/src/staging/release/google-services.json
+app/src/staging/debug/google-services.json

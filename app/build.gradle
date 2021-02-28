@@ -23,7 +23,8 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            buildConfigField "String", 'BASE_URL', "\"https://staging-app-speakout.herokuapp.com/\""
+            //"\"https://staging-app-speakout.herokuapp.com/\""
+            buildConfigField "String", 'BASE_URL', "\"http://192.168.101.6.:3000/\""
         }
         release {
             debuggable false

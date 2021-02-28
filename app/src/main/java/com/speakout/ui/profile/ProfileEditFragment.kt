@@ -27,6 +27,8 @@ import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.PostEventTypes
 import com.speakout.events.PostEvents
+import com.speakout.events.ProfileEventTypes
+import com.speakout.events.ProfileEvents
 import com.speakout.extensions.*
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
@@ -180,6 +182,11 @@ class ProfileEditFragment : Fragment() {
                 PostEvents.sendEvent(
                     context = requireContext(),
                     event = PostEventTypes.USER_DETAILS_UPDATE
+                )
+                ProfileEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    eventType = ProfileEventTypes.DETAILS_UPDATE
                 )
                 findNavController().navigateUp()
             } else {

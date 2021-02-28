@@ -120,7 +120,7 @@ class UserNameFragment : Fragment() {
                 fragment_username_next_btn.disable()
                 if (userNameRegex.matches(text)) {
                     if (text.length < 3) {
-                        fragment_username_til.error = "Username is too small"
+                        fragment_username_til.error = "Username is too short"
                     } else {
                         fragment_username_til.error = null
                         username = text.toString()

@@ -59,14 +59,14 @@ abstract class BaseActivity : AppCompatActivity() {
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) or
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
             ) {
-                RxBus.publish("connected")
+                //Connected
             } else {
-                RxBus.publish("dis-connected")
+                //No Connected
             }
         }
 
         override fun onLost(network: Network) {
-            RxBus.publish("dis-connected")
+            //No Connected
         }
     }
 

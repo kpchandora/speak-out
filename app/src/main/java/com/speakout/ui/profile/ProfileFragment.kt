@@ -385,11 +385,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         override fun onPostClick(postData: PostData, postImageView: ImageView, position: Int) {
             val action =
                 ProfileFragmentDirections.actionNavigationProfileToPostViewFragment(position)
-
-//            val extras = FragmentNavigatorExtras(
-//                postImageView to postData.postId
-//            )
-//            findNavController().navigate(action, extras)
             findNavController().navigate(action)
         }
     }

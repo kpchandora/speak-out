@@ -6,11 +6,13 @@ import android.os.Parcelable
 data class PostsResponse(
     val pageNumber: Int = 0,
     val pageSize: Int = 0,
+    val key: Long = -1,
     val posts: List<PostData> = emptyList()
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
+        parcel.readLong(),
         parcel.createTypedArrayList(PostData) ?: emptyList()
     ) {
     }
@@ -18,6 +20,7 @@ data class PostsResponse(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(pageNumber)
         parcel.writeInt(pageSize)
+        parcel.writeLong(key)
         parcel.writeTypedList(posts)
     }
 

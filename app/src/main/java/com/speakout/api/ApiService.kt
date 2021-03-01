@@ -35,7 +35,7 @@ interface ApiService {
 
     @GET("posts/getFeed")
     suspend fun getFeed(
-        @Query("pageNumber") pageNumber: Int,
+        @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<PostsResponse>
 

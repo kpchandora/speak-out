@@ -1,7 +1,6 @@
 package com.speakout.ui.home
 
 import androidx.lifecycle.*
-import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Event
 import com.speakout.posts.create.PostData
 import com.speakout.common.Result
@@ -64,10 +63,10 @@ class HomeViewModel(
         }
     }
 
-    fun getFeed(pageNumber: Int) {
+    fun getFeed(key: Long) {
         viewModelScope.launch {
             val response = postsRepository.getFeed(
-                pageNumber = pageNumber,
+                key = key,
                 pageSize = FEED_POSTS_COUNT
             )
             if (response is Result.Success) {

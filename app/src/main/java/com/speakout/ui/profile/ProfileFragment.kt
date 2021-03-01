@@ -31,7 +31,6 @@ import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
-import timber.log.Timber
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
@@ -141,7 +140,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            homeViewModel.getFeed(nextPageNumber)
+                            TODO("Is to be implemented")
+//                            homeViewModel.getFeed(nextPageNumber)
                             isLoading = true
                         }
                     }

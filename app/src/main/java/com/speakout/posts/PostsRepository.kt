@@ -78,10 +78,10 @@ class PostsRepository(
             }
         }
 
-    suspend fun getFeed(pageNumber: Int, pageSize: Int): Result<PostsResponse> =
+    suspend fun getFeed(key: Long, pageSize: Int): Result<PostsResponse> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getFeed(pageSize = pageSize, pageNumber = pageNumber)
+                val result = apiService.getFeed(pageSize = pageSize, key = key)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

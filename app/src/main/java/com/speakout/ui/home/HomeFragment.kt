@@ -11,8 +11,6 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +32,7 @@ import com.speakout.posts.view.PostClickEventListener
 import com.speakout.ui.MainActivity
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
+import com.speakout.utils.Constants
 import com.speakout.utils.ImageUtils
 import com.speakout.utils.Utils
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -54,9 +53,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
     private var isLoading = false
-    private var hasMoreData = true
     private var nextPageNumber = 1
     private var postEvents: PostEvents? = null
+    private var key: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,9 +69,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 PostEventTypes.FOLLOW,
                 PostEventTypes.UN_FOLLOW,
                 PostEventTypes.USER_DETAILS_UPDATE -> {
-                    nextPageNumber = 1
+                    key = 0
                     mHomeViewModel.mPostList.clear()
-                    mHomeViewModel.getFeed(nextPageNumber)
+                    mHomeViewModel.getFeed(key)
                 }
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
                 PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
@@ -95,7 +94,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 )
             }
             else -> {
-                mHomeViewModel.getFeed(nextPageNumber)
+                mHomeViewModel.getFeed(key)
             }
         }
     }
@@ -135,14 +134,14 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         fragment_home_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (isLoading || !hasMoreData) return
+                if (isLoading || key == Constants.INVALID_KEY) return
                 if (dy > 0) {
                     (recyclerView.layoutManager as LinearLayoutManager).let {
                         val visibleItems = it.childCount
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            mHomeViewModel.getFeed(nextPageNumber)
+                            mHomeViewModel.getFeed(key)
                             isLoading = true
                         }
                     }
@@ -166,12 +165,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            hasMoreData = it.posts.size == HomeViewModel.FEED_POSTS_COUNT
-            nextPageNumber = it.pageNumber + 1
+            key = it.key
             mPostsAdapter.notifyDataSetChanged()
         })
 
         mHomeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
+            isLoading = false
             showShortToast(it)
         })
 

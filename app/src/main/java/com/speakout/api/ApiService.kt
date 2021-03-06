@@ -29,7 +29,7 @@ interface ApiService {
     @GET("posts/getProfilePosts/{userId}")
     suspend fun getProfilePosts(
         @Path("userId") userId: String,
-        @Query("pageNumber") pageNumber: Int,
+        @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<PostsResponse>
 

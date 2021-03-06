@@ -46,11 +46,11 @@ class HomeViewModel(
     private val _postsError = MutableLiveData<Event<String>>()
     val postsError: LiveData<Event<String>> = _postsError
 
-    fun getProfilePosts(id: String, pageNumber: Int) {
+    fun getProfilePosts(id: String, key: Long) {
         viewModelScope.launch {
             val response = postsRepository.getProfilePosts(
                 userId = id,
-                pageNumber = pageNumber,
+                key = key,
                 pageSize = PROFILE_POSTS_COUNT
             )
             if (response is Result.Success) {

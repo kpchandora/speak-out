@@ -24,12 +24,11 @@ android {
             debuggable true
             minifyEnabled false
             //"\"https://staging-app-speakout.herokuapp.com/\""
-            buildConfigField "String", 'BASE_URL', "\"http://192.168.101.6.:3000/\""
+
         }
         release {
             debuggable false
             minifyEnabled false
-            buildConfigField "String", 'BASE_URL', "\"https://app-speakout.herokuapp.com/\""
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -40,9 +39,11 @@ android {
         staging {
             applicationId "com.speakout.staging"
             versionNameSuffix "-staging"
+            buildConfigField "String", 'BASE_URL', "\"http://192.168.101.9:3000/\""
         }
         prod {
             applicationId "com.speakout"
+            buildConfigField "String", 'BASE_URL', "\"https://app-speakout.herokuapp.com/\""
         }
     }
 

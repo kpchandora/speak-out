@@ -29,6 +29,7 @@ import com.speakout.ui.home.HomeViewModel
 import com.speakout.users.ActionType
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
+import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
 
@@ -60,8 +61,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private lateinit var safeArgs: ProfileFragmentArgs
     private var mProfileEvents: ProfileEvents? = null
     private var isLoading = false
-    private var hasMoreData = true
-    private var nextPageNumber = 1
+    private var key: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,9 +78,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 ProfileEventTypes.CREATE_POST,
                 ProfileEventTypes.DELETE_POST -> {
                     if (userId == mUserId) {
-                        nextPageNumber = 1
+                        key = 0
                         homeViewModel.mPostList.clear()
-                        homeViewModel.getProfilePosts(mUserId, nextPageNumber)
+                        homeViewModel.getProfilePosts(mUserId, key)
                     }
                 }
                 ProfileEventTypes.DIALOG_UN_FOLLOW -> {
@@ -97,7 +97,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 }
             }
         }
-        homeViewModel.getProfilePosts(mUserId, nextPageNumber)
+        homeViewModel.getProfilePosts(mUserId, key)
         profileViewModel.getUser(mUserId)
     }
 
@@ -133,15 +133,14 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         profile_post_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (isLoading || !hasMoreData) return
+                if (isLoading || key == Constants.INVALID_KEY) return
                 if (dy > 0) {
                     (recyclerView.layoutManager as LinearLayoutManager).let {
                         val visibleItems = it.childCount
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            TODO("Is to be implemented")
-//                            homeViewModel.getFeed(nextPageNumber)
+                            homeViewModel.getProfilePosts(mUserId, key)
                             isLoading = true
                         }
                     }
@@ -157,8 +156,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            hasMoreData = it.posts.size == HomeViewModel.PROFILE_POSTS_COUNT
-            nextPageNumber = it.pageNumber + 1
+            key = it.key
             mPostsAdapter.notifyDataSetChanged()
         })
 

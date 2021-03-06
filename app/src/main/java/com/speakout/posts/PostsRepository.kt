@@ -58,7 +58,7 @@ class PostsRepository(
 
     suspend fun getProfilePosts(
         userId: String,
-        pageNumber: Int,
+        key: Long,
         pageSize: Int
     ): Result<PostsResponse> =
         withContext(Dispatchers.IO) {
@@ -66,7 +66,7 @@ class PostsRepository(
                 val result = apiService.getProfilePosts(
                     userId = userId,
                     pageSize = pageSize,
-                    pageNumber = pageNumber
+                    key = key
                 )
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)

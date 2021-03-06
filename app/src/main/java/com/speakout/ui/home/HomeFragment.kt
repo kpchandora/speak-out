@@ -53,7 +53,6 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private lateinit var mPreference: AppPreference
     private lateinit var dialog: PostOptionsDialog
     private var isLoading = false
-    private var nextPageNumber = 1
     private var postEvents: PostEvents? = null
     private var key: Long = 0L
 

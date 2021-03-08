@@ -109,10 +109,6 @@
             app:destination="@id/profile_navigation"
             app:popExitAnim="@anim/slide_out_right" />
 
-        <action
-            android:id="@+id/action_usersListFragment_to_unFollowDialog"
-            app:destination="@id/unFollowDialog" />
-
     </fragment>
 
 
@@ -181,10 +177,6 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right" />
-
-            <action
-                android:id="@+id/action_navigation_profile_to_unFollowDialog"
-                app:destination="@id/unFollowDialog" />
 
             <action
                 android:id="@+id/action_navigation_profile_to_profileEditFragment"
@@ -333,33 +325,6 @@
         </fragment>
 
     </navigation>
-
-    <dialog
-        android:id="@+id/unFollowDialog"
-        android:name="com.speakout.ui.profile.UnFollowDialog"
-        android:label="UnFollowDialog">
-
-        <argument
-            android:name="profileUrl"
-            app:argType="string"
-            app:nullable="true" />
-
-        <argument
-            android:name="username"
-            app:argType="string"
-            app:nullable="false" />
-
-        <argument
-            android:name="userId"
-            app:argType="string"
-            app:nullable="false" />
-
-        <argument
-            android:name="isFrom"
-            app:argType="string"
-            app:nullable="false" />
-
-    </dialog>
 
 
 </navigation>

@@ -23,7 +23,10 @@ import com.speakout.events.*
 import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.showShortToast
+import com.speakout.ui.profile.ProfileFragment
 import com.speakout.ui.profile.ProfileViewModel
+import com.speakout.ui.profile.UnFollowDialog
+import com.speakout.ui.profile.UnFollowDialogModel
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.users_list_fragment.*
 
@@ -69,10 +72,6 @@ class UsersListFragment : Fragment() {
                 }
                 UserEventType.FOLLOW -> {
                     mAdapter.showFollowing(userId)
-                }
-                UserEventType.DIALOG_UN_FOLLOW -> {
-                    mAdapter.showFollow(userId)
-                    profileViewModel.unFollowUser(userId)
                 }
             }
         }
@@ -208,13 +207,18 @@ class UsersListFragment : Fragment() {
         }
 
         override fun onUnFollowClick(userMiniDetails: UsersItem) {
-            val action = UsersListFragmentDirections.actionUsersListFragmentToUnFollowDialog(
-                profileUrl = userMiniDetails.photoUrl,
-                userId = userMiniDetails.userId,
-                isFrom = TAG,
-                username = userMiniDetails.username!!
+            val model = UnFollowDialogModel(
+                userId = userMiniDetails.userId, username = userMiniDetails.username ?: "",
+                isFrom = TAG, profileUrl = userMiniDetails.photoUrl
             )
-            findNavController().navigate(action)
+            val dialog = UnFollowDialog.newInstance(model)
+            dialog.setListener(object : UnFollowDialog.UnFollowDialogListener {
+                override fun onUnFollow(userId: String) {
+                    mAdapter.showFollow(userId)
+                    profileViewModel.unFollowUser(userId)
+                }
+            })
+            dialog.show(requireActivity().supportFragmentManager, TAG)
         }
     }
 

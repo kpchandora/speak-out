@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.navArgs
-import androidx.navigation.navGraphViewModels
 import com.speakout.R
-import com.speakout.auth.UserDetails
 import com.speakout.events.ProfileEventTypes
 import com.speakout.events.ProfileEvents
 import com.speakout.events.UserEventType
@@ -19,14 +16,27 @@ import com.speakout.extensions.getScreenSize
 import com.speakout.extensions.loadImage
 import com.speakout.users.UsersListFragment
 import kotlinx.android.synthetic.main.dialog_unfollow.view.*
-import timber.log.Timber
 
 class UnFollowDialog : AppCompatDialogFragment() {
 
-    private val safeArgs: UnFollowDialogArgs by navArgs()
+    private lateinit var dialogModel: UnFollowDialogModel
+    private var mListener: UnFollowDialogListener? = null
+
+    companion object {
+        private const val ARG_MODEL = "ARG_MODEL"
+        fun newInstance(model: UnFollowDialogModel): UnFollowDialog {
+            return UnFollowDialog().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_MODEL, model)
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        dialogModel =
+            arguments!!.getParcelable<UnFollowDialogModel>(ARG_MODEL) as UnFollowDialogModel
         setStyle(DialogFragment.STYLE_NO_TITLE, 0)
     }
 
@@ -38,19 +48,7 @@ class UnFollowDialog : AppCompatDialogFragment() {
         val view = inflater.inflate(R.layout.dialog_unfollow, container, false)
         isCancelable = false
         view.dialog_unfollow_confirm.setOnClickListener {
-            if (safeArgs.isFrom == ProfileFragment.TAG) {
-                ProfileEvents.sendEvent(
-                    context = requireContext(),
-                    userId = safeArgs.userId,
-                    eventType = ProfileEventTypes.DIALOG_UN_FOLLOW
-                )
-            } else if (safeArgs.isFrom == UsersListFragment.TAG) {
-                UserEvents.sendEvent(
-                    context = requireContext(),
-                    userId = safeArgs.userId,
-                    type = UserEventType.DIALOG_UN_FOLLOW
-                )
-            }
+            mListener?.onUnFollow(dialogModel.userId)
             dismiss()
         }
         view.dialog_unfollow_cancel.setOnClickListener {
@@ -58,12 +56,16 @@ class UnFollowDialog : AppCompatDialogFragment() {
         }
 
         view.dialog_unfollow_iv.loadImage(
-            safeArgs.profileUrl, makeRound = true,
+            dialogModel.profileUrl, makeRound = true,
             placeholder = R.drawable.ic_account_circle_grey
         )
-        view.dialog_unfollow_hint_tv.text = getString(R.string.hint_un_follow, safeArgs.username)
+        view.dialog_unfollow_hint_tv.text = getString(R.string.hint_un_follow, dialogModel.username)
 
         return view
+    }
+
+    fun setListener(listener: UnFollowDialogListener) {
+        mListener = listener
     }
 
     override fun onResume() {
@@ -72,6 +74,10 @@ class UnFollowDialog : AppCompatDialogFragment() {
             (6 * requireActivity().getScreenSize().widthPixels) / 7,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
+    }
+
+    interface UnFollowDialogListener {
+        fun onUnFollow(userId: String)
     }
 
 }

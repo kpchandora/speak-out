@@ -39,7 +39,7 @@ android {
         staging {
             applicationId "com.speakout.staging"
             versionNameSuffix "-staging"
-            buildConfigField "String", 'BASE_URL', "\"http://192.168.101.9:3000/\""
+            buildConfigField "String", 'BASE_URL', "\"http://192.168.101.15:3000/\""
         }
         prod {
             applicationId "com.speakout"

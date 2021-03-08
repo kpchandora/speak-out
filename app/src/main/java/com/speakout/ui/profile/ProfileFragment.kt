@@ -83,11 +83,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                         homeViewModel.getProfilePosts(mUserId, key)
                     }
                 }
-                ProfileEventTypes.DIALOG_UN_FOLLOW -> {
-                    if (userId == mUserId) {
-                        profileViewModel.confirmUnfollow()
-                    }
-                }
                 ProfileEventTypes.FOLLOW,
                 ProfileEventTypes.UN_FOLLOW,
                 ProfileEventTypes.DETAILS_UPDATE -> {
@@ -364,14 +359,17 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun showUnFollowAlertDialog() {
-        findNavController().navigate(
-            ProfileFragmentDirections.actionNavigationProfileToUnFollowDialog(
-                profileUrl = mUserDetails?.photoUrl,
-                username = mUserDetails?.username ?: "",
-                userId = mUserId,
-                isFrom = TAG
-            )
+        val model = UnFollowDialogModel(
+            userId = mUserId, username = mUserDetails?.username ?: "",
+            isFrom = TAG, profileUrl = mUserDetails?.photoUrl
         )
+        val dialog = UnFollowDialog.newInstance(model)
+        dialog.setListener(object : UnFollowDialog.UnFollowDialogListener {
+            override fun onUnFollow(userId: String) {
+                profileViewModel.confirmUnfollow()
+            }
+        })
+        dialog.show(requireActivity().supportFragmentManager, TAG)
     }
 
 

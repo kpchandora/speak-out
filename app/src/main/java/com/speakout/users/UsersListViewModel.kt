@@ -24,13 +24,13 @@ class UsersListViewModel(
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun getLikesList(postId: String, pageNumber: Int) {
+    fun getLikesList(postId: String, key: Long) {
         viewModelScope.launch {
             val response = mUsersRepository.getUsersList(
                 userId = appPreference.getUserId(),
                 postId = postId,
                 actionType = ActionType.Likes,
-                pageNumber = pageNumber,
+                key = key,
                 pageSize = MAX_PAGE_SIZE
             )
             if (response is Result.Success) {
@@ -43,12 +43,12 @@ class UsersListViewModel(
         }
     }
 
-    fun getFollowingsList(userId: String, pageNumber: Int) {
+    fun getFollowingsList(userId: String, key: Long) {
         viewModelScope.launch {
             val response = mUsersRepository.getUsersList(
                 userId = userId,
                 actionType = ActionType.Followings,
-                pageNumber = pageNumber,
+                key = key,
                 pageSize = MAX_PAGE_SIZE
             )
             if (response is Result.Success) {
@@ -61,11 +61,11 @@ class UsersListViewModel(
         }
     }
 
-    fun getFollowersList(userId: String, pageNumber: Int) {
+    fun getFollowersList(userId: String, key: Long) {
         viewModelScope.launch {
             val response = mUsersRepository.getUsersList(
                 userId = userId, actionType = ActionType.Followers,
-                pageNumber = pageNumber,
+                key = key,
                 pageSize = MAX_PAGE_SIZE
             )
             if (response is Result.Success) {

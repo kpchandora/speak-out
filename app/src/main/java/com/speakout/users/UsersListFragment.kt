@@ -28,6 +28,7 @@ import com.speakout.ui.profile.ProfileViewModel
 import com.speakout.ui.profile.UnFollowDialog
 import com.speakout.ui.profile.UnFollowDialogModel
 import com.speakout.utils.AppPreference
+import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.users_list_fragment.*
 
 class UsersListFragment : Fragment() {
@@ -57,8 +58,7 @@ class UsersListFragment : Fragment() {
     private lateinit var mAdapter: UsersListAdapter
     private var mUserEvents: UserEvents? = null
     private var isLoading = false
-    private var hasMoreData = true
-    private var nextPageNumber = 1
+    private var key: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,13 +80,13 @@ class UsersListFragment : Fragment() {
     private fun loadData() {
         when (safeArgs.actionType) {
             ActionType.Likes -> {
-                usersListViewModel.getLikesList(safeArgs.id!!, nextPageNumber)
+                usersListViewModel.getLikesList(safeArgs.id!!, key)
             }
             ActionType.Followers -> {
-                usersListViewModel.getFollowersList(safeArgs.id!!, nextPageNumber)
+                usersListViewModel.getFollowersList(safeArgs.id!!, key)
             }
             ActionType.Followings -> {
-                usersListViewModel.getFollowingsList(safeArgs.id!!, nextPageNumber)
+                usersListViewModel.getFollowingsList(safeArgs.id!!, key)
             }
         }
     }
@@ -109,7 +109,7 @@ class UsersListFragment : Fragment() {
         }
         users_list_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (isLoading || !hasMoreData) return
+                if (isLoading || key == Constants.INVALID_KEY) return
                 if (dy > 0) {
                     (recyclerView.layoutManager as LinearLayoutManager).let {
                         val visibleItems = it.childCount
@@ -129,8 +129,8 @@ class UsersListFragment : Fragment() {
     private fun observeViewModels() {
         usersListViewModel.usersList.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            nextPageNumber = it.pageNumber + 1
-            hasMoreData = it.users.size == UsersListViewModel.MAX_PAGE_SIZE
+            isLoading = false
+            key = it.key
             mAdapter.notifyDataSetChanged()
         })
 

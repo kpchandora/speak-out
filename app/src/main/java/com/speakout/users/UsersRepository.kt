@@ -107,7 +107,7 @@ public class UsersRepository(
         userId: String,
         postId: String = "",
         actionType: ActionType,
-        pageNumber: Int,
+        key: Long,
         pageSize: Int
     ): Result<UserResponse> =
         withContext(Dispatchers.IO) {
@@ -117,21 +117,21 @@ public class UsersRepository(
                         apiService.getLikes(
                             postId = postId,
                             pageSize = pageSize,
-                            pageNumber = pageNumber
+                            key = key
                         )
                     }
                     ActionType.Followers -> {
                         apiService.getFollowers(
                             userId = userId,
                             pageSize = pageSize,
-                            pageNumber = pageNumber
+                            key = key
                         )
                     }
                     ActionType.Followings -> {
                         apiService.getFollowings(
                             userId = userId,
                             pageSize = pageSize,
-                            pageNumber = pageNumber
+                            key = key
                         )
                     }
                 }

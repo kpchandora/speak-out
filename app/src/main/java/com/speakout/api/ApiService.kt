@@ -68,21 +68,21 @@ interface ApiService {
 
     @GET("users/followers/{userId}")
     suspend fun getFollowers(
-        @Path("userId") userId: String, @Query("pageNumber") pageNumber: Int,
+        @Path("userId") userId: String, @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<UserResponse>
 
     @GET("users/followings/{userId}")
     suspend fun getFollowings(
         @Path("userId") userId: String,
-        @Query("pageNumber") pageNumber: Int,
+        @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<UserResponse>
 
     @GET("users/likes/{postId}")
     suspend fun getLikes(
         @Path("postId") postId: String,
-        @Query("pageNumber") pageNumber: Int,
+        @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<UserResponse>
 

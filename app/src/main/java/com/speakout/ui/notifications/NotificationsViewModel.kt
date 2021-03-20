@@ -26,10 +26,10 @@ class NotificationsViewModel(private val mRepository: NotificationRepository) : 
     private val _error = MutableLiveData<Event<String>>()
     val error: LiveData<Event<String>> = _error
 
-    fun getNotifications(pageNumber: Int) {
+    fun getNotifications(key: Long) {
         viewModelScope.launch {
             val response = mRepository.getNotifications(
-                pageNumber = pageNumber,
+                key = key,
                 pageSize = MAX_SIZE
             )
             if (response is Result.Success) {

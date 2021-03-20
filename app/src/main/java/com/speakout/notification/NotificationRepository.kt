@@ -8,10 +8,10 @@ import timber.log.Timber
 
 class NotificationRepository(private val apiService: ApiService) {
 
-    suspend fun getNotifications(pageNumber: Int, pageSize: Int): Result<NotificationResponse> =
+    suspend fun getNotifications(key: Long, pageSize: Int): Result<NotificationResponse> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getNotifications(pageNumber, pageSize)
+                val result = apiService.getNotifications(key, pageSize)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

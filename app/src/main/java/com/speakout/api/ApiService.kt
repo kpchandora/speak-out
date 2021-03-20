@@ -97,7 +97,7 @@ interface ApiService {
 
     @GET("notifications/all")
     suspend fun getNotifications(
-        @Query("pageNumber") pageNumber: Int,
+        @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<NotificationResponse>
 

@@ -28,10 +28,11 @@ import java.net.URL
 /**
  * Created by Kalpesh on 09/08/20.
  */
-public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
+class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
 
+    private val appPreference = AppPreference
     private val userRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, AppPreference)
+        UsersRepository(RetrofitBuilder.apiService, appPreference)
     }
 
     companion object {
@@ -49,8 +50,10 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         Timber.d("Token: $token")
-        GlobalScope.launch {
-            userRepository.updateFcmToken(token)
+        if (appPreference.isLoggedIn()) {
+            GlobalScope.launch {
+                userRepository.updateFcmToken(token)
+            }
         }
     }
 

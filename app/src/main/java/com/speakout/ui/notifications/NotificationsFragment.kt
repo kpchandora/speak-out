@@ -23,6 +23,7 @@ import com.speakout.extensions.showShortToast
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationsItem
 import com.speakout.users.UsersListViewModel
+import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_notifications.*
 
 class NotificationsFragment : Fragment() {
@@ -33,9 +34,8 @@ class NotificationsFragment : Fragment() {
     }
     private lateinit var adapter: NotificationsAdapter
     private var mNotificationEvents: NotificationEvents? = null
-    private var nextPageNumber = 1
+    private var key: Long = 0L
     private var isLoading = false
-    private var hasMoreData = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +47,11 @@ class NotificationsFragment : Fragment() {
             listener = mNotificationListener,
             notifications = notificationsViewModel.mNotifications
         )
-        notificationsViewModel.getNotifications(nextPageNumber)
+        notificationsViewModel.getNotifications(key)
         mNotificationEvents = NotificationEvents(requireContext()) {
-            nextPageNumber = 1
+            key = 0
             notificationsViewModel.mNotifications.clear()
-            notificationsViewModel.getNotifications(nextPageNumber)
+            notificationsViewModel.getNotifications(key)
         }
     }
 
@@ -72,8 +72,7 @@ class NotificationsFragment : Fragment() {
 
         notificationsViewModel.notifications.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            nextPageNumber = it.pageNumber + 1
-            hasMoreData = it.notifications.size == NotificationsViewModel.MAX_SIZE
+            key = it.key
             adapter.notifyDataSetChanged()
         })
 
@@ -84,14 +83,14 @@ class NotificationsFragment : Fragment() {
 
         rv_notification.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (isLoading || !hasMoreData) return
+                if (isLoading || key == Constants.INVALID_KEY) return
                 if (dy > 0) {
                     (recyclerView.layoutManager as LinearLayoutManager).let {
                         val visibleItems = it.childCount
                         val totalItemsCount = it.itemCount
                         val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
                         if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            notificationsViewModel.getNotifications(nextPageNumber)
+                            notificationsViewModel.getNotifications(key)
                             isLoading = true
                         }
                     }

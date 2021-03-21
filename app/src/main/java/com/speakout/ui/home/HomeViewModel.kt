@@ -116,9 +116,9 @@ class HomeViewModel(
         }
     }
 
-    fun addBookmark(postId: String) {
+    fun addBookmark(postId: String, postedBy: String) {
         viewModelScope.launch {
-            _addBookmark.value = Event(postsRepository.addBookmark(postId))
+            _addBookmark.value = Event(postsRepository.addBookmark(postId, postedBy))
         }
     }
 

@@ -148,19 +148,21 @@ class PostsRepository(
         }
     }
 
-    suspend fun addBookmark(postId: String): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val obj = JsonObject()
-            obj.addProperty("postId", postId)
-            val result = apiService.addBookmark(obj)
-            if (result.isSuccessful && result.body() != null) {
-                return@withContext Result.Success(postId)
+    suspend fun addBookmark(postId: String, postedBy: String): Result<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val obj = JsonObject()
+                obj.addProperty("postId", postId)
+                obj.addProperty("postedBy", postedBy)
+                val result = apiService.addBookmark(obj)
+                if (result.isSuccessful && result.body() != null) {
+                    return@withContext Result.Success(postId)
+                }
+                Result.Error(Exception("Something went wrong"), postId)
+            } catch (e: Exception) {
+                Result.Error(e, postId)
             }
-            Result.Error(Exception("Something went wrong"), postId)
-        } catch (e: Exception) {
-            Result.Error(e, postId)
         }
-    }
 
     suspend fun removeBookmark(postId: String): Result<String> = withContext(Dispatchers.IO) {
         try {

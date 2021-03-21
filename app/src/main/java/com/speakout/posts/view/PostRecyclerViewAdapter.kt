@@ -46,6 +46,7 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
         if (payloads.isNotEmpty()) {
             (payloads[0] as? PostData)?.let {
                 Timber.d("BindView Content: ${it.content}")
+                //TODO Only update like content; do not call bind again
                 holder.bind(it)
                 return
             }
@@ -73,6 +74,7 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
                 postDataItem.isLikedBySelf = false
                 postDataItem.likesCount--
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
@@ -83,6 +85,7 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
                 postDataItem.isLikedBySelf = true
                 postDataItem.likesCount++
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
@@ -92,6 +95,7 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
             if (postId == postDataItem.postId) {
                 postDataItem.isBookmarkedBySelf = true
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
@@ -101,6 +105,7 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
             if (postId == postDataItem.postId) {
                 postDataItem.isBookmarkedBySelf = false
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }

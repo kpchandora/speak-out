@@ -42,4 +42,10 @@ class NotificationsViewModel(private val mRepository: NotificationRepository) : 
         }
     }
 
+    fun updateActions() {
+        viewModelScope.launch {
+            mRepository.updateActions()
+        }
+    }
+
 }

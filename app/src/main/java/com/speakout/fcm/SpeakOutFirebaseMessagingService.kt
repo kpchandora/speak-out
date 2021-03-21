@@ -22,6 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
+import java.lang.Exception
 import java.net.URL
 
 
@@ -45,7 +46,7 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         const val USER_IMAGE_URL = "profileUrl"
         const val POST_ID = "postId"
         const val USERNAME = "username"
-
+        const val POST_IMAGE_URL = "postImageUrl"
     }
 
     override fun onNewToken(token: String) {
@@ -127,8 +128,15 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             getNotificationBuilder(channelId = channelId, pendingIntent = pendingIntent)
         notification.setContentText("${map["username"]}(${map["name"]}) liked your post.")
 
-        getUserImageBitmap(map)?.let {
-            notification.setLargeIcon(it)
+        getUserImageBitmap(map)?.let { userBitmap ->
+            notification.setLargeIcon(userBitmap)
+            getPostImageBitmap(map[POST_IMAGE_URL])?.let {
+                notification.setStyle(
+                    NotificationCompat.BigPictureStyle()
+                        .bigPicture(it)
+                        .bigLargeIcon(userBitmap)
+                )
+            }
         }
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -143,7 +151,18 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         manager.cancel("${map[NOTIFICATION_ID]}", 0)
     }
 
-    private fun getUserImageBitmap(map: MutableMap<String, String>): Bitmap? {
+    private fun getPostImageBitmap(postImageUrl: String?): Bitmap? {
+        try {
+            return BitmapFactory.decodeStream(URL(postImageUrl).openConnection().getInputStream())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private fun getUserImageBitmap(
+        map: MutableMap<String, String>
+    ): Bitmap? {
         try {
             map[USER_IMAGE_URL]?.let {
                 val bitmap = BitmapFactory.decodeStream(URL(it).openConnection().getInputStream())

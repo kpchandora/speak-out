@@ -48,10 +48,12 @@ class NotificationsFragment : Fragment() {
             notifications = notificationsViewModel.mNotifications
         )
         notificationsViewModel.getNotifications(key)
+        notificationsViewModel.updateActions()
         mNotificationEvents = NotificationEvents(requireContext()) {
             key = 0
             notificationsViewModel.mNotifications.clear()
             notificationsViewModel.getNotifications(key)
+            notificationsViewModel.updateActions()
         }
     }
 

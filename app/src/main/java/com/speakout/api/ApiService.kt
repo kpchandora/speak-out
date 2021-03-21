@@ -106,4 +106,7 @@ interface ApiService {
 
     @POST("posts/removeBookmark")
     suspend fun removeBookmark(@Body jsonObject: JsonObject): Response<JsonObject>
+
+    @POST("users/actions")
+    suspend fun updateActions(): Response<JsonObject>
 }

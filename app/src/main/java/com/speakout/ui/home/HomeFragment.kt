@@ -257,8 +257,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             dialog.setPost(postData)
         }
 
-        override fun onBookmarkAdd(postId: String) {
-            mHomeViewModel.addBookmark(postId)
+        override fun onBookmarkAdd(postData: PostData) {
+            mHomeViewModel.addBookmark(postId = postData.postId, postedBy = postData.userId)
         }
 
         override fun onBookmarkRemove(postId: String) {

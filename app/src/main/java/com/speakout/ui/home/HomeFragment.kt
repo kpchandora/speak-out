@@ -59,7 +59,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mPreference = AppPreference
-        Timber.d("HomeFragment onCreate")
+
         mPostsAdapter = PostRecyclerViewAdapter(mHomeViewModel.mPostList)
         postEvents = PostEvents(requireContext()) {
             val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
@@ -110,8 +110,8 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         super.onViewCreated(view, savedInstanceState)
 
         setUpWithAppBarConfiguration(view)?.let {
-            it.title = ""
-            view.toolbar_title_tv.visible()
+            it.toolbar_title.gone()
+            view.toolbar_title_home.visible()
         }
 
         dialog = PostOptionsDialog(requireContext())

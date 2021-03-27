@@ -29,6 +29,7 @@ import com.speakout.ui.profile.UnFollowDialog
 import com.speakout.ui.profile.UnFollowDialogModel
 import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import kotlinx.android.synthetic.main.users_list_fragment.*
 
 class UsersListFragment : Fragment() {
@@ -100,7 +101,7 @@ class UsersListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)
+        setUpToolbar(view)?.toolbar_title?.text = safeArgs.actionType.name
         mAdapter.mListener = mUserClickListener
         users_list_rv.apply {
             setHasFixedSize(true)

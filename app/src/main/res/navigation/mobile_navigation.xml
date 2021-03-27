@@ -299,7 +299,6 @@
         <fragment
             android:id="@+id/createNewPostFragment"
             android:name="com.speakout.posts.create.CreateNewPostFragment"
-            android:label="New Post"
             tools:layout="@layout/fragment_create_new_post">
 
             <action

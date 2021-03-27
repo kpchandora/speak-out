@@ -32,6 +32,7 @@ import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import com.speakout.utils.Utils
 import kotlinx.android.synthetic.main.fragment_post_view.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 
@@ -76,7 +77,7 @@ class PostViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)
+        setUpToolbar(view)?.toolbar_title?.text = "Posts"
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_post_view_rv.apply {

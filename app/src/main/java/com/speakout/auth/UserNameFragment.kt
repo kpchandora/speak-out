@@ -23,6 +23,7 @@ import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_user_name.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 
@@ -49,21 +50,14 @@ class UserNameFragment : Fragment() {
         username = safeArgs.username ?: ""
 
         if (safeArgs.type == Type.Edit) {
-            view.post {
-                setUpToolbar(view)?.let {
-                    it.title = "${safeArgs.type} Username"
-                }
-            }
+            setUpToolbar(view)?.toolbar_title?.text = "${safeArgs.type} Username"
             fragment_username_et.setText(username)
             fragment_username_et.setSelection(username.length)
             fragment_username_et.setDrawableEnd(R.drawable.ic_check)
             fragment_username_next_btn.text = getString(R.string.update)
         } else {
-            view.post {
-                setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.let {
-                    it.title = "${safeArgs.type} Username"
-                }
-            }
+            setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.toolbar_title?.text =
+                "${safeArgs.type} Username"
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {

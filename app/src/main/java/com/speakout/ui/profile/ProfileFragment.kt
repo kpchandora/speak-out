@@ -32,6 +32,7 @@ import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
@@ -105,9 +106,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         setUpWithAppBarConfiguration(view)?.let {
-            it.title = safeArgs.username
-//            view.toolbar_title_tv.visible()
-//            view.toolbar_title_tv.text = safeArgs.username
+            it.toolbar_title.text = safeArgs.username
+            if (isSelf)
+                it.iv_settings.visible()
+            else
+                it.iv_settings.gone()
         }
         return view
     }

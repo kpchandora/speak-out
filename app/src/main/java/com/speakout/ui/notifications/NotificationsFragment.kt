@@ -25,6 +25,7 @@ import com.speakout.notification.NotificationsItem
 import com.speakout.users.UsersListViewModel
 import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_notifications.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class NotificationsFragment : Fragment() {
 
@@ -67,7 +68,9 @@ class NotificationsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpWithAppBarConfiguration(view)
+        setUpWithAppBarConfiguration(view)?.toolbar_title?.text =
+            getString(R.string.title_notifications)
+
         rv_notification.setHasFixedSize(true)
         rv_notification.layoutManager = LinearLayoutManager(requireContext())
         rv_notification.adapter = adapter

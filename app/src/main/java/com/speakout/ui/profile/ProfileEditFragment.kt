@@ -33,6 +33,7 @@ import com.speakout.extensions.*
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.io.File
 
@@ -73,11 +74,7 @@ class ProfileEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.post {
-            setUpToolbar(view)?.let {
-                it.title = getString(R.string.edit)
-            }
-        }
+        setUpToolbar(view)?.toolbar_title?.text = getString(R.string.edit)
 
         populateDetails()
 

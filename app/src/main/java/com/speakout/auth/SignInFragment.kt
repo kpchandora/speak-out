@@ -30,6 +30,7 @@ import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_sign_in.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -58,7 +59,7 @@ class SignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpWithAppBarConfiguration(view, R.id.signInFragment)
+        setUpWithAppBarConfiguration(view, R.id.signInFragment)?.toolbar_title?.text = "SignIn"
 
         mPreference = AppPreference
 

@@ -186,6 +186,14 @@
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right" />
 
+            <action
+                android:id="@+id/action_navigation_profile_to_profileOptionsBottomSheetFragment"
+                app:destination="@id/profileOptionsBottomSheetFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
         </fragment>
 
         <fragment
@@ -207,6 +215,13 @@
                 app:popExitAnim="@anim/slide_out_right" />
 
         </fragment>
+
+        <dialog
+            android:id="@+id/profileOptionsBottomSheetFragment"
+            android:name="com.speakout.ui.profile.ProfileOptionsBottomSheetFragment"
+            tools:layout="@layout/fragment_profile_options_bottom_sheet">
+
+        </dialog>
 
     </navigation>
 

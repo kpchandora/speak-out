@@ -32,6 +32,7 @@ import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
+import kotlinx.android.synthetic.main.layout_toolbar.*
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -120,6 +121,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         safeArgs.transitionTag?.let {
             layout_profile_iv.transitionName = it
             loadImage(safeArgs.profileUrl)
+        }
+
+        iv_settings.setOnClickListener {
+            val action = ProfileFragmentDirections.actionNavigationProfileToProfileOptionsBottomSheetFragment()
+            findNavController().navigate(action)
         }
 
         mPostsAdapter.mListener = mListener

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="120dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        tools:context=".ui.profile.ProfileOptionsBottomSheetFragment">
+
+
+        <TextView
+            android:id="@+id/tv_bookmarks"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:drawableStart="@drawable/ic_profile_bookmark"
+            android:drawablePadding="12dp"
+            android:gravity="center_vertical"
+            android:text="@string/text_bookmarks"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:textColor="@color/blue_600"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableStart="@drawable/ic_logout"
+            android:drawablePadding="12dp"
+            android:drawableTint="@color/red_500"
+            android:gravity="center_vertical"
+            android:text="@string/text_logout"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:textColor="@color/red_500"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_bookmarks" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

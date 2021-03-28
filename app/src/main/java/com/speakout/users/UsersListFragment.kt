@@ -130,7 +130,6 @@ class UsersListFragment : Fragment() {
     private fun observeViewModels() {
         usersListViewModel.usersList.observe(viewLifecycleOwner, Observer {
             isLoading = false
-            isLoading = false
             key = it.key
             mAdapter.notifyDataSetChanged()
         })

@@ -109,4 +109,10 @@ interface ApiService {
 
     @POST("users/actions")
     suspend fun updateActions(): Response<JsonObject>
+
+    @GET("posts/getBookmarkedPosts")
+    suspend fun getBookmarks(
+        @Query("key") key: Long,
+        @Query("pageSize") pageSize: Int
+    ): Response<PostsResponse>
 }

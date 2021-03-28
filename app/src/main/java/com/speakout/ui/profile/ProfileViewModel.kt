@@ -34,9 +34,6 @@ class ProfileViewModel(private val appPreference: AppPreference,
     val uploadProfilePicture: LiveData<Event<Result<String>>>
         get() = _uploadProfilePicture
 
-    private val _posts = MutableLiveData<Result<List<PostData>>>()
-    val posts: LiveData<Result<List<PostData>>> = _posts
-
 
     fun uploadProfilePicture(imageFile: File) {
         viewModelScope.launch {

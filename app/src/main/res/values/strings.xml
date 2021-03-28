@@ -102,5 +102,7 @@
     <string name="hint_un_follow">You won\'t get updates from @%s</string>
     <string name="text_bookmarks">Bookmarks</string>
     <string name="text_logout">Logout</string>
+    <string name="logout_info">Are you sure you want\nto logout?</string>
+
 
 </resources>

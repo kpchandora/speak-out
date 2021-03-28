@@ -6,10 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.speakout.R
+import com.speakout.databinding.FragmentProfileOptionsBottomSheetBinding
 
 class ProfileOptionsBottomSheetFragment : BottomSheetDialogFragment() {
+
+    private lateinit var mBinding: FragmentProfileOptionsBottomSheetBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,8 +24,23 @@ class ProfileOptionsBottomSheetFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_options_bottom_sheet, container, false)
+        mBinding = FragmentProfileOptionsBottomSheetBinding.inflate(inflater, container, false)
+        return mBinding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mBinding.tvBookmarks.setOnClickListener {
+            val action =
+                ProfileOptionsBottomSheetFragmentDirections.actionProfileOptionsToBookmarksPostFragment()
+            findNavController().navigate(action)
+        }
+        mBinding.tvLogout.setOnClickListener {
+            dismiss()
+            val action =
+                ProfileOptionsBottomSheetFragmentDirections.actionProfileOptionsBottomSheetFragmentToLogoutDialog()
+            findNavController().navigate(action)
+        }
     }
 
 }

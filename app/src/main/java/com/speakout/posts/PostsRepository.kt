@@ -178,4 +178,17 @@ class PostsRepository(
         }
     }
 
+    suspend fun getBookmarks(key: Long, pageSize: Int): Result<PostsResponse> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getBookmarks(key, pageSize)
+                if (response.isSuccessful && response.body() != null) {
+                    return@withContext Result.Success(response.body()!!)
+                }
+                Result.Error(Exception("Something went wrong"), null)
+            } catch (e: Exception) {
+                Result.Error(e, null)
+            }
+        }
+
 }

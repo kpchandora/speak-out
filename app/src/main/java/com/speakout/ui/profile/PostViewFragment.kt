@@ -98,6 +98,7 @@ class PostViewFragment : Fragment() {
 
         if (!safeArgs.isFromNotification) {
             mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+                progressBar.gone()
                 mPostsAdapter.notifyDataSetChanged()
             })
             fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)

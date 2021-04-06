@@ -19,12 +19,13 @@ import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.showShortToast
 import com.speakout.posts.PostsRepository
+import com.speakout.ui.MainActivity
 import com.speakout.ui.profile.ProfilePostsAdapter
 import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
-class BookmarksPostFragment : Fragment() {
+class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private lateinit var mBinding: FragmentBookmarksPostBinding
 
@@ -95,5 +96,8 @@ class BookmarksPostFragment : Fragment() {
 
     }
 
+    override fun doubleClick() {
+        mBinding.rvBookmarks.layoutManager?.smoothScrollToPosition(mBinding.rvBookmarks, null, 0)
+    }
 
 }

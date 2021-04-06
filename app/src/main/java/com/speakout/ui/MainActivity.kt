@@ -24,27 +24,15 @@ class MainActivity : BaseActivity() {
     private lateinit var navController: NavController
     private var currentFragmentId = 0
     private lateinit var bottomNavigationView: BottomNavigationView
-    private var mHomeFragment: HomeFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        window.navigationBarColor = Color.parseColor("#20111111");
+
         setContentView(R.layout.activity_main)
         bottomNavigationView = findViewById(R.id.nav_view)
 
         navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_search,
-                R.id.navigation_new_post,
-                R.id.notificationFragment,
-                R.id.navigation_profile
-            )
-        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
+
         bottomNavigationView.setupWithNavController(navController)
         bottomNavigationView.setOnNavigationItemSelectedListener {
             Timber.d("setOnNavigationItemSelectedListener: ${it.title}")
@@ -88,26 +76,16 @@ class MainActivity : BaseActivity() {
                     currentFragment.doubleClick()
             }
         }
-
-//        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-//            if (!task.isSuccessful) {
-//                Timber.e("Failed")
-//            }
-//
-//            try {
-//                // Get new Instance ID token
-//                val token = task.result?.token
-//                Timber.d("Token: $token")
-//
-//                GlobalScope.launch {
-//                    UsersRepository(RetrofitBuilder.apiService, AppPreference).updateFcmToken(
-//                        token ?: ""
-//                    )
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
+        if (AppPreference.isLoggedIn()) {
+            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+                GlobalScope.launch {
+                    UsersRepository(
+                        RetrofitBuilder.apiService,
+                        AppPreference
+                    ).updateFcmToken(it.token)
+                }
+            }
+        }
 
     }
 

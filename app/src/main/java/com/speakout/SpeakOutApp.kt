@@ -21,9 +21,7 @@ class SpeakOutApp : Application() {
         var appContext: Context? = null
             private set
     }
-    private val userRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, AppPreference)
-    }
+
 
     override fun onCreate() {
         super.onCreate()
@@ -32,13 +30,6 @@ class SpeakOutApp : Application() {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
-        }
-        if (AppPreference.isLoggedIn()){
-            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
-                GlobalScope.launch {
-                    userRepository.updateFcmToken(it.token)
-                }
-            }
         }
     }
 

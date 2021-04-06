@@ -22,12 +22,13 @@ import com.speakout.extensions.setUpWithAppBarConfiguration
 import com.speakout.extensions.showShortToast
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationsItem
+import com.speakout.ui.MainActivity
 import com.speakout.users.UsersListViewModel
 import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_notifications.*
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
-class NotificationsFragment : Fragment() {
+class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private lateinit var safeArgs: NotificationsFragmentArgs
     private val notificationsViewModel: NotificationsViewModel by viewModels {
@@ -135,6 +136,10 @@ class NotificationsFragment : Fragment() {
             )
             findNavController().navigate(action, extras)
         }
+    }
+
+    override fun doubleClick() {
+        rv_notification.layoutManager?.smoothScrollToPosition(rv_notification, null, 0)
     }
 
 }

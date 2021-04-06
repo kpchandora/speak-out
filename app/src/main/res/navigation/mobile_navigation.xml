@@ -239,7 +239,15 @@
             android:id="@+id/bookmarksPostFragment"
             android:name="com.speakout.ui.bookmark.BookmarksPostFragment"
             android:label="BookmarksPostFragment"
-            tools:layout="@layout/fragment_bookmarks_post" />
+            tools:layout="@layout/fragment_bookmarks_post">
+            <action
+                android:id="@+id/action_bookmarks_to_postViewFragment"
+                app:destination="@id/postViewFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
 
         <dialog
             android:id="@+id/logoutDialog"
@@ -281,6 +289,11 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_postViewFragment_to_profile_navigation"
+            app:destination="@id/profile_navigation"
             app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>

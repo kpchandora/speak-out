@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
@@ -102,8 +103,6 @@ class PostViewFragment : Fragment() {
                 mPostsAdapter.notifyDataSetChanged()
             })
             fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
-        } else {
-            progressBar.visible()
         }
         observeViewModels()
     }
@@ -179,7 +178,16 @@ class PostViewFragment : Fragment() {
         }
 
         override fun onProfileClick(postData: PostData, profileImageView: ImageView) {
-            findNavController().navigateUp()
+            val action = PostViewFragmentDirections.actionGlobalProfileFragment(
+                userId = postData.userId,
+                profileUrl = postData.photoUrl,
+                transitionTag = postData.postId,
+                username = postData.username
+            )
+            val extras = FragmentNavigatorExtras(
+                profileImageView to postData.postId
+            )
+            findNavController().navigate(action, extras)
         }
 
         override fun onLikedUsersClick(postData: PostData) {

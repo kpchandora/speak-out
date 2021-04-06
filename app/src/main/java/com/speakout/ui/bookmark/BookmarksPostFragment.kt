@@ -5,8 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +21,9 @@ import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.showShortToast
 import com.speakout.posts.PostsRepository
+import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
+import com.speakout.ui.profile.ProfilePostClickListener
 import com.speakout.ui.profile.ProfilePostsAdapter
 import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
@@ -46,6 +50,7 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         super.onCreate(savedInstanceState)
         mBookmarksViewModel.getBookmarks(key)
         mPostsAdapter = ProfilePostsAdapter(mBookmarksViewModel.mPostList)
+        mPostsAdapter.mListener = mListener
     }
 
     override fun onCreateView(
@@ -98,6 +103,15 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun doubleClick() {
         mBinding.rvBookmarks.layoutManager?.smoothScrollToPosition(mBinding.rvBookmarks, null, 0)
+    }
+
+    private val mListener = object : ProfilePostClickListener {
+        override fun onPostClick(postData: PostData, postImageView: ImageView, position: Int) {
+            val action =
+                BookmarksPostFragmentDirections.actionBookmarksToPostViewFragment(
+                    isFromNotification = true, postId = postData.postId)
+            findNavController().navigate(action)
+        }
     }
 
 }

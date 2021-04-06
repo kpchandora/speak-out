@@ -73,7 +73,7 @@ class SignInFragment : Fragment() {
             } else {
                 hideProgress()
                 showShortToast("Failed")
-                FirebaseUtils.signOut()
+                FirebaseUtils.signOut(requireActivity())
             }
         })
 
@@ -97,7 +97,7 @@ class SignInFragment : Fragment() {
                     }
                 }
             } else {
-                FirebaseUtils.signOut().also {
+                FirebaseUtils.signOut(requireActivity()).also {
                     hideProgress()
                     showShortToast("Something went wrong, please try again")
                 }
@@ -108,6 +108,7 @@ class SignInFragment : Fragment() {
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
+
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
         auth = FirebaseAuth.getInstance()
@@ -177,7 +178,7 @@ class SignInFragment : Fragment() {
                     } ?: kotlin.run {
                         showShortToast("Failed")
                         hideProgress()
-                        FirebaseUtils.signOut()
+                        FirebaseUtils.signOut(requireActivity())
                     }
                 } else {
                     showShortToast("Failed")

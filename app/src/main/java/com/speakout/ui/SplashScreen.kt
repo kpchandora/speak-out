@@ -6,6 +6,11 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.core.content.ContextCompat
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
+import com.speakout.users.UsersRepository
+import com.speakout.utils.AppPreference
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class SplashScreen : AppCompatActivity() {
 
@@ -19,7 +24,6 @@ class SplashScreen : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }, 1000)
-
     }
 
 

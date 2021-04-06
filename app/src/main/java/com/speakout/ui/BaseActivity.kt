@@ -38,11 +38,8 @@ abstract class BaseActivity : AppCompatActivity() {
         mProgressDialog.dismiss()
     }
 
-    fun currentUser() = FirebaseUtils.currentUser()
-
     fun userId() = FirebaseUtils.userId()
 
-    fun signOut() = FirebaseUtils.signOut()
 
     override fun onDestroy() {
         mConnectivityManager.unregisterNetworkCallback(connectivityCallback)

@@ -15,7 +15,7 @@ import timber.log.Timber
 /**
  * Created by Kalpesh on 02/08/20.
  */
-public class UsersRepository(
+class UsersRepository(
     private val apiService: ApiService,
     private val appPreference: AppPreference
 ) {

@@ -8,13 +8,21 @@
 
     <include layout="@layout/layout_toolbar" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/fragment_profile_scroll_view"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_profile"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white">
+        android:layout_height="match_parent">
 
-        <include layout="@layout/layout_profile" />
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/fragment_profile_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white">
 
-    </androidx.core.widget.NestedScrollView>
+
+            <include layout="@layout/layout_profile" />
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

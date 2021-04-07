@@ -106,6 +106,7 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
         mBookmarksViewModel.posts.observe(viewLifecycleOwner, Observer {
+            mBinding.swipeBookmarks.isRefreshing = false
             isLoading = false
             key = it.key
             mPostsAdapter.notifyDataSetChanged()
@@ -113,8 +114,16 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         mBookmarksViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
             isLoading = false
+            mBinding.swipeBookmarks.isRefreshing = false
             showShortToast(it)
         })
+
+        mBinding.swipeBookmarks.setOnRefreshListener {
+            key = 0
+            mBookmarksViewModel.mPostList.clear()
+            mPostsAdapter.notifyDataSetChanged()
+            mBookmarksViewModel.getBookmarks(key)
+        }
 
     }
 

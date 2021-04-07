@@ -52,10 +52,7 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         notificationsViewModel.getNotifications(key)
         notificationsViewModel.updateActions()
         mNotificationEvents = NotificationEvents(requireContext()) {
-            key = 0
-            notificationsViewModel.mNotifications.clear()
-            notificationsViewModel.getNotifications(key)
-            notificationsViewModel.updateActions()
+            refreshData()
         }
     }
 
@@ -76,13 +73,20 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         rv_notification.layoutManager = LinearLayoutManager(requireContext())
         rv_notification.adapter = adapter
 
+        swipe_notifications.setOnRefreshListener {
+            adapter.notifyDataSetChanged()
+            refreshData()
+        }
+
         notificationsViewModel.notifications.observe(viewLifecycleOwner, Observer {
+            swipe_notifications.isRefreshing = false
             isLoading = false
             key = it.key
             adapter.notifyDataSetChanged()
         })
 
         notificationsViewModel.error.observe(viewLifecycleOwner, EventObserver {
+            swipe_notifications.isRefreshing = false
             isLoading = false
             showShortToast(it)
         })
@@ -108,6 +112,13 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     override fun onDestroy() {
         mNotificationEvents?.dispose()
         super.onDestroy()
+    }
+
+    private fun refreshData() {
+        key = 0
+        notificationsViewModel.mNotifications.clear()
+        notificationsViewModel.getNotifications(key)
+        notificationsViewModel.updateActions()
     }
 
     private fun navigateToPostView(postId: String) {

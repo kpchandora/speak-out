@@ -149,6 +149,13 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         observeViewModels()
+
+        swipe_home.setOnRefreshListener {
+            key = 0
+            mHomeViewModel.mPostList.clear()
+            mPostsAdapter.notifyDataSetChanged()
+            mHomeViewModel.getFeed(key)
+        }
     }
 
     override fun onDestroyView() {
@@ -163,6 +170,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            swipe_home.isRefreshing = false
             isLoading = false
             key = it.key
             mPostsAdapter.notifyDataSetChanged()
@@ -170,6 +178,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         mHomeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
             isLoading = false
+            swipe_home.isRefreshing = false
             showShortToast(it)
         })
 

@@ -140,6 +140,14 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             findNavController().navigate(action)
         }
 
+        swipe_profile.setOnRefreshListener {
+            key = 0
+            homeViewModel.mPostList.clear()
+            mPostsAdapter.notifyDataSetChanged()
+            homeViewModel.getProfilePosts(mUserId, key)
+            profileViewModel.getUser(mUserId)
+        }
+
         mPostsAdapter.mListener = mListener
         profile_post_rv.apply {
             setHasFixedSize(true)
@@ -165,18 +173,21 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { result ->
+            swipe_profile.isRefreshing = false
             if (result is Result.Success) {
                 populateData(result.data)
             }
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            swipe_profile.isRefreshing = false
             isLoading = false
             key = it.key
             mPostsAdapter.notifyDataSetChanged()
         })
 
         homeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
+            swipe_profile.isRefreshing = false
             isLoading = false
             showShortToast(it)
         })

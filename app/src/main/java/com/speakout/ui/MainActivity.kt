@@ -1,8 +1,10 @@
 package com.speakout.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -19,7 +21,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), NavBadgeListener {
 
     private lateinit var navController: NavController
     private var currentFragmentId = 0
@@ -89,6 +91,12 @@ class MainActivity : BaseActivity() {
 
     }
 
+    override fun updateBadgeVisibility(isVisible: Boolean) {
+        bottomNavigationView.getOrCreateBadge(R.id.notificationFragment).let {
+            it.isVisible = isVisible
+            it.backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.primary_dark)
+        }
+    }
 
     private fun handleNavigationVisibility(id: Int) {
         when (id) {
@@ -133,4 +141,5 @@ class MainActivity : BaseActivity() {
     interface BottomIconDoubleClick {
         fun doubleClick()
     }
+
 }

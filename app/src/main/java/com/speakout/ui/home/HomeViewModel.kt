@@ -46,6 +46,9 @@ class HomeViewModel(
     private val _postsError = MutableLiveData<Event<String>>()
     val postsError: LiveData<Event<String>> = _postsError
 
+    private val _count = MutableLiveData<Event<Result<Int>>>()
+    val count: LiveData<Event<Result<Int>>> = _count
+
     fun getProfilePosts(id: String, key: Long) {
         viewModelScope.launch {
             val response = postsRepository.getProfilePosts(
@@ -125,6 +128,12 @@ class HomeViewModel(
     fun removeBookmark(postId: String) {
         viewModelScope.launch {
             _removeBookmark.value = Event(postsRepository.removeBookmark(postId))
+        }
+    }
+
+    fun getCount() {
+        viewModelScope.launch {
+            _count.value = Event(postsRepository.getUnreadNotificationsCount())
         }
     }
 

@@ -34,5 +34,4 @@ class NotificationRepository(private val apiService: ApiService) {
                 Result.Error(e, null)
             }
         }
-
 }

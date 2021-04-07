@@ -1,5 +1,6 @@
 package com.speakout.ui.notifications
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import com.speakout.extensions.showShortToast
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationsItem
 import com.speakout.ui.MainActivity
+import com.speakout.ui.NavBadgeListener
 import com.speakout.users.UsersListViewModel
 import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_notifications.*
@@ -38,6 +40,12 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var mNotificationEvents: NotificationEvents? = null
     private var key: Long = 0L
     private var isLoading = false
+    private var mBadgeListener: NavBadgeListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mBadgeListener = context as? NavBadgeListener
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +62,7 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mNotificationEvents = NotificationEvents(requireContext()) {
             refreshData()
         }
+        mBadgeListener?.updateBadgeVisibility(false)
     }
 
     override fun onCreateView(

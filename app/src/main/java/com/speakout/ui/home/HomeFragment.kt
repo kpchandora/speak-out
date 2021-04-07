@@ -1,6 +1,7 @@
 package com.speakout.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
@@ -30,6 +31,7 @@ import com.speakout.posts.view.PostRecyclerViewAdapter
 import com.speakout.posts.create.PostData
 import com.speakout.posts.view.PostClickEventListener
 import com.speakout.ui.MainActivity
+import com.speakout.ui.NavBadgeListener
 import com.speakout.users.ActionType
 import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
@@ -55,6 +57,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var isLoading = false
     private var postEvents: PostEvents? = null
     private var key: Long = 0L
+    private var mBadgeListener: NavBadgeListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mBadgeListener = context as? NavBadgeListener
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +102,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
             else -> {
                 mHomeViewModel.getFeed(key)
+                mHomeViewModel.getCount()
             }
         }
     }
@@ -213,6 +222,12 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mHomeViewModel.addBookmark.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Error) {
                 mPostsAdapter.removeBookmark(it.data ?: "")
+            }
+        })
+
+        mHomeViewModel.count.observe(viewLifecycleOwner, EventObserver {
+            if (it is Result.Success) {
+                mBadgeListener?.updateBadgeVisibility(it.data > 0)
             }
         })
 

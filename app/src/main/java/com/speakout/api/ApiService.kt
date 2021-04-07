@@ -115,4 +115,7 @@ interface ApiService {
         @Query("key") key: Long,
         @Query("pageSize") pageSize: Int
     ): Response<PostsResponse>
+
+    @GET("notifications/unreadNotifications")
+    suspend fun getUnreadNotificationsCount(): Response<JsonObject>
 }

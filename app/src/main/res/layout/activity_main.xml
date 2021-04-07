@@ -27,6 +27,7 @@
         android:foreground="?attr/selectableItemBackground"
         app:backgroundTint="@color/white"
         app:itemBackground="@color/white"
+        app:itemIconTint="@drawable/selector_tab_tint"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
 

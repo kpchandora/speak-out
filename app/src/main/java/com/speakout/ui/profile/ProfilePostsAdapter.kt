@@ -33,10 +33,61 @@ class ProfilePostsAdapter(private val mPostsList: ArrayList<PostData>) :
         holder.bind(mPostsList[position])
     }
 
-    fun updateData(list: List<PostData>) {
-        mPostsList.clear()
-        mPostsList.addAll(list)
-        notifyDataSetChanged()
+
+    fun deletePost(postId: String) {
+        var matchedPost: PostData? = null
+        mPostsList.forEachIndexed { index, post ->
+            if (postId == post.postId) {
+                notifyItemRemoved(index)
+                matchedPost = post
+                return@forEachIndexed
+            }
+        }
+        matchedPost?.let {
+            mPostsList.remove(it)
+        }
+    }
+
+    fun removeLike(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isLikedBySelf = false
+                postDataItem.likesCount--
+                notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
+            }
+        }
+    }
+
+    fun addLike(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isLikedBySelf = true
+                postDataItem.likesCount++
+                notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
+            }
+        }
+    }
+
+    fun addBookmark(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isBookmarkedBySelf = true
+                notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
+            }
+        }
+    }
+
+    fun removeBookmark(postId: String) {
+        mPostsList.forEachIndexed { index, postDataItem ->
+            if (postId == postDataItem.postId) {
+                postDataItem.isBookmarkedBySelf = false
+                notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
+            }
+        }
     }
 
     class ProfilePostsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {

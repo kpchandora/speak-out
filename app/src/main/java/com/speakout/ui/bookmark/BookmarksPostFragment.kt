@@ -17,6 +17,8 @@ import com.speakout.R
 import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.databinding.FragmentBookmarksPostBinding
+import com.speakout.events.PostEventTypes
+import com.speakout.events.PostEvents
 import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
 import com.speakout.extensions.showShortToast
@@ -45,12 +47,27 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var isLoading = false
     private var key: Long = 0L
     private lateinit var mPostsAdapter: ProfilePostsAdapter
+    private var postEvents: PostEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBookmarksViewModel.getBookmarks(key)
         mPostsAdapter = ProfilePostsAdapter(mBookmarksViewModel.mPostList)
         mPostsAdapter.mListener = mListener
+        postEvents = PostEvents(requireContext()) {
+            val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
+            when (it.extras?.getInt(PostEvents.EVENT_TYPE)) {
+                PostEventTypes.DELETE,
+                PostEventTypes.REMOVE_BOOKMARK -> mPostsAdapter.deletePost(postId)
+                PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
+                PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
+                PostEventTypes.ADD_BOOKMARK -> {
+                    key = 0
+                    mBookmarksViewModel.mPostList.clear()
+                    mBookmarksViewModel.getBookmarks(key)
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -109,9 +126,15 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         override fun onPostClick(postData: PostData, postImageView: ImageView, position: Int) {
             val action =
                 BookmarksPostFragmentDirections.actionBookmarksToPostViewFragment(
-                    isFromNotification = true, postId = postData.postId)
+                    isFromNotification = true, postId = postData.postId
+                )
             findNavController().navigate(action)
         }
+    }
+
+    override fun onDestroy() {
+        postEvents?.dispose()
+        super.onDestroy()
     }
 
 }

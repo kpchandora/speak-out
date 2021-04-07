@@ -64,6 +64,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var mProfileEvents: ProfileEvents? = null
     private var isLoading = false
     private var key: Long = 0L
+    private var postEvents: PostEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +93,16 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                         profileViewModel.getUser(mUserId)
                     }
                 }
+            }
+        }
+        postEvents = PostEvents(requireContext()) {
+            val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
+            when (it.extras?.getInt(PostEvents.EVENT_TYPE)) {
+                PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
+                PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
+                PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
+                PostEventTypes.ADD_BOOKMARK -> mPostsAdapter.addBookmark(postId)
+                PostEventTypes.REMOVE_BOOKMARK -> mPostsAdapter.removeBookmark(postId)
             }
         }
         homeViewModel.getProfilePosts(mUserId, key)
@@ -124,7 +135,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
         iv_settings.setOnClickListener {
-            val action = ProfileFragmentDirections.actionNavigationProfileToProfileOptionsBottomSheetFragment()
+            val action =
+                ProfileFragmentDirections.actionNavigationProfileToProfileOptionsBottomSheetFragment()
             findNavController().navigate(action)
         }
 
@@ -181,6 +193,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onDestroy() {
         mProfileEvents?.dispose()
+        postEvents?.dispose()
         super.onDestroy()
     }
 

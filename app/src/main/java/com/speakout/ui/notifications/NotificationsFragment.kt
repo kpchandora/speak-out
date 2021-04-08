@@ -62,7 +62,6 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mNotificationEvents = NotificationEvents(requireContext()) {
             refreshData()
         }
-        mBadgeListener?.updateBadgeVisibility(false)
     }
 
     override fun onCreateView(
@@ -116,6 +115,11 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mBadgeListener?.updateBadgeVisibility(false)
     }
 
     override fun onDestroy() {

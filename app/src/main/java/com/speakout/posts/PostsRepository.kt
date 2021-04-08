@@ -194,7 +194,7 @@ class PostsRepository(
     suspend fun getUnreadNotificationsCount(): Result<Int> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.updateActions()
+                val result = apiService.getUnreadNotificationsCount()
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!.get("count").asInt)
                 }

@@ -1,5 +1,7 @@
 package com.speakout.ui
 
+import android.app.NotificationManager
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -88,6 +90,8 @@ class MainActivity : BaseActivity(), NavBadgeListener {
                 }
             }
         }
+
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
 
     }
 

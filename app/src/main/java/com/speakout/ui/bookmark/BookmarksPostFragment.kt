@@ -9,7 +9,6 @@ import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,9 +18,7 @@ import com.speakout.common.EventObserver
 import com.speakout.databinding.FragmentBookmarksPostBinding
 import com.speakout.events.PostEventTypes
 import com.speakout.events.PostEvents
-import com.speakout.extensions.createFactory
-import com.speakout.extensions.setUpToolbar
-import com.speakout.extensions.showShortToast
+import com.speakout.extensions.*
 import com.speakout.posts.PostsRepository
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
@@ -29,6 +26,7 @@ import com.speakout.ui.profile.ProfilePostClickListener
 import com.speakout.ui.profile.ProfilePostsAdapter
 import com.speakout.utils.AppPreference
 import com.speakout.utils.Constants
+import kotlinx.android.synthetic.main.fragment_bookmarks_post.*
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -106,6 +104,11 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
         mBookmarksViewModel.posts.observe(viewLifecycleOwner, Observer {
+            if (mBookmarksViewModel.mPostList.isEmpty()) {
+                view_empty_bookmarks_posts.visible()
+            } else {
+                view_empty_bookmarks_posts.gone()
+            }
             mBinding.swipeBookmarks.isRefreshing = false
             isLoading = false
             key = it.key

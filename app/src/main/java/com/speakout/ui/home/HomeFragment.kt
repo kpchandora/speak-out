@@ -179,6 +179,11 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            if (mHomeViewModel.mPostList.isEmpty()) {
+                view_empty_home_posts.visible()
+            } else {
+                view_empty_home_posts.gone()
+            }
             swipe_home.isRefreshing = false
             isLoading = false
             key = it.key
@@ -206,6 +211,11 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         mHomeViewModel.deletePost.observe(viewLifecycleOwner, EventObserver {
             if (it is Result.Success) {
                 mPostsAdapter.deletePost(it.data.postId)
+                if (mHomeViewModel.mPostList.isEmpty()) {
+                    view_empty_home_posts.visible()
+                } else {
+                    view_empty_home_posts.gone()
+                }
             }
 
             if (it is Result.Error) {

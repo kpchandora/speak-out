@@ -19,6 +19,7 @@
         android:layout_marginTop="?actionBarSize"
         android:layout_marginEnd="12dp">
 
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_notification"
             android:layout_width="match_parent"
@@ -26,7 +27,23 @@
             android:clipToPadding="false"
             android:paddingTop="8dp"
             tools:listitem="@layout/item_notification_layout" />
+
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <ProgressBar
+        android:id="@+id/notifications_pb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
+    <View
+        android:id="@+id/view_empty_notifications"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:background="@drawable/ic_empty_notifications"
+        android:visibility="gone" />
 
 </FrameLayout>

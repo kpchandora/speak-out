@@ -141,6 +141,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
         swipe_profile.setOnRefreshListener {
+            view_empty_profile_posts.gone()
             key = 0
             homeViewModel.mPostList.clear()
             mPostsAdapter.notifyDataSetChanged()
@@ -180,6 +181,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            if (homeViewModel.mPostList.isEmpty()) {
+                view_empty_profile_posts.visible()
+            } else {
+                view_empty_profile_posts.gone()
+            }
             swipe_profile.isRefreshing = false
             isLoading = false
             key = it.key

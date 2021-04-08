@@ -207,4 +207,15 @@
         app:spanCount="3"
         tools:listitem="@layout/item_profile_post_layout" />
 
+    <View
+        android:id="@+id/view_empty_profile_posts"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/ic_empty_posts"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/profile_post_rv" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

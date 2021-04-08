@@ -1,5 +1,6 @@
 package com.speakout.ui.notifications
 
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,9 +19,7 @@ import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.NotificationEvents
-import com.speakout.extensions.createFactory
-import com.speakout.extensions.setUpWithAppBarConfiguration
-import com.speakout.extensions.showShortToast
+import com.speakout.extensions.*
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationsItem
 import com.speakout.ui.MainActivity
@@ -76,12 +75,13 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         super.onViewCreated(view, savedInstanceState)
         setUpWithAppBarConfiguration(view)?.toolbar_title?.text =
             getString(R.string.title_notifications)
-
+        (requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
         rv_notification.setHasFixedSize(true)
         rv_notification.layoutManager = LinearLayoutManager(requireContext())
         rv_notification.adapter = adapter
 
         swipe_notifications.setOnRefreshListener {
+            view_empty_notifications.gone()
             adapter.notifyDataSetChanged()
             refreshData()
         }
@@ -91,11 +91,18 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             isLoading = false
             key = it.key
             adapter.notifyDataSetChanged()
+            if (notificationsViewModel.mNotifications.isEmpty()) {
+                view_empty_notifications.visible()
+            } else {
+                view_empty_notifications.gone()
+            }
+            notifications_pb.gone()
         })
 
         notificationsViewModel.error.observe(viewLifecycleOwner, EventObserver {
             swipe_notifications.isRefreshing = false
             isLoading = false
+            notifications_pb.gone()
             showShortToast(it)
         })
 

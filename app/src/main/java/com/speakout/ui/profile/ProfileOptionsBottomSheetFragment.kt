@@ -1,5 +1,6 @@
 package com.speakout.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.speakout.R
 import com.speakout.databinding.FragmentProfileOptionsBottomSheetBinding
+import com.speakout.ui.about.AboutActivity
 
 class ProfileOptionsBottomSheetFragment : BottomSheetDialogFragment() {
 
@@ -40,6 +42,10 @@ class ProfileOptionsBottomSheetFragment : BottomSheetDialogFragment() {
             val action =
                 ProfileOptionsBottomSheetFragmentDirections.actionProfileOptionsBottomSheetFragmentToLogoutDialog()
             findNavController().navigate(action)
+        }
+        mBinding.tvAbout.setOnClickListener {
+            dismiss()
+            startActivity(Intent(requireContext(), AboutActivity::class.java))
         }
     }
 

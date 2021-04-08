@@ -2,7 +2,6 @@ package com.speakout.ui
 
 import android.app.NotificationManager
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
@@ -11,12 +10,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.iid.FirebaseInstanceId
 import com.speakout.*
 import com.speakout.api.RetrofitBuilder
-import com.speakout.ui.home.HomeFragment
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope

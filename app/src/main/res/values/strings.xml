@@ -104,6 +104,8 @@
     <string name="text_bookmarks">Bookmarks</string>
     <string name="text_logout">Logout</string>
     <string name="logout_info">Are you sure you want\nto logout?</string>
-
+    <string name="app_version">Version: %s</string>
+    <string name="made_in_india">Made in India\n❤️</string>
+    <string name="about">About</string>
 
 </resources>

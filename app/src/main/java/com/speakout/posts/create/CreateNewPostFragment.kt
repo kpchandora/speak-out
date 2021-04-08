@@ -35,7 +35,7 @@ class CreateNewPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)?.toolbar_title?.text = "New Post"
+        setUpToolbar(view)?.toolbar_title?.text = getString(R.string.title_new_post)
 
         create_post_container_layout.addViewObserver {
             activity?.let {
@@ -47,6 +47,8 @@ class CreateNewPostFragment : Fragment() {
         }
 
         create_post_content_tv.text = postContent
+
+        create_post_next_btn.isEnabled = postContent.length > 10
 
         create_post_container_layout.setOnClickListener {
             startActivityForResult(
@@ -96,6 +98,7 @@ class CreateNewPostFragment : Fragment() {
                 data?.extras?.let {
                     it.getString(BottomDialogActivity.CONTENT)?.let { content ->
                         create_post_content_tv.text = content
+                        create_post_next_btn.isEnabled = content.length > 10
                     }
                 }
             }

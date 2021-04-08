@@ -33,7 +33,7 @@
                 android:background="@android:color/transparent"
                 android:focusable="true"
                 android:gravity="start"
-                android:hint="@string/enter_content_hint"
+                android:hint="@string/type_here"
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLength="300"

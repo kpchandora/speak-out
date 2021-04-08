@@ -113,7 +113,7 @@ class PostViewFragment : Fragment() {
                 sendPostEvents(it.data.postId, PostEventTypes.DELETE)
                 ProfileEvents.sendEvent(
                     context = requireContext(),
-                    userId = it.data.userId,
+                    userId = it.data.postId,
                     eventType = ProfileEventTypes.DELETE_POST
                 )
                 Timber.d("Delete Success: ${it.data.postId}")

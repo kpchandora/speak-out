@@ -1,6 +1,7 @@
 package com.speakout.utils
 
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -23,6 +24,8 @@ object FirebaseUtils {
         )
         client.signOut()
         client.revokeAccess()
+        (activity.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
+            .cancelAll()
     }
 
     fun getPostsStorageRef() = FirebaseStorage.getInstance().reference.child("posts")

@@ -60,6 +60,7 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Timber.d("Data: ${remoteMessage.data}")
+        if (!appPreference.isLoggedIn()) return
         remoteMessage.data.let {
             val type = it["type"]
             if (type.isNotNullOrEmpty()) {

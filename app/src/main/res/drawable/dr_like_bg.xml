@@ -3,7 +3,6 @@
 
     <item android:drawable="@drawable/ic_filled_heart" android:state_checked="true" />
 
-    <item android:drawable="@drawable/ic_like"
-        android:state_checked="false"/>
+    <item android:drawable="@drawable/ic_like" android:state_checked="false" />
 
 </selector>

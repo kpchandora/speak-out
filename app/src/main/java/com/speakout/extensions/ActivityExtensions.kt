@@ -25,48 +25,12 @@ fun Fragment.showShortToast(message: String) {
     Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
 }
 
-fun <T> Context.openActivity(clazz: Class<T>, extras: Bundle? = null): Intent {
-    return Intent(this, clazz).also { intent ->
-        extras?.let {
-            intent.putExtras(extras)
-        }
-        startActivity(intent)
-    }
-}
-
-fun <T> Activity.openActivityForResult(
-    clazz: Class<T>,
-    requestCode: Int,
-    extras: Bundle? = null
-): Intent {
-    return Intent(this, clazz).also { intent ->
-        extras?.let {
-            intent.putExtras(extras)
-        }
-        startActivityForResult(intent, requestCode)
-    }
-}
 
 fun Activity.getScreenSize(): DisplayMetrics {
     val displayMetrics = DisplayMetrics()
     windowManager.defaultDisplay.getMetrics(displayMetrics)
     return displayMetrics
 }
-
-fun AppCompatActivity.addFragment(
-    container: Int,
-    fragment: Fragment,
-    tag: Int = 0,
-    backStackTag: String? = null
-) {
-    supportFragmentManager.beginTransaction().let {
-        it.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-        it.add(container, fragment)
-        it.addToBackStack(backStackTag)
-        it.commit()
-    }
-}
-
 
 fun Fragment.setUpToolbar(view: View): Toolbar? {
     view.findViewById<Toolbar>(R.id.toolbar)?.let {

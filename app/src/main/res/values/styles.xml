@@ -41,4 +41,16 @@
         <item name="android:elevation">8dp</item>
     </style>
 
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/dr_bottomsheet_top_rounded_corners</item>
+    </style>
+
+    <style name="ProfileBottomSheet" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+        <item name="android:windowSoftInputMode">stateAlwaysHidden</item>
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
 </resources>

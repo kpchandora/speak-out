@@ -1,9 +1,9 @@
 package com.speakout.ui.notifications
 
 import android.widget.ImageView
-import com.speakout.notification.NotificationResponse
+import com.speakout.notification.NotificationsItem
 
 interface NotificationsClickListener {
-    fun onPostClick(notification: NotificationResponse)
-    fun onProfileClick(notification: NotificationResponse, imageView: ImageView)
+    fun onPostClick(notification: NotificationsItem)
+    fun onProfileClick(notification: NotificationsItem, imageView: ImageView)
 }

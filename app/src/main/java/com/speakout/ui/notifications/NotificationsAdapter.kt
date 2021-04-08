@@ -5,11 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
 import com.speakout.notification.NotificationResponse
+import com.speakout.notification.NotificationsItem
 
-class NotificationsAdapter(private val listener: NotificationsClickListener) :
+class NotificationsAdapter(
+    private val notifications: ArrayList<NotificationsItem>,
+    private val listener: NotificationsClickListener
+) :
     RecyclerView.Adapter<NotificationsViewHolder>() {
-
-    private val notifications = ArrayList<NotificationResponse>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationsViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -19,12 +21,6 @@ class NotificationsAdapter(private val listener: NotificationsClickListener) :
 
     override fun onBindViewHolder(holder: NotificationsViewHolder, position: Int) {
         holder.bind(notifications[position])
-    }
-
-    fun updateData(list: List<NotificationResponse>) {
-        notifications.clear()
-        notifications.addAll(list)
-        notifyDataSetChanged()
     }
 
     override fun getItemCount() = notifications.size

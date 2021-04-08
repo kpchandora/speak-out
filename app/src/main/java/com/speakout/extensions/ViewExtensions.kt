@@ -92,6 +92,7 @@ fun ImageView.loadImage(url: String?, placeholder: Int, makeRound: Boolean = fal
 
 inline fun ImageView.loadImageWithCallback(
     url: String, makeRound: Boolean = false,
+    centerCrop: Boolean = false,
     crossinline onSuccess: () -> Unit,
     crossinline onFailed: () -> Unit
 ) {
@@ -102,7 +103,11 @@ inline fun ImageView.loadImageWithCallback(
         glide = glide.apply(RequestOptions.circleCropTransform())
     }
 
-    glide.listener(object : RequestListener<Drawable> {
+    if (centerCrop){
+        glide = glide.centerCrop()
+    }
+    glide
+        .listener(object : RequestListener<Drawable> {
         override fun onLoadFailed(
             e: GlideException?,
             model: Any?,

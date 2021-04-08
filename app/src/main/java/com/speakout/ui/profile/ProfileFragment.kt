@@ -13,20 +13,27 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserDetails
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
 import com.speakout.extensions.*
+import com.speakout.posts.PostsRepository
 import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.users.ActionType
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
+import com.speakout.utils.Constants
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.layout_profile.*
-import timber.log.Timber
+import kotlinx.android.synthetic.main.layout_toolbar.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
@@ -34,23 +41,39 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         const val TAG = "ProfileFragment"
     }
 
-    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation)
-    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
-    private val mPostsAdapter = ProfilePostsAdapter()
+    private val profileViewModel: ProfileViewModel by navGraphViewModels(R.id.profile_navigation) {
+        val appPreference = AppPreference
+        ProfileViewModel(
+            appPreference,
+            UsersRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private val homeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation) {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private lateinit var mPostsAdapter: ProfilePostsAdapter
     private var mUserId = ""
     private var isSelf = false
     private lateinit var screenSize: DisplayMetrics
     private var mUserDetails: UserDetails? = null
     private lateinit var safeArgs: ProfileFragmentArgs
     private var mProfileEvents: ProfileEvents? = null
+    private var isLoading = false
+    private var key: Long = 0L
+    private var postEvents: PostEvents? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("Details: ${arguments?.getString("userId")}")
         safeArgs = ProfileFragmentArgs.fromBundle(arguments!!)
         mUserId = safeArgs.userId ?: ""
         isSelf = mUserId == AppPreference.getUserId()
         screenSize = requireActivity().getScreenSize()
+
+        mPostsAdapter = ProfilePostsAdapter(homeViewModel.mPostList)
 
         mProfileEvents = ProfileEvents(requireContext()) {
             val userId = it.getStringExtra(ProfileEvents.USER_ID) ?: return@ProfileEvents
@@ -58,12 +81,9 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 ProfileEventTypes.CREATE_POST,
                 ProfileEventTypes.DELETE_POST -> {
                     if (userId == mUserId) {
-                        homeViewModel.getProfilePosts(mUserId)
-                    }
-                }
-                ProfileEventTypes.DIALOG_UN_FOLLOW -> {
-                    if (userId == mUserId) {
-                        profileViewModel.confirmUnfollow()
+                        key = 0
+                        homeViewModel.mPostList.clear()
+                        homeViewModel.getProfilePosts(mUserId, key)
                     }
                 }
                 ProfileEventTypes.FOLLOW,
@@ -75,7 +95,17 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                 }
             }
         }
-        homeViewModel.getProfilePosts(mUserId)
+        postEvents = PostEvents(requireContext()) {
+            val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
+            when (it.extras?.getInt(PostEvents.EVENT_TYPE)) {
+                PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
+                PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
+                PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
+                PostEventTypes.ADD_BOOKMARK -> mPostsAdapter.addBookmark(postId)
+                PostEventTypes.REMOVE_BOOKMARK -> mPostsAdapter.removeBookmark(postId)
+            }
+        }
+        homeViewModel.getProfilePosts(mUserId, key)
         profileViewModel.getUser(mUserId)
     }
 
@@ -88,9 +118,11 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         setUpWithAppBarConfiguration(view)?.let {
-            it.title = safeArgs.username
-//            view.toolbar_title_tv.visible()
-//            view.toolbar_title_tv.text = safeArgs.username
+            it.toolbar_title.text = safeArgs.username
+            if (isSelf)
+                it.iv_settings.visible()
+            else
+                it.iv_settings.gone()
         }
         return view
     }
@@ -102,6 +134,20 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             loadImage(safeArgs.profileUrl)
         }
 
+        iv_settings.setOnClickListener {
+            val action =
+                ProfileFragmentDirections.actionNavigationProfileToProfileOptionsBottomSheetFragment()
+            findNavController().navigate(action)
+        }
+
+        swipe_profile.setOnRefreshListener {
+            key = 0
+            homeViewModel.mPostList.clear()
+            mPostsAdapter.notifyDataSetChanged()
+            homeViewModel.getProfilePosts(mUserId, key)
+            profileViewModel.getUser(mUserId)
+        }
+
         mPostsAdapter.mListener = mListener
         profile_post_rv.apply {
             setHasFixedSize(true)
@@ -109,21 +155,41 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             adapter = mPostsAdapter
         }
 
+        profile_post_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (isLoading || key == Constants.INVALID_KEY) return
+                if (dy > 0) {
+                    (recyclerView.layoutManager as LinearLayoutManager).let {
+                        val visibleItems = it.childCount
+                        val totalItemsCount = it.itemCount
+                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                            homeViewModel.getProfilePosts(mUserId, key)
+                            isLoading = true
+                        }
+                    }
+                }
+            }
+        })
+
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { result ->
+            swipe_profile.isRefreshing = false
             if (result is Result.Success) {
                 populateData(result.data)
             }
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
-            if (it is Result.Success) {
-                mPostsAdapter.updateData(it.data)
-                homeViewModel.addPosts(it.data)
-            }
+            swipe_profile.isRefreshing = false
+            isLoading = false
+            key = it.key
+            mPostsAdapter.notifyDataSetChanged()
+        })
 
-            if (it is Result.Error) {
-                Timber.d("Failed to fetch posts: ${it.error}")
-            }
+        homeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
+            swipe_profile.isRefreshing = false
+            isLoading = false
+            showShortToast(it)
         })
 
         layout_profile_followers_container.setOnClickListener {
@@ -138,6 +204,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onDestroy() {
         mProfileEvents?.dispose()
+        postEvents?.dispose()
         super.onDestroy()
     }
 
@@ -305,13 +372,13 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun loadImage(photoUrl: String?) {
-        layout_profile_iv.layoutParams.width = screenSize.widthPixels / 3
+        card_view.layoutParams.width = screenSize.widthPixels / 3
         layout_profile_bg_view.layoutParams.width = screenSize.widthPixels / 3
 
         layout_profile_bg_view.gone()
-        layout_profile_iv.loadImageWithCallback(photoUrl ?: "", makeRound = true,
+        layout_profile_iv.loadImageWithCallback(photoUrl ?: "", centerCrop = true,
             onSuccess = {
-                layout_profile_bg_view.visible()
+//                layout_profile_bg_view.visible()
             },
             onFailed = {
                 layout_profile_bg_view.gone()
@@ -325,14 +392,17 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     private fun showUnFollowAlertDialog() {
-        findNavController().navigate(
-            ProfileFragmentDirections.actionNavigationProfileToUnFollowDialog(
-                profileUrl = mUserDetails?.photoUrl,
-                username = mUserDetails?.username ?: "",
-                userId = mUserId,
-                isFrom = TAG
-            )
+        val model = UnFollowDialogModel(
+            userId = mUserId, username = mUserDetails?.username ?: "",
+            isFrom = TAG, profileUrl = mUserDetails?.photoUrl
         )
+        val dialog = UnFollowDialog.newInstance(model)
+        dialog.setListener(object : UnFollowDialog.UnFollowDialogListener {
+            override fun onUnFollow(userId: String) {
+                profileViewModel.confirmUnfollow()
+            }
+        })
+        dialog.show(requireActivity().supportFragmentManager, TAG)
     }
 
 
@@ -344,11 +414,6 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         override fun onPostClick(postData: PostData, postImageView: ImageView, position: Int) {
             val action =
                 ProfileFragmentDirections.actionNavigationProfileToPostViewFragment(position)
-
-//            val extras = FragmentNavigatorExtras(
-//                postImageView to postData.postId
-//            )
-//            findNavController().navigate(action, extras)
             findNavController().navigate(action)
         }
     }

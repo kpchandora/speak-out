@@ -11,20 +11,26 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
-import com.speakout.auth.UserMiniDetails
+import com.speakout.api.RetrofitBuilder
+import com.speakout.auth.UsersItem
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
+import com.speakout.extensions.createFactory
 import com.speakout.extensions.gone
 import com.speakout.extensions.isNotNullOrEmpty
 import com.speakout.extensions.visible
 import com.speakout.ui.MainActivity
+import com.speakout.users.UsersRepository
+import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_search.*
 import timber.log.Timber
 
 
 class SearchFragment : Fragment() {
 
-    private val searchViewModel: SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels() {
+        SearchViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
     private val mAdapter = SearchAdapter()
     private var usersCount = 0
 
@@ -109,7 +115,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun navigateToProfile(
-        userMiniDetails: UserMiniDetails,
+        userMiniDetails: UsersItem,
         profileImageView: ImageView
     ) {
         val action = SearchFragmentDirections.actionSearchFragmentToNavigationProfile(
@@ -149,7 +155,7 @@ class SearchFragment : Fragment() {
     }
 
     private val mUserClickListener = object : OnSearchUserClickListener {
-        override fun onUserClick(userMiniDetails: UserMiniDetails, profileImageView: ImageView) {
+        override fun onUserClick(userMiniDetails: UsersItem, profileImageView: ImageView) {
             navigateToProfile(userMiniDetails, profileImageView)
         }
     }

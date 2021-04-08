@@ -29,6 +29,7 @@ import com.speakout.posts.create.PostData
 import com.speakout.ui.MainActivity
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_post_tags.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.util.*
 
@@ -53,11 +54,7 @@ class TagsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.post {
-            setUpToolbar(view)?.let {
-                it.title = "Tags"
-            }
-        }
+        setUpToolbar(view)?.toolbar_title?.text = "Tags"
         fragment_post_tags_progress.visible()
         mAdapter.setHasStableIds(true)
         mAdapter.setListener(tagsListener)

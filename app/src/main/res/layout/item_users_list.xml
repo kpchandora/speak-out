@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
     android:orientation="horizontal"
     android:paddingStart="12dp"
-    android:paddingEnd="12dp">
+    android:paddingTop="6dp"
+    android:paddingEnd="12dp"
+    android:paddingBottom="6dp">
 
     <FrameLayout
         android:id="@+id/fl_profile"
@@ -17,13 +17,13 @@
 
         <ImageView
             android:id="@+id/item_users_list_profile_iv"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             tools:src="@tools:sample/avatars" />
 
         <View
-            android:layout_width="46dp"
-            android:layout_height="46dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@drawable/dr_circle_stroke_bg_grey500" />
 
     </FrameLayout>
@@ -46,8 +46,9 @@
             android:layout_margin="1dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="16sp"
             tools:text="@tools:sample/first_names" />
 
         <TextView
@@ -57,6 +58,7 @@
             android:layout_margin="1dp"
             android:ellipsize="end"
             android:maxLines="1"
+            android:textSize="14sp"
             tools:text="@tools:sample/lorem/random" />
 
     </LinearLayout>
@@ -76,7 +78,7 @@
             android:background="@drawable/dr_unfollow_bg"
             android:gravity="center"
             android:textColor="@color/black"
-            android:textSize="12sp"
+            android:textSize="14sp"
             tools:text="Following" />
 
     </androidx.cardview.widget.CardView>

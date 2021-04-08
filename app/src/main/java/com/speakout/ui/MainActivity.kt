@@ -1,8 +1,10 @@
 package com.speakout.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -12,13 +14,14 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.iid.FirebaseInstanceId
 import com.speakout.*
 import com.speakout.api.RetrofitBuilder
+import com.speakout.ui.home.HomeFragment
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), NavBadgeListener {
 
     private lateinit var navController: NavController
     private var currentFragmentId = 0
@@ -26,27 +29,19 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        window.navigationBarColor = Color.parseColor("#20111111");
+
         setContentView(R.layout.activity_main)
         bottomNavigationView = findViewById(R.id.nav_view)
 
         navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_search,
-                R.id.navigation_new_post,
-                R.id.notificationFragment,
-                R.id.navigation_profile
-            )
-        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
+
         bottomNavigationView.setupWithNavController(navController)
         bottomNavigationView.setOnNavigationItemSelectedListener {
             Timber.d("setOnNavigationItemSelectedListener: ${it.title}")
             when (it.itemId) {
+                R.id.navigation_home -> {
+                    navController.popBackStack(R.id.navigation_home, false)
+                }
                 R.id.navigation_new_post -> {
                     navController.navigate(R.id.create_post_navigation)
                     return@setOnNavigationItemSelectedListener false
@@ -83,29 +78,25 @@ class MainActivity : BaseActivity() {
                     currentFragment.doubleClick()
             }
         }
-
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Timber.e("Failed")
-            }
-
-            try {
-                // Get new Instance ID token
-                val token = task.result?.token
-                Timber.d("Token: $token")
-
+        if (AppPreference.isLoggedIn()) {
+            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
                 GlobalScope.launch {
-                    UsersRepository(RetrofitBuilder.apiService, AppPreference).updateFcmToken(
-                        token ?: ""
-                    )
+                    UsersRepository(
+                        RetrofitBuilder.apiService,
+                        AppPreference
+                    ).updateFcmToken(it.token)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
 
     }
 
+    override fun updateBadgeVisibility(isVisible: Boolean) {
+        bottomNavigationView.getOrCreateBadge(R.id.notificationFragment).let {
+            it.isVisible = isVisible
+            it.backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.primary_dark)
+        }
+    }
 
     private fun handleNavigationVisibility(id: Int) {
         when (id) {
@@ -150,4 +141,5 @@ class MainActivity : BaseActivity() {
     interface BottomIconDoubleClick {
         fun doubleClick()
     }
+
 }

@@ -3,6 +3,7 @@ package com.speakout.api
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
+import com.speakout.BuildConfig
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.tasks.await
 import okhttp3.Interceptor
@@ -26,6 +27,8 @@ class AuthTokenInterceptor : Interceptor {
                 Timber.d("End")
                 val modifiedRequest = request.newBuilder()
                     .addHeader("Authorization", pair.second)
+                    .addHeader("version_name", BuildConfig.VERSION_NAME)
+                    .addHeader("version_code", BuildConfig.VERSION_CODE.toString())
                     .build()
                 return chain.proceed(modifiedRequest)
             } else {

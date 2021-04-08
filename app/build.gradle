@@ -13,17 +13,42 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.speakout"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            //"\"https://staging-app-speakout.herokuapp.com/\""
+
+        }
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    flavorDimensions "environment"
+
+    productFlavors {
+        staging {
+            applicationId "com.speakout.staging"
+            versionNameSuffix "-staging"
+            buildConfigField "String", 'BASE_URL', "\"https://staging-app-speakout.herokuapp.com/\""
+        }
+        prod {
+            applicationId "com.speakout"
+            buildConfigField "String", 'BASE_URL', "\"https://app-speakout.herokuapp.com/\""
+        }
+    }
+
+    dataBinding {
+        enabled = true
     }
 
     kotlinOptions {
@@ -34,8 +59,6 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
-
-    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/main/assets/'] } }
 }
 
 dependencies {
@@ -114,7 +137,7 @@ dependencies {
 
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
     // Lottie
     implementation 'com.airbnb.android:lottie:3.4.0'

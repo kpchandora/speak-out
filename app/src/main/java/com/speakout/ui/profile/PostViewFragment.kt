@@ -8,16 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
 import com.speakout.extensions.*
+import com.speakout.posts.PostsRepository
 import com.speakout.posts.view.OnPostOptionsClickListener
 import com.speakout.posts.view.PostOptionsDialog
 import com.speakout.posts.create.PostData
@@ -25,18 +29,32 @@ import com.speakout.posts.view.PostRecyclerViewAdapter
 import com.speakout.ui.home.HomeViewModel
 import com.speakout.posts.view.PostClickEventListener
 import com.speakout.users.ActionType
+import com.speakout.utils.AppPreference
 import com.speakout.utils.ImageUtils
 import com.speakout.utils.Utils
 import kotlinx.android.synthetic.main.fragment_post_view.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 
 class PostViewFragment : Fragment() {
 
     private val safeArgs: PostViewFragmentArgs by navArgs()
-    private val mPostsAdapter = PostRecyclerViewAdapter()
-    private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation)
-    private val singleHomeViewModel: HomeViewModel by viewModels()
+    private lateinit var mPostsAdapter: PostRecyclerViewAdapter
+    private val navHomeViewModel: HomeViewModel by navGraphViewModels(R.id.profile_navigation) {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private val singleHomeViewModel: HomeViewModel by viewModels {
+        val appPreference = AppPreference
+        HomeViewModel(
+            appPreference,
+            PostsRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
     private lateinit var mHomeViewModel: HomeViewModel
     private lateinit var dialog: PostOptionsDialog
 
@@ -48,6 +66,7 @@ class PostViewFragment : Fragment() {
         } else {
             mHomeViewModel = navHomeViewModel
         }
+        mPostsAdapter = PostRecyclerViewAdapter(mHomeViewModel.mPostList)
     }
 
     override fun onCreateView(
@@ -59,7 +78,7 @@ class PostViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)
+        setUpToolbar(view)?.toolbar_title?.text = "Posts"
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
         fragment_post_view_rv.apply {
@@ -79,10 +98,11 @@ class PostViewFragment : Fragment() {
         })
 
         if (!safeArgs.isFromNotification) {
-            mPostsAdapter.updatePosts(mHomeViewModel.getProfilePosts())
+            mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+                progressBar.gone()
+                mPostsAdapter.notifyDataSetChanged()
+            })
             fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
-        } else {
-            progressBar.visible()
         }
         observeViewModels()
     }
@@ -93,7 +113,7 @@ class PostViewFragment : Fragment() {
                 sendPostEvents(it.data.postId, PostEventTypes.DELETE)
                 ProfileEvents.sendEvent(
                     context = requireContext(),
-                    userId = it.data.userId,
+                    userId = it.data.postId,
                     eventType = ProfileEventTypes.DELETE_POST
                 )
                 Timber.d("Delete Success: ${it.data.postId}")
@@ -158,7 +178,16 @@ class PostViewFragment : Fragment() {
         }
 
         override fun onProfileClick(postData: PostData, profileImageView: ImageView) {
-            findNavController().navigateUp()
+            val action = PostViewFragmentDirections.actionGlobalProfileFragment(
+                userId = postData.userId,
+                profileUrl = postData.photoUrl,
+                transitionTag = postData.postId,
+                username = postData.username
+            )
+            val extras = FragmentNavigatorExtras(
+                profileImageView to postData.postId
+            )
+            findNavController().navigate(action, extras)
         }
 
         override fun onLikedUsersClick(postData: PostData) {
@@ -175,8 +204,8 @@ class PostViewFragment : Fragment() {
             dialog.setPost(postData)
         }
 
-        override fun onBookmarkAdd(postId: String) {
-            mHomeViewModel.addBookmark(postId)
+        override fun onBookmarkAdd(postData: PostData) {
+            mHomeViewModel.addBookmark(postId = postData.postId, postedBy = postData.userId)
         }
 
         override fun onBookmarkRemove(postId: String) {
@@ -196,8 +225,7 @@ class PostViewFragment : Fragment() {
         NotificationEvents.sendEvent(requireContext())
     }
 
-    private val mPostsOptionsClickListener = object :
-        OnPostOptionsClickListener {
+    private val mPostsOptionsClickListener = object : OnPostOptionsClickListener {
         override fun onCopy(post: PostData) {
             Utils.copyText(requireContext(), post.content)
             showShortToast("Copied Successfully")
@@ -209,7 +237,6 @@ class PostViewFragment : Fragment() {
 
         @SuppressLint("CheckResult")
         override fun onSave(post: PostData) {
-            Timber.d("Save post")
             ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
                 .withDefaultSchedulers()
                 .subscribe({

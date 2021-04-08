@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -19,17 +18,22 @@ import com.mlsdev.rximagepicker.RxImagePicker
 import com.mlsdev.rximagepicker.Sources
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.auth.UserDetails
 import com.speakout.auth.Type
-import com.speakout.auth.UserMiniDetails
 import com.speakout.auth.UserViewModel
+import com.speakout.auth.UsersItem
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.PostEventTypes
 import com.speakout.events.PostEvents
+import com.speakout.events.ProfileEventTypes
+import com.speakout.events.ProfileEvents
 import com.speakout.extensions.*
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.fragment_profile_edit.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.io.File
 
@@ -40,8 +44,16 @@ class ProfileEditFragment : Fragment() {
 
     private var mProfileUrl = ""
     private var isUploading = false
-    private val profileViewModel: ProfileViewModel by viewModels()
-    private val userViewModel: UserViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels() {
+        val appPreference = AppPreference
+        ProfileViewModel(
+            appPreference,
+            UsersRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private val userViewModel: UserViewModel by viewModels() {
+        UserViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
     private val safeArgs: ProfileEditFragmentArgs by navArgs()
     private lateinit var mUserDetails: UserDetails
 
@@ -62,11 +74,7 @@ class ProfileEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.post {
-            setUpToolbar(view)?.let {
-                it.title = getString(R.string.edit)
-            }
-        }
+        setUpToolbar(view)?.toolbar_title?.text = getString(R.string.edit)
 
         populateDetails()
 
@@ -80,7 +88,7 @@ class ProfileEditFragment : Fragment() {
 
         profile_edit_update_btn.setOnClickListener {
             userViewModel.updateUserDetails(
-                UserMiniDetails(
+                UsersItem(
                     userId = AppPreference.getUserId(),
                     photoUrl = mProfileUrl,
                     name = profile_edit_full_name_et.text.toString().trim(),
@@ -171,6 +179,11 @@ class ProfileEditFragment : Fragment() {
                 PostEvents.sendEvent(
                     context = requireContext(),
                     event = PostEventTypes.USER_DETAILS_UPDATE
+                )
+                ProfileEvents.sendEvent(
+                    context = requireContext(),
+                    userId = it.data.userId,
+                    eventType = ProfileEventTypes.DETAILS_UPDATE
                 )
                 findNavController().navigateUp()
             } else {

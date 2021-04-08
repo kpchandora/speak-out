@@ -19,6 +19,7 @@ import com.speakout.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_create_new_post.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class CreateNewPostFragment : Fragment() {
 
@@ -34,7 +35,8 @@ class CreateNewPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)
+        setUpToolbar(view)?.toolbar_title?.text = "New Post"
+
         create_post_container_layout.addViewObserver {
             activity?.let {
                 it.getScreenSize().let {

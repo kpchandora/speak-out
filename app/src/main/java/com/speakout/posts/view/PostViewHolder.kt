@@ -11,8 +11,66 @@ import kotlinx.android.synthetic.main.item_post_layout.view.*
 class PostViewHolder(val view: View, private val mEventListener: PostClickEventListener?) :
     RecyclerView.ViewHolder(view) {
 
+    init {
+        view.apply {
+            item_post_like_cb.setOnClickListener {
+                val post = tag as PostData
+                if (item_post_like_cb.isChecked) {
+                    post.isLikedBySelf = true
+                    post.likesCount++
+                    mEventListener?.onLike(adapterPosition, post)
+                } else {
+                    post.isLikedBySelf = false
+                    post.likesCount--
+                    mEventListener?.onRemoveLike(adapterPosition, post)
+                }
+                setLikes(post)
+            }
+
+            item_bookmark_cb.setOnClickListener {
+                val post = tag as PostData
+                if (item_bookmark_cb.isChecked) {
+                    lottie_bookmark.visible()
+                    lottie_bookmark.playAnimation()
+                    post.isBookmarkedBySelf = true
+                    mEventListener?.onBookmarkAdd(post)
+                } else {
+                    lottie_bookmark.gone()
+                    post.isBookmarkedBySelf = false
+                    mEventListener?.onBookmarkRemove(postId = post.postId)
+                }
+            }
+
+            item_post_layout_menu_tv.setOnClickListener {
+                val post = tag as PostData
+                mEventListener?.onMenuClick(post, adapterPosition)
+            }
+
+            item_post_load_fail_tv.setOnClickListener {
+                val post = tag as PostData
+                loadPost(post.postImageUrl)
+            }
+
+            item_post_names_layout.setOnClickListener {
+                val post = tag as PostData
+                mEventListener?.onProfileClick(post, item_post_profile_iv)
+            }
+
+            item_post_profile_iv.setOnClickListener {
+                val post = tag as PostData
+                mEventListener?.onProfileClick(post, item_post_profile_iv)
+            }
+
+            item_post_like_count_tv.setOnClickListener {
+                val post = tag as PostData
+                mEventListener?.onLikedUsersClick(post)
+            }
+        }
+    }
+
     fun bind(post: PostData) {
         view.apply {
+            tag = post
             item_post_profile_iv.transitionName = post.postId
 
             item_post_profile_iv.loadImage(
@@ -30,52 +88,6 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
 
             item_post_like_cb.isChecked = post.isLikedBySelf
             item_bookmark_cb.isChecked = post.isBookmarkedBySelf
-
-            item_post_like_cb.setOnClickListener {
-                if (item_post_like_cb.isChecked) {
-                    post.isLikedBySelf = true
-                    post.likesCount++
-                    mEventListener?.onLike(adapterPosition, post)
-                } else {
-                    post.isLikedBySelf = false
-                    post.likesCount--
-                    mEventListener?.onRemoveLike(adapterPosition, post)
-                }
-                setLikes(post)
-            }
-
-            item_bookmark_cb.setOnClickListener {
-                if (item_bookmark_cb.isChecked) {
-                    lottie_bookmark.visible()
-                    lottie_bookmark.playAnimation()
-                    post.isBookmarkedBySelf = true
-                    mEventListener?.onBookmarkAdd(postId = post.postId)
-                } else {
-                    lottie_bookmark.gone()
-                    post.isBookmarkedBySelf = false
-                    mEventListener?.onBookmarkRemove(postId = post.postId)
-                }
-            }
-
-            item_post_layout_menu_tv.setOnClickListener {
-                mEventListener?.onMenuClick(post, adapterPosition)
-            }
-
-            item_post_load_fail_tv.setOnClickListener {
-                loadPost(post.postImageUrl)
-            }
-
-            item_post_names_layout.setOnClickListener {
-                mEventListener?.onProfileClick(post, item_post_profile_iv)
-            }
-
-            item_post_profile_iv.setOnClickListener {
-                mEventListener?.onProfileClick(post, item_post_profile_iv)
-            }
-
-            item_post_like_count_tv.setOnClickListener {
-                mEventListener?.onLikedUsersClick(post)
-            }
         }
     }
 

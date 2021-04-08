@@ -81,6 +81,7 @@
     </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/post_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -124,7 +125,9 @@
                 android:layout_margin="8dp"
                 android:background="@drawable/dr_like_bg"
                 android:button="@null"
-                android:checked="false" />
+                android:checked="false"
+                android:stateListAnimator="@animator/like_animation" />
+
 
         </FrameLayout>
 

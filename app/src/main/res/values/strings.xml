@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">SpeakOut</string>
-    <string name="google_sign_in_key" translatable="false">206284362307-fs8bc6dt68l77fivu5f30it2hgfoaopa.apps.googleusercontent.com</string>
     <string name="username_hint">Username</string>
     <string name="done">Done</string>
     <string name="next">Next</string>
@@ -101,5 +100,9 @@
     </plurals>
 
     <string name="hint_un_follow">You won\'t get updates from @%s</string>
+    <string name="text_bookmarks">Bookmarks</string>
+    <string name="text_logout">Logout</string>
+    <string name="logout_info">Are you sure you want\nto logout?</string>
+
 
 </resources>

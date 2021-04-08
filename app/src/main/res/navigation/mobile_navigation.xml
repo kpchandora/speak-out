@@ -109,10 +109,6 @@
             app:destination="@id/profile_navigation"
             app:popExitAnim="@anim/slide_out_right" />
 
-        <action
-            android:id="@+id/action_usersListFragment_to_unFollowDialog"
-            app:destination="@id/unFollowDialog" />
-
     </fragment>
 
 
@@ -183,12 +179,16 @@
                 app:popExitAnim="@anim/slide_out_right" />
 
             <action
-                android:id="@+id/action_navigation_profile_to_unFollowDialog"
-                app:destination="@id/unFollowDialog" />
-
-            <action
                 android:id="@+id/action_navigation_profile_to_profileEditFragment"
                 app:destination="@id/profileEditFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+
+            <action
+                android:id="@+id/action_navigation_profile_to_profileOptionsBottomSheetFragment"
+                app:destination="@id/profileOptionsBottomSheetFragment"
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
@@ -215,6 +215,45 @@
                 app:popExitAnim="@anim/slide_out_right" />
 
         </fragment>
+
+        <dialog
+            android:id="@+id/profileOptionsBottomSheetFragment"
+            android:name="com.speakout.ui.profile.ProfileOptionsBottomSheetFragment"
+            tools:layout="@layout/fragment_profile_options_bottom_sheet">
+
+
+            <action
+                android:id="@+id/action_profileOptions_to_bookmarksPostFragment"
+                app:destination="@id/bookmarksPostFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+            <action
+                android:id="@+id/action_profileOptionsBottomSheetFragment_to_logoutDialog"
+                app:destination="@id/logoutDialog" />
+        </dialog>
+
+
+        <fragment
+            android:id="@+id/bookmarksPostFragment"
+            android:name="com.speakout.ui.bookmark.BookmarksPostFragment"
+            android:label="BookmarksPostFragment"
+            tools:layout="@layout/fragment_bookmarks_post">
+            <action
+                android:id="@+id/action_bookmarks_to_postViewFragment"
+                app:destination="@id/postViewFragment"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
+        </fragment>
+
+        <dialog
+            android:id="@+id/logoutDialog"
+            android:name="com.speakout.ui.profile.LogoutDialog"
+            android:label="LogoutDialog"
+            tools:layout="@layout/dialog_logout" />
 
     </navigation>
 
@@ -250,6 +289,11 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
+        <action
+            android:id="@+id/action_postViewFragment_to_profile_navigation"
+            app:destination="@id/profile_navigation"
             app:popExitAnim="@anim/slide_out_right" />
 
     </fragment>
@@ -307,7 +351,6 @@
         <fragment
             android:id="@+id/createNewPostFragment"
             android:name="com.speakout.posts.create.CreateNewPostFragment"
-            android:label="New Post"
             tools:layout="@layout/fragment_create_new_post">
 
             <action
@@ -333,33 +376,6 @@
         </fragment>
 
     </navigation>
-
-    <dialog
-        android:id="@+id/unFollowDialog"
-        android:name="com.speakout.ui.profile.UnFollowDialog"
-        android:label="UnFollowDialog">
-
-        <argument
-            android:name="profileUrl"
-            app:argType="string"
-            app:nullable="true" />
-
-        <argument
-            android:name="username"
-            app:argType="string"
-            app:nullable="false" />
-
-        <argument
-            android:name="userId"
-            app:argType="string"
-            app:nullable="false" />
-
-        <argument
-            android:name="isFrom"
-            app:argType="string"
-            app:nullable="false" />
-
-    </dialog>
 
 
 </navigation>

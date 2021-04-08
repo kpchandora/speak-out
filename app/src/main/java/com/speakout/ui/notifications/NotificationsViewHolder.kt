@@ -9,7 +9,7 @@ import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
 import com.speakout.extensions.toFormattedTime
 import com.speakout.extensions.visible
-import com.speakout.notification.NotificationResponse
+import com.speakout.notification.NotificationsItem
 import kotlinx.android.synthetic.main.item_notification_layout.view.*
 
 class NotificationsViewHolder(
@@ -18,7 +18,7 @@ class NotificationsViewHolder(
 ) :
     RecyclerView.ViewHolder(view) {
 
-    fun bind(notification: NotificationResponse) {
+    fun bind(notification: NotificationsItem) {
         with(view) {
             iv_notification_profile.loadImage(
                 url = notification.photoUrl,

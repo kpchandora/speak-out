@@ -56,6 +56,7 @@ class CreateNewPostFragment : Fragment() {
                     BottomDialogActivity.CONTENT, create_post_content_tv.text.toString()
                 ), Constants.IntentStrings.CreatePost.REQUEST_CODE
             )
+            requireActivity().overridePendingTransition(R.anim.slide_up, R.anim.slide_down)
         }
 
         create_post_next_btn.setOnClickListener {

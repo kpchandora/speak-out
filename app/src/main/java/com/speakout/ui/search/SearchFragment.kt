@@ -77,7 +77,7 @@ class SearchFragment : Fragment() {
             },
             onDebouncingQueryTextChange = {
                 if (it.isNotNullOrEmpty()) {
-                    searchViewModel.searchUsers(it!!)
+                    searchViewModel.searchUsers(it!!.toLowerCase())
                 }
             }
         ))

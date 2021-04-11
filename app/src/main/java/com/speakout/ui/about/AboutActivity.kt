@@ -17,5 +17,4 @@ class AboutActivity : AppCompatActivity() {
         window?.navigationBarColor = Color.BLACK
     }
 
-
 }

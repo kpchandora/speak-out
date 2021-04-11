@@ -63,4 +63,9 @@ class BottomDialogActivity : Activity() {
         showKeyboard()
     }
 
+    override fun finish() {
+        overridePendingTransition(R.anim.slide_down, R.anim.slide_up)
+        super.finish()
+    }
+
 }

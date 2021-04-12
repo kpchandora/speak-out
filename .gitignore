@@ -13,3 +13,4 @@ app/google-services.json
 *.aab
 **/output.json
 *.jks
+app/config

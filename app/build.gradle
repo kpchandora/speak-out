@@ -23,7 +23,6 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            //"\"https://staging-app-speakout.herokuapp.com/\""
 
         }
         release {
@@ -39,11 +38,17 @@ android {
         staging {
             applicationId "com.speakout.staging"
             versionNameSuffix "-staging"
-            buildConfigField "String", 'BASE_URL', "\"https://staging-app-speakout.herokuapp.com/\""
         }
         prod {
             applicationId "com.speakout"
-            buildConfigField "String", 'BASE_URL', "\"https://app-speakout.herokuapp.com/\""
+        }
+    }
+
+    applicationVariants.all { variant ->
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("app/config/${variant.name}.props"))
+        properties.each { p ->
+            variant.buildConfigField 'String', p.key, p.value
         }
     }
 

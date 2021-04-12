@@ -11,16 +11,34 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.speakout.*
+import com.speakout.BuildConfig
+import com.speakout.MobileNavigationDirections
+import com.speakout.R
 import com.speakout.api.RetrofitBuilder
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import java.lang.Exception
 
 class MainActivity : BaseActivity(), NavBadgeListener {
+
+    companion object {
+        private const val DAYS_FOR_FLEXIBLE_UPDATE = 5
+        private const val APP_UPDATE_REQUEST_CODE = 10
+    }
 
     private lateinit var navController: NavController
     private var currentFragmentId = 0
@@ -36,7 +54,6 @@ class MainActivity : BaseActivity(), NavBadgeListener {
 
         bottomNavigationView.setupWithNavController(navController)
         bottomNavigationView.setOnNavigationItemSelectedListener {
-            Timber.d("setOnNavigationItemSelectedListener: ${it.title}")
             when (it.itemId) {
                 R.id.navigation_home -> {
                     navController.popBackStack(R.id.navigation_home, false)
@@ -64,12 +81,10 @@ class MainActivity : BaseActivity(), NavBadgeListener {
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             currentFragmentId = destination.id
-            Timber.d("addOnDestinationChangedListener: ${destination.label}")
             handleNavigationVisibility(currentFragmentId)
         }
 
         bottomNavigationView.setOnNavigationItemReselectedListener {
-            Timber.d("setOnNavigationItemReselectedListener: ${it.title}")
             val hostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
             if (hostFragment is NavHostFragment) {
                 val currentFragment = hostFragment.childFragmentManager.fragments.first()
@@ -90,6 +105,22 @@ class MainActivity : BaseActivity(), NavBadgeListener {
 
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
 
+        FirebaseAuth.getInstance().currentUser?.let {
+            FirebaseDatabase.getInstance().getReference("app")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        //Ignore
+                    }
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        try {
+                            checkUpdate(snapshot.child("appVersion").value.toString().toInt())
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                })
+        }
     }
 
     override fun updateBadgeVisibility(isVisible: Boolean) {
@@ -129,7 +160,6 @@ class MainActivity : BaseActivity(), NavBadgeListener {
         if (currentFragmentId == R.id.navigation_home) {
             finish()
         } else {
-            Timber.d("onBackPressed: $currentFragmentId")
             super.onBackPressed()
         }
     }
@@ -137,6 +167,61 @@ class MainActivity : BaseActivity(), NavBadgeListener {
     override fun onDestroy() {
         AppPreference.clearFirebaseToken()
         super.onDestroy()
+    }
+
+    private fun checkUpdate(version: Int) {
+
+        if (version > BuildConfig.VERSION_CODE) {
+            val appUpdateManager = AppUpdateManagerFactory.create(this)
+            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+            appUpdateInfoTask.addOnSuccessListener {
+
+                if (it.installStatus() == InstallStatus.DOWNLOADED) {
+                    appUpdateManager.completeUpdate()
+                    return@addOnSuccessListener
+                }
+
+                if (it.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                    && it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+                ) {
+                    appUpdateManager.startUpdateFlowForResult(
+                        it,
+                        this,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+                        APP_UPDATE_REQUEST_CODE
+                    )
+                    return@addOnSuccessListener
+                }
+
+                //Check for flexible update and staleness
+
+                val listener = InstallStateUpdatedListener { installState ->
+                    if (installState.installStatus() == InstallStatus.DOWNLOADED) {
+                        appUpdateManager.completeUpdate()
+                    }
+                }
+                appUpdateManager.registerListener(listener)
+                appUpdateManager.startUpdateFlowForResult(
+                    it,
+                    this,
+                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
+                    APP_UPDATE_REQUEST_CODE
+                )
+
+                //Check for immediate update
+//                if (it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) &&
+//                    it.updatePriority > 3
+//                ) {
+//                    appUpdateManager.startUpdateFlowForResult(
+//                        it,
+//                        this,
+//                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+//                        APP_UPDATE_REQUEST_CODE
+//                    )
+//                    return@addOnSuccessListener
+//                }
+            }
+        }
     }
 
     interface BottomIconDoubleClick {

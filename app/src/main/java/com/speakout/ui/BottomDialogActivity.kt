@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import com.speakout.R
 import com.speakout.extensions.addViewObserver
 import com.speakout.extensions.getScreenSize
@@ -41,21 +42,30 @@ class BottomDialogActivity : Activity() {
             it.getString(CONTENT)?.let { content ->
                 bottom_dialog_et.setText(content)
                 bottom_dialog_et.setSelection(content.length)
+                bottom_dialog_done_btn.isEnabled = content.length > 10
             }
         }
 
+        bottom_dialog_et.doOnTextChanged { text, start, count, after ->
+            text?.toString()?.trim()?.let {
+                bottom_dialog_done_btn.isEnabled = it.length > 10
+            }
+        }
+
+        bottom_dialog_et.requestFocus()
         bottom_dialog_done_btn.setOnClickListener {
             hideKeyboard()
             val text = bottom_dialog_et.text.toString().trim()
-            if (text.isEmpty()) {
-                bottom_dialog_et.error = getString(R.string.error_empty)
-            } else {
-                setResult(RESULT_OK, Intent().putExtra(CONTENT, text))
-                finish()
-            }
+            setResult(RESULT_OK, Intent().putExtra(CONTENT, text))
+            finish()
         }
 
         showKeyboard()
-
     }
+
+    override fun finish() {
+        overridePendingTransition(R.anim.slide_down, R.anim.slide_up)
+        super.finish()
+    }
+
 }

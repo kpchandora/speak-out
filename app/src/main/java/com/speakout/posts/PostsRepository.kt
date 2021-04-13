@@ -6,6 +6,7 @@ import com.speakout.api.ApiService
 import com.speakout.api.BaseRepository
 import com.speakout.common.Result
 import com.speakout.posts.create.PostData
+import com.speakout.posts.create.PostsResponse
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,7 @@ import java.io.ByteArrayOutputStream
 /**
  * Created by Kalpesh on 01/08/20.
  */
-public class PostsRepository(
+class PostsRepository(
     private val apiService: ApiService,
     private val appPreference: AppPreference
 ) : BaseRepository() {
@@ -55,10 +56,18 @@ public class PostsRepository(
         }
     }
 
-    suspend fun getProfilePosts(userId: String): Result<List<PostData>> =
+    suspend fun getProfilePosts(
+        userId: String,
+        key: Long,
+        pageSize: Int
+    ): Result<PostsResponse> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getProfilePosts(userId)
+                val result = apiService.getProfilePosts(
+                    userId = userId,
+                    pageSize = pageSize,
+                    key = key
+                )
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -69,10 +78,10 @@ public class PostsRepository(
             }
         }
 
-    suspend fun getFeed(): Result<List<PostData>> =
+    suspend fun getFeed(key: Long, pageSize: Int): Result<PostsResponse> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.getFeed()
+                val result = apiService.getFeed(pageSize = pageSize, key = key)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
@@ -139,19 +148,21 @@ public class PostsRepository(
         }
     }
 
-    suspend fun addBookmark(postId: String): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val obj = JsonObject()
-            obj.addProperty("postId", postId)
-            val result = apiService.addBookmark(obj)
-            if (result.isSuccessful && result.body() != null) {
-                return@withContext Result.Success(postId)
+    suspend fun addBookmark(postId: String, postedBy: String): Result<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val obj = JsonObject()
+                obj.addProperty("postId", postId)
+                obj.addProperty("postedBy", postedBy)
+                val result = apiService.addBookmark(obj)
+                if (result.isSuccessful && result.body() != null) {
+                    return@withContext Result.Success(postId)
+                }
+                Result.Error(Exception("Something went wrong"), postId)
+            } catch (e: Exception) {
+                Result.Error(e, postId)
             }
-            Result.Error(Exception("Something went wrong"), postId)
-        } catch (e: Exception) {
-            Result.Error(e, postId)
         }
-    }
 
     suspend fun removeBookmark(postId: String): Result<String> = withContext(Dispatchers.IO) {
         try {
@@ -166,5 +177,32 @@ public class PostsRepository(
             Result.Error(e, postId)
         }
     }
+
+    suspend fun getBookmarks(key: Long, pageSize: Int): Result<PostsResponse> =
+        withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getBookmarks(key, pageSize)
+                if (response.isSuccessful && response.body() != null) {
+                    return@withContext Result.Success(response.body()!!)
+                }
+                Result.Error(Exception("Something went wrong"), null)
+            } catch (e: Exception) {
+                Result.Error(e, null)
+            }
+        }
+
+    suspend fun getUnreadNotificationsCount(): Result<Int> =
+        withContext(Dispatchers.IO) {
+            try {
+                val result = apiService.getUnreadNotificationsCount()
+                if (result.isSuccessful && result.body() != null) {
+                    return@withContext Result.Success(result.body()!!.get("count").asInt)
+                }
+                Result.Error(Exception("Something went wrong"), null)
+            } catch (e: Exception) {
+                Result.Error(e, null)
+            }
+        }
+
 
 }

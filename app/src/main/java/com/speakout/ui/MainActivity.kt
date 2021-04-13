@@ -1,24 +1,45 @@
 package com.speakout.ui
 
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.speakout.*
+import com.speakout.BuildConfig
+import com.speakout.MobileNavigationDirections
+import com.speakout.R
 import com.speakout.api.RetrofitBuilder
 import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import timber.log.Timber
+import kotlin.Exception
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), NavBadgeListener {
+
+    companion object {
+        private const val DAYS_FOR_FLEXIBLE_UPDATE = 5
+        private const val APP_UPDATE_REQUEST_CODE = 10
+    }
 
     private lateinit var navController: NavController
     private var currentFragmentId = 0
@@ -26,27 +47,18 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        window.navigationBarColor = Color.parseColor("#20111111");
+
         setContentView(R.layout.activity_main)
         bottomNavigationView = findViewById(R.id.nav_view)
 
         navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_home,
-                R.id.navigation_search,
-                R.id.navigation_new_post,
-                R.id.notificationFragment,
-                R.id.navigation_profile
-            )
-        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
+
         bottomNavigationView.setupWithNavController(navController)
         bottomNavigationView.setOnNavigationItemSelectedListener {
-            Timber.d("setOnNavigationItemSelectedListener: ${it.title}")
             when (it.itemId) {
+                R.id.navigation_home -> {
+                    navController.popBackStack(R.id.navigation_home, false)
+                }
                 R.id.navigation_new_post -> {
                     navController.navigate(R.id.create_post_navigation)
                     return@setOnNavigationItemSelectedListener false
@@ -70,12 +82,10 @@ class MainActivity : BaseActivity() {
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             currentFragmentId = destination.id
-            Timber.d("addOnDestinationChangedListener: ${destination.label}")
             handleNavigationVisibility(currentFragmentId)
         }
 
         bottomNavigationView.setOnNavigationItemReselectedListener {
-            Timber.d("setOnNavigationItemReselectedListener: ${it.title}")
             val hostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
             if (hostFragment is NavHostFragment) {
                 val currentFragment = hostFragment.childFragmentManager.fragments.first()
@@ -83,29 +93,43 @@ class MainActivity : BaseActivity() {
                     currentFragment.doubleClick()
             }
         }
-
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Timber.e("Failed")
-            }
-
-            try {
-                // Get new Instance ID token
-                val token = task.result?.token
-                Timber.d("Token: $token")
-
+        if (AppPreference.isLoggedIn()) {
+            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
                 GlobalScope.launch {
-                    UsersRepository(RetrofitBuilder.apiService, AppPreference).updateFcmToken(
-                        token ?: ""
-                    )
+                    UsersRepository(
+                        RetrofitBuilder.apiService,
+                        AppPreference
+                    ).updateFcmToken(it.token)
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
         }
 
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
+
+        FirebaseAuth.getInstance().currentUser?.let {
+            FirebaseDatabase.getInstance().getReference("app")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        FirebaseCrashlytics.getInstance().recordException(error.toException())
+                    }
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        try {
+                            checkUpdate(snapshot.child("appVersion").value.toString().toInt())
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                })
+        }
     }
 
+    override fun updateBadgeVisibility(isVisible: Boolean) {
+        bottomNavigationView.getOrCreateBadge(R.id.notificationFragment).let {
+            it.isVisible = isVisible
+            it.backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.primary_dark)
+        }
+    }
 
     private fun handleNavigationVisibility(id: Int) {
         when (id) {
@@ -137,7 +161,6 @@ class MainActivity : BaseActivity() {
         if (currentFragmentId == R.id.navigation_home) {
             finish()
         } else {
-            Timber.d("onBackPressed: $currentFragmentId")
             super.onBackPressed()
         }
     }
@@ -147,7 +170,63 @@ class MainActivity : BaseActivity() {
         super.onDestroy()
     }
 
+    private fun checkUpdate(version: Int) {
+
+        if (version > BuildConfig.VERSION_CODE) {
+            val appUpdateManager = AppUpdateManagerFactory.create(this)
+            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+            appUpdateInfoTask.addOnSuccessListener {
+
+                if (it.installStatus() == InstallStatus.DOWNLOADED) {
+                    appUpdateManager.completeUpdate()
+                    return@addOnSuccessListener
+                }
+
+                if (it.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                    && it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+                ) {
+                    appUpdateManager.startUpdateFlowForResult(
+                        it,
+                        this,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+                        APP_UPDATE_REQUEST_CODE
+                    )
+                    return@addOnSuccessListener
+                }
+
+                //Check for flexible update and staleness
+
+                val listener = InstallStateUpdatedListener { installState ->
+                    if (installState.installStatus() == InstallStatus.DOWNLOADED) {
+                        appUpdateManager.completeUpdate()
+                    }
+                }
+                appUpdateManager.registerListener(listener)
+                appUpdateManager.startUpdateFlowForResult(
+                    it,
+                    this,
+                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
+                    APP_UPDATE_REQUEST_CODE
+                )
+
+                //Check for immediate update
+//                if (it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) &&
+//                    it.updatePriority > 3
+//                ) {
+//                    appUpdateManager.startUpdateFlowForResult(
+//                        it,
+//                        this,
+//                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
+//                        APP_UPDATE_REQUEST_CODE
+//                    )
+//                    return@addOnSuccessListener
+//                }
+            }
+        }
+    }
+
     interface BottomIconDoubleClick {
         fun doubleClick()
     }
+
 }

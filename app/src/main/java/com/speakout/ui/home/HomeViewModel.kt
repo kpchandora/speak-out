@@ -1,23 +1,26 @@
 package com.speakout.ui.home
 
 import androidx.lifecycle.*
-import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Event
 import com.speakout.posts.create.PostData
-import io.reactivex.disposables.CompositeDisposable
 import com.speakout.common.Result
 import com.speakout.posts.PostMiniDetails
 import com.speakout.posts.PostsRepository
+import com.speakout.posts.create.PostsResponse
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
-    private val appPreference = AppPreference
-    private val mPostsRepository: PostsRepository by lazy {
-        PostsRepository(RetrofitBuilder.apiService, appPreference)
+class HomeViewModel(
+    private val appPreference: AppPreference,
+    private val postsRepository: PostsRepository
+) : ViewModel() {
+
+    companion object {
+        const val FEED_POSTS_COUNT = 10
+        const val PROFILE_POSTS_COUNT = 20
     }
 
-    private val mPostList = ArrayList<PostData>()
+    val mPostList = ArrayList<PostData>()
 
     private val _unlikePost = MutableLiveData<Event<Result<PostMiniDetails>>>()
     val unlikePost: LiveData<Event<Result<PostMiniDetails>>> = _unlikePost
@@ -31,8 +34,8 @@ class HomeViewModel : ViewModel() {
     private val _singlePost = MutableLiveData<Event<Result<PostData>>>()
     val singlePost: LiveData<Event<Result<PostData>>> = _singlePost
 
-    private val _posts = MutableLiveData<Result<List<PostData>>>()
-    val posts: LiveData<Result<List<PostData>>> = _posts
+    private val _posts = MutableLiveData<PostsResponse>()
+    val posts: LiveData<PostsResponse> = _posts
 
     private val _addBookmark = MutableLiveData<Event<Result<String>>>()
     val addBookmark: LiveData<Event<Result<String>>> = _addBookmark
@@ -40,22 +43,49 @@ class HomeViewModel : ViewModel() {
     private val _removeBookmark = MutableLiveData<Event<Result<String>>>()
     val removeBookmark: LiveData<Event<Result<String>>> = _removeBookmark
 
-    fun getProfilePosts(id: String) {
+    private val _postsError = MutableLiveData<Event<String>>()
+    val postsError: LiveData<Event<String>> = _postsError
+
+    private val _count = MutableLiveData<Event<Result<Int>>>()
+    val count: LiveData<Event<Result<Int>>> = _count
+
+    fun getProfilePosts(id: String, key: Long) {
         viewModelScope.launch {
-            _posts.value = mPostsRepository.getProfilePosts(id)
+            val response = postsRepository.getProfilePosts(
+                userId = id,
+                key = key,
+                pageSize = PROFILE_POSTS_COUNT
+            )
+            if (response is Result.Success) {
+                mPostList.addAll(response.data.posts)
+                _posts.value = response.data
+            }
+            if (response is Result.Error) {
+                _postsError.value = Event(response.error.message!!)
+            }
         }
     }
 
-    fun getFeed() {
+    fun getFeed(key: Long) {
         viewModelScope.launch {
-            _posts.value = mPostsRepository.getFeed()
+            val response = postsRepository.getFeed(
+                key = key,
+                pageSize = FEED_POSTS_COUNT
+            )
+            if (response is Result.Success) {
+                mPostList.addAll(response.data.posts)
+                _posts.value = response.data
+            }
+            if (response is Result.Error) {
+                _postsError.value = Event(response.error.message!!)
+            }
         }
     }
 
     fun likePost(postData: PostData) {
         viewModelScope.launch {
             _likePost.value = Event(
-                mPostsRepository.likePost(
+                postsRepository.likePost(
                     PostMiniDetails(postId = postData.postId, userId = appPreference.getUserId())
                 )
             )
@@ -65,23 +95,18 @@ class HomeViewModel : ViewModel() {
     fun unlikePost(postData: PostData) {
         viewModelScope.launch {
             _unlikePost.value = Event(
-                mPostsRepository.unLikePost(
+                postsRepository.unLikePost(
                     PostMiniDetails(postId = postData.postId, userId = appPreference.getUserId())
                 )
             )
         }
     }
 
-    fun addPosts(list: List<PostData>) {
-        mPostList.addAll(list)
-    }
-
-    fun getProfilePosts() = mPostList
 
     fun deletePost(postData: PostData) {
         viewModelScope.launch {
             _deletePost.value = Event(
-                mPostsRepository.deletePost(
+                postsRepository.deletePost(
                     PostMiniDetails(postId = postData.postId, userId = appPreference.getUserId())
                 )
             )
@@ -90,19 +115,25 @@ class HomeViewModel : ViewModel() {
 
     fun getSinglePost(postId: String) {
         viewModelScope.launch {
-            _singlePost.value = Event(mPostsRepository.getSinglePost(postId))
+            _singlePost.value = Event(postsRepository.getSinglePost(postId))
         }
     }
 
-    fun addBookmark(postId: String) {
+    fun addBookmark(postId: String, postedBy: String) {
         viewModelScope.launch {
-            _addBookmark.value = Event(mPostsRepository.addBookmark(postId))
+            _addBookmark.value = Event(postsRepository.addBookmark(postId, postedBy))
         }
     }
 
     fun removeBookmark(postId: String) {
         viewModelScope.launch {
-            _removeBookmark.value = Event(mPostsRepository.removeBookmark(postId))
+            _removeBookmark.value = Event(postsRepository.removeBookmark(postId))
+        }
+    }
+
+    fun getCount() {
+        viewModelScope.launch {
+            _count.value = Event(postsRepository.getUnreadNotificationsCount())
         }
     }
 

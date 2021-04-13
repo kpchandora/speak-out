@@ -15,19 +15,16 @@ object RetrofitBuilder {
     private val interceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
-    private val client = OkHttpClient.Builder().addInterceptor(interceptor)
-        .addInterceptor(AuthTokenInterceptor())
+    private val client = OkHttpClient.Builder().addInterceptor(AuthTokenInterceptor())
+        .also {
+            if (BuildConfig.BUILD_TYPE.contains("debug", true))
+                it.addInterceptor(interceptor)
+        }
         .build()
-
-    /*
-    For testing purpose, replace the IP of your computer or laptop
-    if running on real device
-     */
-    private const val BASE_URL = "http://192.168.101.8:3000/"
 
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(CoroutineCallAdapterFactory())

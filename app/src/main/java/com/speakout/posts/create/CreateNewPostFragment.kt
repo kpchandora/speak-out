@@ -19,6 +19,7 @@ import com.speakout.utils.Constants
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_create_new_post.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class CreateNewPostFragment : Fragment() {
 
@@ -34,7 +35,8 @@ class CreateNewPostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)
+        setUpToolbar(view)?.toolbar_title?.text = getString(R.string.title_new_post)
+
         create_post_container_layout.addViewObserver {
             activity?.let {
                 it.getScreenSize().let {
@@ -46,12 +48,15 @@ class CreateNewPostFragment : Fragment() {
 
         create_post_content_tv.text = postContent
 
+        create_post_next_btn.isEnabled = postContent.length > 10
+
         create_post_container_layout.setOnClickListener {
             startActivityForResult(
                 Intent(requireContext(), BottomDialogActivity::class.java).putExtra(
                     BottomDialogActivity.CONTENT, create_post_content_tv.text.toString()
                 ), Constants.IntentStrings.CreatePost.REQUEST_CODE
             )
+            requireActivity().overridePendingTransition(R.anim.slide_up, R.anim.slide_down)
         }
 
         create_post_next_btn.setOnClickListener {
@@ -94,6 +99,7 @@ class CreateNewPostFragment : Fragment() {
                 data?.extras?.let {
                     it.getString(BottomDialogActivity.CONTENT)?.let { content ->
                         create_post_content_tv.text = content
+                        create_post_next_btn.isEnabled = content.length > 10
                     }
                 }
             }

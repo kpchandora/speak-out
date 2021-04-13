@@ -8,12 +8,7 @@ import com.speakout.utils.AppPreference
 import com.speakout.common.Result
 import kotlinx.coroutines.launch
 
-class UserViewModel : ViewModel() {
-
-    private val appPreference = AppPreference
-    private val mUsersRepository: UsersRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, appPreference)
-    }
+class UserViewModel(private val mUsersRepository: UsersRepository) : ViewModel() {
 
     private val _username = MutableLiveData<Result<Boolean>>()
     val username: LiveData<Result<Boolean>> = _username
@@ -31,7 +26,7 @@ class UserViewModel : ViewModel() {
         }
     }
 
-    fun updateUserDetails(userMiniDetails: UserMiniDetails) {
+    fun updateUserDetails(userMiniDetails: UsersItem) {
         viewModelScope.launch {
             _updateUserDetails.value = Event(mUsersRepository.updateUserDetails(userMiniDetails))
         }

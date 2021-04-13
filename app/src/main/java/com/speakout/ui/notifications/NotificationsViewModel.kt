@@ -9,21 +9,42 @@ import com.speakout.common.Event
 import com.speakout.common.Result
 import com.speakout.notification.NotificationRepository
 import com.speakout.notification.NotificationResponse
+import com.speakout.notification.NotificationsItem
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class NotificationsViewModel : ViewModel() {
+class NotificationsViewModel(private val mRepository: NotificationRepository) : ViewModel() {
 
-    private val mRepository: NotificationRepository by lazy {
-        NotificationRepository(RetrofitBuilder.apiService)
+    companion object {
+        const val MAX_SIZE = 20
     }
 
-    private val _notifications = MutableLiveData<Event<Result<List<NotificationResponse>>>>()
-    val notifications: LiveData<Event<Result<List<NotificationResponse>>>> = _notifications
+    val mNotifications = ArrayList<NotificationsItem>()
+    private val _notifications = MutableLiveData<NotificationResponse>()
+    val notifications: LiveData<NotificationResponse> = _notifications
 
-    fun getNotifications() {
+    private val _error = MutableLiveData<Event<String>>()
+    val error: LiveData<Event<String>> = _error
+
+    fun getNotifications(key: Long) {
         viewModelScope.launch {
-            _notifications.value = Event(mRepository.getNotifications())
+            val response = mRepository.getNotifications(
+                key = key,
+                pageSize = MAX_SIZE
+            )
+            if (response is Result.Success) {
+                mNotifications.addAll(response.data.notifications)
+                _notifications.value = response.data
+            }
+            if (response is Result.Error) {
+                _error.value = Event(response.error.message!!)
+            }
+        }
+    }
+
+    fun updateActions() {
+        viewModelScope.launch {
+            mRepository.updateActions()
         }
     }
 

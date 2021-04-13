@@ -1,50 +1,80 @@
 package com.speakout.users
 
 import androidx.lifecycle.*
-import com.speakout.api.RetrofitBuilder
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UserResponse
+import com.speakout.auth.UsersItem
+import com.speakout.common.Event
 import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.launch
 
-class UsersListViewModel : ViewModel() {
+class UsersListViewModel(
+    private val appPreference: AppPreference,
+    private val mUsersRepository: UsersRepository
+) : ViewModel() {
 
-    private val mUsersRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, AppPreference)
+    companion object {
+        const val MAX_PAGE_SIZE = 20
     }
 
-    private val _likesList = MutableLiveData<Result<List<UserMiniDetails>>>()
-    val likesList: LiveData<Result<List<UserMiniDetails>>> = _likesList
+    val mUsersList = ArrayList<UsersItem>()
+    private val _usersList = MutableLiveData<UserResponse>()
+    val usersList: LiveData<UserResponse> = _usersList
 
-    private val _followersList = MutableLiveData<Result<List<UserMiniDetails>>>()
-    val followersList: LiveData<Result<List<UserMiniDetails>>> = _followersList
+    private val _error = MutableLiveData<Event<String>>()
+    val error: LiveData<Event<String>> = _error
 
-    private val _followingsList = MutableLiveData<Result<List<UserMiniDetails>>>()
-    val followingsList: LiveData<Result<List<UserMiniDetails>>> = _followingsList
-
-    fun getLikesList(postId: String) {
+    fun getLikesList(postId: String, key: Long) {
         viewModelScope.launch {
-            _likesList.value = mUsersRepository.getUsersList(
-                userId = AppPreference.getUserId(),
+            val response = mUsersRepository.getUsersList(
+                userId = appPreference.getUserId(),
                 postId = postId,
-                actionType = ActionType.Likes
+                actionType = ActionType.Likes,
+                key = key,
+                pageSize = MAX_PAGE_SIZE
             )
+            if (response is Result.Success) {
+                mUsersList.addAll(response.data.users)
+                _usersList.value = response.data
+            }
+            if (response is Result.Error) {
+                _error.value = Event(response.error.message!!)
+            }
         }
     }
 
-    fun getFollowingsList(userId: String) {
+    fun getFollowingsList(userId: String, key: Long) {
         viewModelScope.launch {
-            _followingsList.value = mUsersRepository.getUsersList(
-                userId = userId, actionType = ActionType.Followings
+            val response = mUsersRepository.getUsersList(
+                userId = userId,
+                actionType = ActionType.Followings,
+                key = key,
+                pageSize = MAX_PAGE_SIZE
             )
+            if (response is Result.Success) {
+                mUsersList.addAll(response.data.users)
+                _usersList.value = response.data
+            }
+            if (response is Result.Error) {
+                _error.value = Event(response.error.message!!)
+            }
         }
     }
 
-    fun getFollowersList(userId: String) {
+    fun getFollowersList(userId: String, key: Long) {
         viewModelScope.launch {
-            _followersList.value = mUsersRepository.getUsersList(
-                userId = userId, actionType = ActionType.Followers
+            val response = mUsersRepository.getUsersList(
+                userId = userId, actionType = ActionType.Followers,
+                key = key,
+                pageSize = MAX_PAGE_SIZE
             )
+            if (response is Result.Success) {
+                mUsersList.addAll(response.data.users)
+                _usersList.value = response.data
+            }
+            if (response is Result.Error) {
+                _error.value = Event(response.error.message!!)
+            }
         }
     }
 

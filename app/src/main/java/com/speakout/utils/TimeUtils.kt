@@ -21,8 +21,8 @@ object TimeUtils {
             Time.HOURS -> "h"
             Time.DAYS -> "d"
             Time.WEEKS -> "w"
-            Time.MONTHS -> "months"
-            Time.YEARS -> "years"
+            Time.MONTHS -> " months"
+            Time.YEARS -> " years"
         }
         return "${pair.second}$timeType"
     }

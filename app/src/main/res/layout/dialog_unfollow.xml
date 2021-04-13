@@ -11,7 +11,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="12dp"
-        tools:src="@drawable/ic_favorite" />
+        tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/dialog_unfollow_hint_tv"

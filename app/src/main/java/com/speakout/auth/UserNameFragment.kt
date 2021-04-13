@@ -14,19 +14,24 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.extensions.*
 import com.speakout.ui.MainActivity
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_user_name.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 
 class UserNameFragment : Fragment() {
 
-    private val mUserViewModel: UserViewModel by viewModels()
+    private val mUserViewModel: UserViewModel by viewModels() {
+        UserViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
     private var username = ""
     private val userNameRegex = "^[a-z0-9_]{1,25}\$".toRegex()
     private val safeArgs: UserNameFragmentArgs by navArgs()
@@ -45,21 +50,14 @@ class UserNameFragment : Fragment() {
         username = safeArgs.username ?: ""
 
         if (safeArgs.type == Type.Edit) {
-            view.post {
-                setUpToolbar(view)?.let {
-                    it.title = "${safeArgs.type} Username"
-                }
-            }
+            setUpToolbar(view)?.toolbar_title?.text = "${safeArgs.type} Username"
             fragment_username_et.setText(username)
             fragment_username_et.setSelection(username.length)
             fragment_username_et.setDrawableEnd(R.drawable.ic_check)
             fragment_username_next_btn.text = getString(R.string.update)
         } else {
-            view.post {
-                setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.let {
-                    it.title = "${safeArgs.type} Username"
-                }
-            }
+            setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.toolbar_title?.text =
+                "${safeArgs.type} Username"
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
                 object : OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
@@ -116,7 +114,7 @@ class UserNameFragment : Fragment() {
                 fragment_username_next_btn.disable()
                 if (userNameRegex.matches(text)) {
                     if (text.length < 3) {
-                        fragment_username_til.error = "Username is too small"
+                        fragment_username_til.error = "Username is too short"
                     } else {
                         fragment_username_til.error = null
                         username = text.toString()
@@ -132,7 +130,7 @@ class UserNameFragment : Fragment() {
         fragment_username_next_btn.setOnClickListener {
             (requireActivity() as MainActivity).showProgress()
             mUserViewModel.updateUserDetails(
-                UserMiniDetails(
+                UsersItem(
                     userId = AppPreference.getUserId(),
                     username = username
                 )

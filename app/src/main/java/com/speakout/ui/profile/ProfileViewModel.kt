@@ -13,14 +13,8 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import java.io.File
 
-class ProfileViewModel : ViewModel() {
-    private val appPreference = AppPreference
-    private val mUsersRepository: UsersRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, appPreference)
-    }
-
-    private val compositeDisposable = CompositeDisposable()
-    private val mPostList = ArrayList<PostData>()
+class ProfileViewModel(private val appPreference: AppPreference,
+                       private val mUsersRepository: UsersRepository) : ViewModel() {
 
     private val _confirmUnfollow = MutableLiveData<Event<Unit>>()
     val confirmUnfollow: LiveData<Event<Unit>> = _confirmUnfollow
@@ -39,9 +33,6 @@ class ProfileViewModel : ViewModel() {
     private val _uploadProfilePicture = MutableLiveData<Event<Result<String>>>()
     val uploadProfilePicture: LiveData<Event<Result<String>>>
         get() = _uploadProfilePicture
-
-    private val _posts = MutableLiveData<Result<List<PostData>>>()
-    val posts: LiveData<Result<List<PostData>>> = _posts
 
 
     fun uploadProfilePicture(imageFile: File) {

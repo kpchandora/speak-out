@@ -20,13 +20,20 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.iid.FirebaseInstanceId
 
 import com.speakout.R
+import com.speakout.api.RetrofitBuilder
 import com.speakout.common.Result
 import com.speakout.extensions.*
+import com.speakout.users.UsersRepository
 import com.speakout.utils.AppPreference
 import com.speakout.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_sign_in.*
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class SignInFragment : Fragment() {
 
@@ -36,7 +43,12 @@ class SignInFragment : Fragment() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
-    private val mUserViewModel: UserViewModel by viewModels()
+    private val mUserViewModel: UserViewModel by viewModels {
+        UserViewModel(UsersRepository(RetrofitBuilder.apiService, AppPreference)).createFactory()
+    }
+    private val userRepository by lazy {
+        UsersRepository(RetrofitBuilder.apiService, AppPreference)
+    }
     private lateinit var mPreference: AppPreference
 
     override fun onCreateView(
@@ -48,7 +60,7 @@ class SignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpWithAppBarConfiguration(view, R.id.signInFragment)
+        setUpWithAppBarConfiguration(view, R.id.signInFragment)?.toolbar_title?.text = "SignIn"
 
         mPreference = AppPreference
 
@@ -62,7 +74,7 @@ class SignInFragment : Fragment() {
             } else {
                 hideProgress()
                 showShortToast("Failed")
-                FirebaseUtils.signOut()
+                FirebaseUtils.signOut(requireActivity())
             }
         })
 
@@ -86,7 +98,7 @@ class SignInFragment : Fragment() {
                     }
                 }
             } else {
-                FirebaseUtils.signOut().also {
+                FirebaseUtils.signOut(requireActivity()).also {
                     hideProgress()
                     showShortToast("Something went wrong, please try again")
                 }
@@ -94,9 +106,10 @@ class SignInFragment : Fragment() {
         })
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.google_sign_in_key))
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
+
 
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
         auth = FirebaseAuth.getInstance()
@@ -129,6 +142,7 @@ class SignInFragment : Fragment() {
                 val account: GoogleSignInAccount? = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
+                FirebaseCrashlytics.getInstance().recordException(e)
                 e.printStackTrace()
                 hideProgress()
             }
@@ -141,24 +155,32 @@ class SignInFragment : Fragment() {
             .addOnCompleteListener { task: Task<AuthResult> ->
                 if (task.isSuccessful) {
                     task.result?.user?.apply {
-                        if (task.result!!.additionalUserInfo?.isNewUser == true) {
-                            val model = UserDetails(
-                                userId = uid,
-                                name = displayName,
-                                photoUrl = photoUrl?.toString(),
-                                phoneNumber = phoneNumber,
-                                email = email,
-                                creationTimeStamp = metadata?.creationTimestamp,
-                                lastSignInTimestamp = metadata?.lastSignInTimestamp
-                            )
-                            mUserViewModel.saveUserDetails(model)
-                        } else {
-                            mUserViewModel.getUserData(uid = uid)
+                        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                GlobalScope.launch {
+                                    userRepository.updateFcmToken(it.result?.token ?: "")
+                                }
+                            }
+                            if (task.result!!.additionalUserInfo?.isNewUser == true) {
+                                val model = UserDetails(
+                                    userId = uid,
+                                    name = displayName,
+                                    photoUrl = photoUrl?.toString(),
+                                    phoneNumber = phoneNumber,
+                                    email = email,
+                                    creationTimeStamp = metadata?.creationTimestamp,
+                                    lastSignInTimestamp = metadata?.lastSignInTimestamp
+                                )
+                                mUserViewModel.saveUserDetails(model)
+                            } else {
+                                mUserViewModel.getUserData(uid = uid)
+                            }
                         }
+
                     } ?: kotlin.run {
                         showShortToast("Failed")
                         hideProgress()
-                        FirebaseUtils.signOut()
+                        FirebaseUtils.signOut(requireActivity())
                     }
                 } else {
                     showShortToast("Failed")

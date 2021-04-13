@@ -15,8 +15,7 @@ import com.speakout.utils.AppPreference
 import kotlinx.android.synthetic.main.dialog_post_options.*
 import timber.log.Timber
 
-class PostOptionsDialog(private val mContext: Context) :
-    Dialog(mContext) {
+class PostOptionsDialog(private val mContext: Context) : Dialog(mContext) {
 
     private var mListener: OnPostOptionsClickListener? = null
     private var mPost: PostData? = null
@@ -27,7 +26,6 @@ class PostOptionsDialog(private val mContext: Context) :
         setContentView(R.layout.dialog_post_options)
         dialog_post_container.addViewObserver {
             (mContext as? Activity)?.getScreenSize()?.widthPixels?.let {
-                Timber.d("On create")
                 dialog_post_container.layoutParams.width = 6 * it / 7
                 dialog_post_container.requestLayout()
             }

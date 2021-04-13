@@ -12,9 +12,9 @@ import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
 import kotlin.collections.ArrayList
 
-class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
+class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
+    RecyclerView.Adapter<PostViewHolder>() {
 
-    private val mPostsList = ArrayList<PostData>()
     var mEventListener: PostClickEventListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -46,6 +46,7 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
         if (payloads.isNotEmpty()) {
             (payloads[0] as? PostData)?.let {
                 Timber.d("BindView Content: ${it.content}")
+                //TODO Only update like content; do not call bind again
                 holder.bind(it)
                 return
             }
@@ -73,6 +74,7 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
                 postDataItem.isLikedBySelf = false
                 postDataItem.likesCount--
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
@@ -83,6 +85,7 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
                 postDataItem.isLikedBySelf = true
                 postDataItem.likesCount++
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
@@ -92,6 +95,7 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
             if (postId == postDataItem.postId) {
                 postDataItem.isBookmarkedBySelf = true
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
@@ -101,12 +105,12 @@ class PostRecyclerViewAdapter : RecyclerView.Adapter<PostViewHolder>() {
             if (postId == postDataItem.postId) {
                 postDataItem.isBookmarkedBySelf = false
                 notifyItemChanged(index, postDataItem)
+                return@forEachIndexed
             }
         }
     }
 
     fun updatePosts(list: List<PostData>) {
-        mPostsList.clear()
         mPostsList.addAll(list)
         notifyDataSetChanged()
     }

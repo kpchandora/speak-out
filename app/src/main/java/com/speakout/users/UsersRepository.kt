@@ -3,11 +3,11 @@ package com.speakout.users
 import com.google.gson.JsonObject
 import com.speakout.api.ApiService
 import com.speakout.auth.UserDetails
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UserResponse
+import com.speakout.auth.UsersItem
 import com.speakout.common.Result
 import com.speakout.utils.AppPreference
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
 import retrofit2.Response
 import timber.log.Timber
@@ -15,7 +15,7 @@ import timber.log.Timber
 /**
  * Created by Kalpesh on 02/08/20.
  */
-public class UsersRepository(
+class UsersRepository(
     private val apiService: ApiService,
     private val appPreference: AppPreference
 ) {
@@ -58,7 +58,7 @@ public class UsersRepository(
             }
         }
 
-    suspend fun updateUserDetails(userMiniDetails: UserMiniDetails): Result<UserDetails> =
+    suspend fun updateUserDetails(userMiniDetails: UsersItem): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
                 val result = apiService.updateUserDetails(userMiniDetails)
@@ -106,41 +106,55 @@ public class UsersRepository(
     suspend fun getUsersList(
         userId: String,
         postId: String = "",
-        actionType: ActionType
-    ): Result<List<UserMiniDetails>> =
+        actionType: ActionType,
+        key: Long,
+        pageSize: Int
+    ): Result<UserResponse> =
         withContext(Dispatchers.IO) {
             try {
-                val result: Response<List<UserMiniDetails>> = when (actionType) {
+                val result: Response<UserResponse> = when (actionType) {
                     ActionType.Likes -> {
-                        apiService.getLikes(postId = postId)
+                        apiService.getLikes(
+                            postId = postId,
+                            pageSize = pageSize,
+                            key = key
+                        )
                     }
                     ActionType.Followers -> {
-                        apiService.getFollowers(userId = userId)
+                        apiService.getFollowers(
+                            userId = userId,
+                            pageSize = pageSize,
+                            key = key
+                        )
                     }
                     ActionType.Followings -> {
-                        apiService.getFollowings(userId = userId)
+                        apiService.getFollowings(
+                            userId = userId,
+                            pageSize = pageSize,
+                            key = key
+                        )
                     }
                 }
 
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to get data"), emptyList<UserMiniDetails>())
+                Result.Error(Exception("Failed to get data"), null)
             } catch (e: Exception) {
-                Result.Error(e, emptyList<UserMiniDetails>())
+                Result.Error(e, null)
             }
         }
 
-    suspend fun searchUsers(username: String): Result<List<UserMiniDetails>> =
+    suspend fun searchUsers(username: String): Result<List<UsersItem>> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.searchUsers(username)
+                val result = apiService.searchUsers(username = username)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }
-                Result.Error(Exception("Failed to get users"), emptyList<UserMiniDetails>())
+                Result.Error(Exception("Failed to get users"), emptyList<UsersItem>())
             } catch (e: Exception) {
-                Result.Error(e, emptyList<UserMiniDetails>())
+                Result.Error(e, emptyList<UsersItem>())
             }
         }
 

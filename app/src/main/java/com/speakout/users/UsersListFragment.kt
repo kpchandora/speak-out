@@ -12,16 +12,25 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 import com.speakout.R
-import com.speakout.auth.UserMiniDetails
+import com.speakout.api.RetrofitBuilder
+import com.speakout.auth.UsersItem
 import com.speakout.common.EventObserver
 import com.speakout.common.Result
 import com.speakout.events.*
+import com.speakout.extensions.createFactory
 import com.speakout.extensions.setUpToolbar
+import com.speakout.extensions.showShortToast
+import com.speakout.ui.profile.ProfileFragment
 import com.speakout.ui.profile.ProfileViewModel
+import com.speakout.ui.profile.UnFollowDialog
+import com.speakout.ui.profile.UnFollowDialogModel
+import com.speakout.utils.AppPreference
+import com.speakout.utils.Constants
+import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import kotlinx.android.synthetic.main.users_list_fragment.*
-import timber.log.Timber
 
 class UsersListFragment : Fragment() {
 
@@ -30,25 +39,32 @@ class UsersListFragment : Fragment() {
     }
 
     private val safeArgs: UsersListFragmentArgs by navArgs()
-    private val usersListViewModel: UsersListViewModel by viewModels()
-    private val profileViewModel: ProfileViewModel by viewModels()
-    private val mAdapter = UsersListAdapter()
+    private val usersListViewModel: UsersListViewModel by viewModels() {
+        val appPreference = AppPreference
+        UsersListViewModel(
+            appPreference,
+            UsersRepository(
+                RetrofitBuilder.apiService,
+                appPreference
+            )
+        ).createFactory()
+    }
+    private val profileViewModel: ProfileViewModel by viewModels() {
+        val appPreference = AppPreference
+        ProfileViewModel(
+            appPreference,
+            UsersRepository(RetrofitBuilder.apiService, appPreference)
+        ).createFactory()
+    }
+    private lateinit var mAdapter: UsersListAdapter
     private var mUserEvents: UserEvents? = null
+    private var isLoading = false
+    private var key: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        when (safeArgs.actionType) {
-            ActionType.Likes -> {
-                usersListViewModel.getLikesList(safeArgs.id!!)
-            }
-            ActionType.Followers -> {
-                usersListViewModel.getFollowersList(safeArgs.id!!)
-            }
-            ActionType.Followings -> {
-                usersListViewModel.getFollowingsList(safeArgs.id!!)
-            }
-        }
-
+        mAdapter = UsersListAdapter(usersListViewModel.mUsersList)
+        loadData()
         mUserEvents = UserEvents(requireContext()) {
             val userId = it.getStringExtra(UserEvents.USER_ID) ?: return@UserEvents
             when (it.getIntExtra(UserEvents.EVENT_TYPE, -1)) {
@@ -58,10 +74,20 @@ class UsersListFragment : Fragment() {
                 UserEventType.FOLLOW -> {
                     mAdapter.showFollowing(userId)
                 }
-                UserEventType.DIALOG_UN_FOLLOW -> {
-                    mAdapter.showFollow(userId)
-                    profileViewModel.unFollowUser(userId)
-                }
+            }
+        }
+    }
+
+    private fun loadData() {
+        when (safeArgs.actionType) {
+            ActionType.Likes -> {
+                usersListViewModel.getLikesList(safeArgs.id!!, key)
+            }
+            ActionType.Followers -> {
+                usersListViewModel.getFollowersList(safeArgs.id!!, key)
+            }
+            ActionType.Followings -> {
+                usersListViewModel.getFollowingsList(safeArgs.id!!, key)
             }
         }
     }
@@ -75,33 +101,42 @@ class UsersListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)
+        setUpToolbar(view)?.toolbar_title?.text = safeArgs.actionType.name
         mAdapter.mListener = mUserClickListener
         users_list_rv.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = mAdapter
         }
+        users_list_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (isLoading || key == Constants.INVALID_KEY) return
+                if (dy > 0) {
+                    (recyclerView.layoutManager as LinearLayoutManager).let {
+                        val visibleItems = it.childCount
+                        val totalItemsCount = it.itemCount
+                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                            loadData()
+                            isLoading = true
+                        }
+                    }
+                }
+            }
+        })
         observeViewModels()
     }
 
     private fun observeViewModels() {
-        usersListViewModel.followersList.observe(viewLifecycleOwner, Observer {
-            if (it is Result.Success) {
-                mAdapter.addData(it.data)
-            }
+        usersListViewModel.usersList.observe(viewLifecycleOwner, Observer {
+            isLoading = false
+            key = it.key
+            mAdapter.notifyDataSetChanged()
         })
 
-        usersListViewModel.followingsList.observe(viewLifecycleOwner, Observer {
-            if (it is Result.Success) {
-                mAdapter.addData(it.data)
-            }
-        })
-
-        usersListViewModel.likesList.observe(viewLifecycleOwner, Observer {
-            if (it is Result.Success) {
-                mAdapter.addData(it.data)
-            }
+        usersListViewModel.error.observe(viewLifecycleOwner, EventObserver {
+            isLoading = false
+            showShortToast(it)
         })
 
         profileViewModel.followUser.observe(viewLifecycleOwner, EventObserver {
@@ -133,7 +168,7 @@ class UsersListFragment : Fragment() {
     }
 
     private fun navigateToProfile(
-        userMiniDetails: UserMiniDetails,
+        userMiniDetails: UsersItem,
         profileImageView: ImageView
     ) {
         val action = UsersListFragmentDirections.actionUsersListFragmentToNavigationProfile(
@@ -163,22 +198,27 @@ class UsersListFragment : Fragment() {
     }
 
     private val mUserClickListener = object : OnUserClickListener {
-        override fun onUserClick(userMiniDetails: UserMiniDetails, profileImageView: ImageView) {
+        override fun onUserClick(userMiniDetails: UsersItem, profileImageView: ImageView) {
             navigateToProfile(userMiniDetails, profileImageView)
         }
 
-        override fun onFollowClick(userMiniDetails: UserMiniDetails) {
+        override fun onFollowClick(userMiniDetails: UsersItem) {
             profileViewModel.followUser(userMiniDetails.userId)
         }
 
-        override fun onUnFollowClick(userMiniDetails: UserMiniDetails) {
-            val action = UsersListFragmentDirections.actionUsersListFragmentToUnFollowDialog(
-                profileUrl = userMiniDetails.photoUrl,
-                userId = userMiniDetails.userId,
-                isFrom = TAG,
-                username = userMiniDetails.username!!
+        override fun onUnFollowClick(userMiniDetails: UsersItem) {
+            val model = UnFollowDialogModel(
+                userId = userMiniDetails.userId, username = userMiniDetails.username ?: "",
+                isFrom = TAG, profileUrl = userMiniDetails.photoUrl
             )
-            findNavController().navigate(action)
+            val dialog = UnFollowDialog.newInstance(model)
+            dialog.setListener(object : UnFollowDialog.UnFollowDialogListener {
+                override fun onUnFollow(userId: String) {
+                    mAdapter.showFollow(userId)
+                    profileViewModel.unFollowUser(userId)
+                }
+            })
+            dialog.show(requireActivity().supportFragmentManager, TAG)
         }
     }
 

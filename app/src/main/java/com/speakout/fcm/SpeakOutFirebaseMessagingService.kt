@@ -10,6 +10,7 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavDeepLinkBuilder
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.speakout.R
@@ -22,16 +23,18 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
+import java.lang.Exception
 import java.net.URL
 
 
 /**
  * Created by Kalpesh on 09/08/20.
  */
-public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
+class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
 
+    private val appPreference = AppPreference
     private val userRepository by lazy {
-        UsersRepository(RetrofitBuilder.apiService, AppPreference)
+        UsersRepository(RetrofitBuilder.apiService, appPreference)
     }
 
     companion object {
@@ -44,18 +47,21 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         const val USER_IMAGE_URL = "profileUrl"
         const val POST_ID = "postId"
         const val USERNAME = "username"
-
+        const val POST_IMAGE_URL = "postImageUrl"
     }
 
     override fun onNewToken(token: String) {
         Timber.d("Token: $token")
-        GlobalScope.launch {
-            userRepository.updateFcmToken(token)
+        if (appPreference.isLoggedIn()) {
+            GlobalScope.launch {
+                userRepository.updateFcmToken(token)
+            }
         }
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Timber.d("Data: ${remoteMessage.data}")
+        if (!appPreference.isLoggedIn()) return
         remoteMessage.data.let {
             val type = it["type"]
             if (type.isNotNullOrEmpty()) {
@@ -124,8 +130,15 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             getNotificationBuilder(channelId = channelId, pendingIntent = pendingIntent)
         notification.setContentText("${map["username"]}(${map["name"]}) liked your post.")
 
-        getUserImageBitmap(map)?.let {
-            notification.setLargeIcon(it)
+        getUserImageBitmap(map)?.let { userBitmap ->
+            notification.setLargeIcon(userBitmap)
+            getPostImageBitmap(map[POST_IMAGE_URL])?.let {
+                notification.setStyle(
+                    NotificationCompat.BigPictureStyle()
+                        .bigPicture(it)
+                        .bigLargeIcon(userBitmap)
+                )
+            }
         }
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -140,7 +153,19 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         manager.cancel("${map[NOTIFICATION_ID]}", 0)
     }
 
-    private fun getUserImageBitmap(map: MutableMap<String, String>): Bitmap? {
+    private fun getPostImageBitmap(postImageUrl: String?): Bitmap? {
+        try {
+            return BitmapFactory.decodeStream(URL(postImageUrl).openConnection().getInputStream())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
+        return null
+    }
+
+    private fun getUserImageBitmap(
+        map: MutableMap<String, String>
+    ): Bitmap? {
         try {
             map[USER_IMAGE_URL]?.let {
                 val bitmap = BitmapFactory.decodeStream(URL(it).openConnection().getInputStream())
@@ -148,6 +173,7 @@ public class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             }
         } catch (e: IOException) {
             e.printStackTrace()
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
         return null
     }

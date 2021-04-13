@@ -5,14 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.speakout.R
-import com.speakout.auth.UserMiniDetails
+import com.speakout.auth.UsersItem
 import com.speakout.extensions.gone
 import com.speakout.extensions.loadImage
 import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
-    private val usersList = ArrayList<UserMiniDetails>()
+    private val usersList = ArrayList<UsersItem>()
     var mListener: OnSearchUserClickListener? = null
 
 
@@ -31,7 +31,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
         }
     }
 
-    fun updateData(list: List<UserMiniDetails>) {
+    fun updateData(list: List<UsersItem>) {
         usersList.clear()
         usersList.addAll(list)
         notifyDataSetChanged()
@@ -39,8 +39,19 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     class SearchViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         var mListener: OnSearchUserClickListener? = null
-        fun bind(user: UserMiniDetails) {
+
+        init {
+            view.setOnClickListener {
+                mListener?.onUserClick(
+                    view.tag as UsersItem,
+                    view.item_users_list_profile_iv
+                )
+            }
+        }
+
+        fun bind(user: UsersItem) {
             view.apply {
+                tag = user
                 item_users_list_profile_iv.transitionName = user.userId
                 item_users_list_profile_iv.loadImage(
                     user.photoUrl,
@@ -51,17 +62,8 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
                 cv_follow.gone()
                 item_users_list_username_tv.text = user.username
                 item_users_list_name_tv.text = user.name
-
-                setOnClickListener {
-                    mListener?.onUserClick(
-                        user,
-                        item_users_list_profile_iv
-                    )
-                }
-
             }
         }
-
     }
 
 }

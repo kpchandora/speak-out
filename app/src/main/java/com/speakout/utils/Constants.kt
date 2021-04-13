@@ -2,6 +2,8 @@ package com.speakout.utils
 
 object Constants {
 
+    const val INVALID_KEY = -1L
+
     object UserDetails {
         const val userId = "user_id"
         const val name = "name"

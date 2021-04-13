@@ -16,6 +16,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.speakout.common.Result
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +45,7 @@ object ImageUtils {
             return Single.just(returnedBitmap)
         } catch (e: Exception) {
             e.printStackTrace()
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
         return Single.just(null)
     }
@@ -65,6 +67,7 @@ object ImageUtils {
                     Result.Error(Exception("Failed to upload image"), null)
                 }
             } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
                 Result.Error(Exception("Failed to upload image"), null)
             }
         }
@@ -100,8 +103,6 @@ object ImageUtils {
             )
             val imagePath = File(folderPath, "IMG${System.currentTimeMillis()}.jpg")
 
-            Timber.d("Saved Image Path: ${imagePath.path}")
-
             var isSuccess = true
             if (!folderPath.exists()) {
                 isSuccess = folderPath.mkdir()
@@ -119,6 +120,7 @@ object ImageUtils {
                     return true
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    FirebaseCrashlytics.getInstance().recordException(e)
                 }
             }
         } else {

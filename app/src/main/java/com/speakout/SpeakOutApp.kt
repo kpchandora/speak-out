@@ -3,6 +3,8 @@ package com.speakout
 import android.app.Application
 import android.content.Context
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.iid.FirebaseInstanceId
 import com.speakout.api.RetrofitBuilder
 import com.speakout.users.UsersRepository

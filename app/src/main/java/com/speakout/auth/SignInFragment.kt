@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.iid.FirebaseInstanceId
 
 import com.speakout.R
@@ -141,6 +142,7 @@ class SignInFragment : Fragment() {
                 val account: GoogleSignInAccount? = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
+                FirebaseCrashlytics.getInstance().recordException(e)
                 e.printStackTrace()
                 hideProgress()
             }

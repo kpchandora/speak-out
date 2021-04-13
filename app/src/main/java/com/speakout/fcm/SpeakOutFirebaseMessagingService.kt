@@ -10,6 +10,7 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavDeepLinkBuilder
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.speakout.R
@@ -157,6 +158,7 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             return BitmapFactory.decodeStream(URL(postImageUrl).openConnection().getInputStream())
         } catch (e: Exception) {
             e.printStackTrace()
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
         return null
     }
@@ -171,6 +173,7 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             }
         } catch (e: IOException) {
             e.printStackTrace()
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
         return null
     }

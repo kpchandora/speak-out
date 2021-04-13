@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-kapt'
@@ -23,7 +23,6 @@ android {
         debug {
             debuggable true
             minifyEnabled false
-            //"\"https://staging-app-speakout.herokuapp.com/\""
 
         }
         release {
@@ -39,11 +38,17 @@ android {
         staging {
             applicationId "com.speakout.staging"
             versionNameSuffix "-staging"
-            buildConfigField "String", 'BASE_URL', "\"https://staging-app-speakout.herokuapp.com/\""
         }
         prod {
             applicationId "com.speakout"
-            buildConfigField "String", 'BASE_URL', "\"https://app-speakout.herokuapp.com/\""
+        }
+    }
+
+    applicationVariants.all { variant ->
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("app/config/${variant.name}.props"))
+        properties.each { p ->
+            variant.buildConfigField 'String', p.key, p.value
         }
     }
 
@@ -75,6 +80,7 @@ dependencies {
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'com.google.firebase:firebase-database:19.6.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -155,5 +161,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit2_version"
     implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2"
 
+    implementation 'com.google.android.play:core-ktx:1.8.1'
+    implementation "com.google.firebase:firebase-crashlytics:17.3.0"
 }
 apply plugin: 'com.google.gms.google-services'

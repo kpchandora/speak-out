@@ -9,3 +9,8 @@
 .cxx
 app/google-services.json
 **/google-services.json
+*.apk
+*.aab
+**/output.json
+*.jks
+app/config

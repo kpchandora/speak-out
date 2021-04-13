@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.speakout">
+    package="com.speakoutall">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".SpeakOutApp"
+        android:name="com.speakoutall.SpeakOutApp"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,18 +20,18 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".ui.BottomDialogActivity"
+            android:name="com.speakoutall.ui.BottomDialogActivity"
             android:theme="@style/Theme.UserDialog"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.speakoutall.ui.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name=".ui.SplashScreen"
+            android:name="com.speakoutall.ui.SplashScreen"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -42,11 +42,11 @@
         </activity>
 
         <activity
-            android:name=".ui.about.AboutActivity"
+            android:name="com.speakoutall.ui.about.AboutActivity"
             android:screenOrientation="portrait" />
 
         <service
-            android:name=".fcm.SpeakOutFirebaseMessagingService"
+            android:name="com.speakoutall.fcm.SpeakOutFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

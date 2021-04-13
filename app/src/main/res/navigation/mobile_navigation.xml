@@ -12,7 +12,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.speakout.ui.home.HomeFragment"
+        android:name="com.speakoutall.ui.home.HomeFragment"
         tools:layout="@layout/fragment_home">
 
         <action
@@ -44,7 +44,7 @@
 
     <fragment
         android:id="@+id/navigation_search"
-        android:name="com.speakout.ui.search.SearchFragment"
+        android:name="com.speakoutall.ui.search.SearchFragment"
         tools:layout="@layout/fragment_search">
 
         <action
@@ -56,7 +56,7 @@
 
     <fragment
         android:id="@+id/notificationFragment"
-        android:name="com.speakout.ui.notifications.NotificationsFragment"
+        android:name="com.speakoutall.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications">
 
@@ -90,7 +90,7 @@
 
     <fragment
         android:id="@+id/usersListFragment"
-        android:name="com.speakout.users.UsersListFragment"
+        android:name="com.speakoutall.users.UsersListFragment"
         android:label="{actionType}"
         tools:layout="@layout/users_list_fragment">
 
@@ -102,7 +102,7 @@
         <argument
             android:name="actionType"
             android:defaultValue="Likes"
-            app:argType="com.speakout.users.ActionType" />
+            app:argType="com.speakoutall.users.ActionType" />
 
         <action
             android:id="@+id/action_usersListFragment_to_navigation_profile"
@@ -139,7 +139,7 @@
 
         <fragment
             android:id="@+id/navigation_profile"
-            android:name="com.speakout.ui.profile.ProfileFragment"
+            android:name="com.speakoutall.ui.profile.ProfileFragment"
             tools:layout="@layout/fragment_profile">
 
             <argument
@@ -198,12 +198,12 @@
 
         <fragment
             android:id="@+id/profileEditFragment"
-            android:name="com.speakout.ui.profile.ProfileEditFragment"
+            android:name="com.speakoutall.ui.profile.ProfileEditFragment"
             tools:layout="@layout/fragment_profile_edit">
 
             <argument
                 android:name="userDetails"
-                app:argType="com.speakout.auth.UserDetails"
+                app:argType="com.speakoutall.auth.UserDetails"
                 app:nullable="false" />
 
             <action
@@ -218,7 +218,7 @@
 
         <dialog
             android:id="@+id/profileOptionsBottomSheetFragment"
-            android:name="com.speakout.ui.profile.ProfileOptionsBottomSheetFragment"
+            android:name="com.speakoutall.ui.profile.ProfileOptionsBottomSheetFragment"
             tools:layout="@layout/fragment_profile_options_bottom_sheet">
 
 
@@ -237,7 +237,7 @@
 
         <fragment
             android:id="@+id/bookmarksPostFragment"
-            android:name="com.speakout.ui.bookmark.BookmarksPostFragment"
+            android:name="com.speakoutall.ui.bookmark.BookmarksPostFragment"
             android:label="BookmarksPostFragment"
             tools:layout="@layout/fragment_bookmarks_post">
             <action
@@ -251,7 +251,7 @@
 
         <dialog
             android:id="@+id/logoutDialog"
-            android:name="com.speakout.ui.profile.LogoutDialog"
+            android:name="com.speakoutall.ui.profile.LogoutDialog"
             android:label="LogoutDialog"
             tools:layout="@layout/dialog_logout" />
 
@@ -260,7 +260,7 @@
 
     <fragment
         android:id="@+id/postViewFragment"
-        android:name="com.speakout.ui.profile.PostViewFragment"
+        android:name="com.speakoutall.ui.profile.PostViewFragment"
         android:label="Posts"
         tools:layout="@layout/fragment_post_view">
 
@@ -300,13 +300,13 @@
 
     <fragment
         android:id="@+id/userNameFragment"
-        android:name="com.speakout.auth.UserNameFragment"
+        android:name="com.speakoutall.auth.UserNameFragment"
         tools:layout="@layout/fragment_user_name">
 
         <argument
             android:name="type"
             android:defaultValue="Edit"
-            app:argType="com.speakout.auth.Type" />
+            app:argType="com.speakoutall.auth.Type" />
 
         <argument
             android:name="username"
@@ -323,7 +323,7 @@
 
     <fragment
         android:id="@+id/signInFragment"
-        android:name="com.speakout.auth.SignInFragment"
+        android:name="com.speakoutall.auth.SignInFragment"
         android:label="SignIn"
         tools:layout="@layout/fragment_sign_in">
 
@@ -350,7 +350,7 @@
 
         <fragment
             android:id="@+id/createNewPostFragment"
-            android:name="com.speakout.posts.create.CreateNewPostFragment"
+            android:name="com.speakoutall.posts.create.CreateNewPostFragment"
             tools:layout="@layout/fragment_create_new_post">
 
             <action
@@ -365,7 +365,7 @@
 
         <fragment
             android:id="@+id/tagsFragment"
-            android:name="com.speakout.posts.tags.TagsFragment"
+            android:name="com.speakoutall.posts.tags.TagsFragment"
             tools:layout="@layout/fragment_post_tags">
 
             <argument

@@ -110,7 +110,7 @@ class MainActivity : BaseActivity(), NavBadgeListener {
             FirebaseDatabase.getInstance().getReference("app")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
-                        //Ignore
+                        FirebaseCrashlytics.getInstance().recordException(error.toException())
                     }
 
                     override fun onDataChange(snapshot: DataSnapshot) {

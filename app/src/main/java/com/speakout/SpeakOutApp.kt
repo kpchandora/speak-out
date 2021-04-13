@@ -33,9 +33,6 @@ class SpeakOutApp : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
-        FirebaseAuth.getInstance().currentUser?.let {
-            FirebaseCrashlytics.getInstance().setCustomKey("email", it.email.toString())
-        }
     }
 
 }

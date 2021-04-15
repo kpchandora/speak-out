@@ -15,15 +15,14 @@ android {
         applicationId "com.speakoutall"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         debug {
             debuggable true
             minifyEnabled false
-
         }
         release {
             debuggable false
@@ -46,9 +45,11 @@ android {
 
     applicationVariants.all { variant ->
         Properties properties = new Properties();
-        properties.load(new FileInputStream("app/config/${variant.name}.props"))
-        properties.each { p ->
-            variant.buildConfigField 'String', p.key, p.value
+        if (new File("app/config/${variant.name}.props").exists()){
+            properties.load(new FileInputStream("app/config/${variant.name}.props"))
+            properties.each { p ->
+                variant.buildConfigField 'String', p.key, p.value
+            }
         }
     }
 

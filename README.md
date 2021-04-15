@@ -4,10 +4,19 @@
 
 **Speakout** lets you upload text posts. The user can add tags, bookmark posts, like, delete and save posts on their device.
 
+## Setup
+Add the below code in app level ```build.gradle``` file of this project.
+```groovy
+debug {
+    ...
+    buildConfigField 'String', 'BASE_URL', "\"https://staging-app-speakout.herokuapp.com/\""
+}
+```
 
 ## Contribute
 If you want to contribute to this app, you're always welcome!
 See [Contributing Guidelines](CONTRIBUTING.md). 
+
 
 ## License
 ```

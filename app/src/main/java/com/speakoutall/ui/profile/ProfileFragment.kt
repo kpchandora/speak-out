@@ -266,7 +266,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                     type = UserEventType.FOLLOW
                 )
                 mUserDetails = it.data
-                populateFollowersAndFollowings(it.data)
+                profileViewModel.getUser(mUserId)
             } else {
                 mUserDetails?.let { userDetails ->
                     populateFollowersAndFollowings(userDetails)
@@ -284,7 +284,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                     userId = it.data.userId,
                     type = UserEventType.UN_FOLLOW
                 )
-                populateFollowersAndFollowings(it.data)
+                profileViewModel.getUser(mUserId)
             } else {
                 mUserDetails?.let { userDetails ->
                     populateFollowersAndFollowings(userDetails)

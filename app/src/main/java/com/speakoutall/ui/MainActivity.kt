@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.NavController
@@ -49,6 +50,7 @@ class MainActivity : BaseActivity(), NavBadgeListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         bottomNavigationView = findViewById(R.id.nav_view)
 
         navController = findNavController(R.id.nav_host_fragment)

@@ -118,11 +118,14 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
         setUpWithAppBarConfiguration(view)?.let {
-            it.toolbar_title.text = safeArgs.username
-            if (isSelf)
+
+            if (isSelf) {
                 it.iv_settings.visible()
-            else
+                it.toolbar_title.text = AppPreference.getUserUniqueName()
+            } else {
+                it.toolbar_title.text = safeArgs.username
                 it.iv_settings.gone()
+            }
         }
         return view
     }
@@ -263,7 +266,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                     type = UserEventType.FOLLOW
                 )
                 mUserDetails = it.data
-                populateFollowersAndFollowings(it.data)
+                profileViewModel.getUser(mUserId)
             } else {
                 mUserDetails?.let { userDetails ->
                     populateFollowersAndFollowings(userDetails)
@@ -281,7 +284,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                     userId = it.data.userId,
                     type = UserEventType.UN_FOLLOW
                 )
-                populateFollowersAndFollowings(it.data)
+                profileViewModel.getUser(mUserId)
             } else {
                 mUserDetails?.let { userDetails ->
                     populateFollowersAndFollowings(userDetails)

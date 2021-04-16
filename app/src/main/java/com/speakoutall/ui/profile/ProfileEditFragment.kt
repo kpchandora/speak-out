@@ -25,6 +25,7 @@ import com.speakoutall.auth.UserViewModel
 import com.speakoutall.auth.UsersItem
 import com.speakoutall.common.EventObserver
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.FragmentProfileEditBinding
 import com.speakoutall.events.PostEventTypes
 import com.speakoutall.events.PostEvents
 import com.speakoutall.events.ProfileEventTypes
@@ -32,7 +33,6 @@ import com.speakoutall.events.ProfileEvents
 import com.speakoutall.extensions.*
 import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
-import kotlinx.android.synthetic.main.fragment_profile_edit.*
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.io.File
@@ -56,6 +56,7 @@ class ProfileEditFragment : Fragment() {
     }
     private val safeArgs: ProfileEditFragmentArgs by navArgs()
     private lateinit var mUserDetails: UserDetails
+    private lateinit var mDataBinding: FragmentProfileEditBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,8 +68,8 @@ class ProfileEditFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.d("onCreateView")
-        return inflater.inflate(R.layout.fragment_profile_edit, container, false)
+        mDataBinding = FragmentProfileEditBinding.inflate(inflater, container, false)
+        return mDataBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,46 +81,49 @@ class ProfileEditFragment : Fragment() {
 
         observeViewModels()
 
-        profile_edit_fragment_iv.setOnClickListener {
+        mDataBinding.profileEditFragmentIv.setOnClickListener {
             if (!isUploading) {
                 pickImage()
             }
         }
 
-        profile_edit_update_btn.setOnClickListener {
+        mDataBinding.profileEditUpdateBtn.setOnClickListener {
             userViewModel.updateUserDetails(
                 UsersItem(
                     userId = AppPreference.getUserId(),
                     photoUrl = mProfileUrl,
-                    name = profile_edit_full_name_et.text.toString().trim(),
-                    phoneNumber = profile_edit_mobile_et.text.toString().trim()
+                    name = mDataBinding.profileEditFullNameEt.text.toString().trim(),
+                    phoneNumber = mDataBinding.profileEditMobileEt.text.toString().trim()
                 )
             )
         }
 
-        profile_edit_full_name_et.doAfterTextChanged { text: Editable? ->
+        mDataBinding.profileEditFullNameEt.doAfterTextChanged { text: Editable? ->
             val isValid =
-                profile_edit_full_name_til.checkAndShowError(text, getString(R.string.error_empty))
-            profile_edit_update_btn.isEnabled = isValid
+                mDataBinding.profileEditFullNameTil.checkAndShowError(
+                    text,
+                    getString(R.string.error_empty)
+                )
+            mDataBinding.profileEditUpdateBtn.isEnabled = isValid
         }
 
-        profile_edit_mobile_et.doAfterTextChanged {
+        mDataBinding.profileEditMobileEt.doAfterTextChanged {
             it?.let {
                 if (it.toString().trim().isEmpty() || it.toString().trim().length == 10) {
-                    profile_edit_mobile_til.error = null
-                    profile_edit_update_btn.enable()
+                    mDataBinding.profileEditMobileTil.error = null
+                    mDataBinding.profileEditUpdateBtn.enable()
                 } else {
-                    profile_edit_update_btn.disable()
-                    profile_edit_mobile_til.error = getString(R.string.mobile_error)
+                    mDataBinding.profileEditUpdateBtn.disable()
+                    mDataBinding.profileEditMobileTil.error = getString(R.string.mobile_error)
                 }
             }
         }
 
-        profile_edit_username_et.setOnClickListener {
+        mDataBinding.profileEditUsernameEt.setOnClickListener {
             val action = ProfileEditFragmentDirections
                 .actionProfileEditFragmentToUserNameFragment(
                     type = Type.Edit,
-                    username = profile_edit_username_et.text.toString()
+                    username = mDataBinding.profileEditUsernameEt.text.toString()
                 )
 
             findNavController().navigate(action)
@@ -128,24 +132,24 @@ class ProfileEditFragment : Fragment() {
 
     private fun populateDetails() {
         val screenSize = requireActivity().getScreenSize()
-        profile_edit_update_btn.layoutParams.width = screenSize.widthPixels / 4
-        profile_edit_fragment_iv.layoutParams.width = screenSize.widthPixels / 3
-        profile_edit_bg_view.layoutParams.width = screenSize.widthPixels / 3
+        mDataBinding.profileEditUpdateBtn.layoutParams.width = screenSize.widthPixels / 4
+        mDataBinding.profileEditFragmentIv.layoutParams.width = screenSize.widthPixels / 3
+        mDataBinding.profileEditBgView.layoutParams.width = screenSize.widthPixels / 3
 
         updatePicture()
 
-        profile_edit_add_iv.layoutParams.width = screenSize.widthPixels / 10
-        profile_edit_pb.layoutParams.width = screenSize.widthPixels / 10
-        profile_edit_username_et.setText(mUserDetails.username)
-        profile_edit_full_name_et.setText(mUserDetails.name)
-        profile_edit_full_name_et.setSelection(mUserDetails.name?.length ?: 0)
-        profile_edit_mobile_et.setText(mUserDetails.phoneNumber ?: "")
+        mDataBinding.profileEditAddIv.layoutParams.width = screenSize.widthPixels / 10
+        mDataBinding.profileEditPb.layoutParams.width = screenSize.widthPixels / 10
+        mDataBinding.profileEditUsernameEt.setText(mUserDetails.username)
+        mDataBinding.profileEditFullNameEt.setText(mUserDetails.name)
+        mDataBinding.profileEditFullNameEt.setSelection(mUserDetails.name?.length ?: 0)
+        mDataBinding.profileEditMobileEt.setText(mUserDetails.phoneNumber ?: "")
 
     }
 
     private fun updatePicture() {
-        profile_edit_bg_view.gone()
-        profile_edit_fragment_iv.loadImage(
+        mDataBinding.profileEditBgView.gone()
+        mDataBinding.profileEditFragmentIv.loadImage(
             url = mProfileUrl,
             makeRound = true,
             placeholder = R.drawable.ic_account_circle_grey
@@ -156,8 +160,8 @@ class ProfileEditFragment : Fragment() {
         profileViewModel.uploadProfilePicture.observe(requireActivity(), EventObserver {
             Timber.d("Picture Uploaded")
             isUploading = false
-            profile_edit_pb.gone()
-            profile_edit_update_btn.enable()
+            mDataBinding.profileEditPb.gone()
+            mDataBinding.profileEditUpdateBtn.enable()
             if (it is Result.Success) {
                 mProfileUrl = it.data
                 updatePicture()
@@ -171,7 +175,7 @@ class ProfileEditFragment : Fragment() {
             ?.observe(
                 viewLifecycleOwner
             ) {
-                profile_edit_username_et.setText(it)
+                mDataBinding.profileEditUsernameEt.setText(it)
             }
 
         userViewModel.updateUserDetails.observe(requireActivity(), EventObserver {
@@ -200,8 +204,8 @@ class ProfileEditFragment : Fragment() {
             }
             .subscribe({
                 if (it != null) {
-                    profile_edit_pb.visible()
-                    profile_edit_update_btn.disable()
+                    mDataBinding.profileEditPb.visible()
+                    mDataBinding.profileEditUpdateBtn.disable()
                     isUploading = true
                     profileViewModel.uploadProfilePicture(it)
                 } else {

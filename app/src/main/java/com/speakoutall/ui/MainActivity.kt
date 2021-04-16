@@ -50,7 +50,7 @@ class MainActivity : BaseActivity(), NavBadgeListener {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
         bottomNavigationView = findViewById(R.id.nav_view)
 
         navController = findNavController(R.id.nav_host_fragment)

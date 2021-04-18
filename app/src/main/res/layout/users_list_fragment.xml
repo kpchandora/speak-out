@@ -12,7 +12,8 @@
         android:id="@+id/users_list_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:clipToPadding="false"
+        android:padding="8dp"
         tools:listitem="@layout/item_users_list" />
 
 </LinearLayout>

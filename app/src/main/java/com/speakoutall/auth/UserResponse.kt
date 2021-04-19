@@ -7,7 +7,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class UserResponse(
 
-    @field:SerializedName("pageNumber")
+    @field:SerializedName("key")
     val key: Long = 0,
 
     @field:SerializedName("pageSize")

@@ -84,6 +84,7 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             refreshData()
         }
 
+        swipe_notifications.isRefreshing = true
         notificationsViewModel.notifications.observe(viewLifecycleOwner, Observer {
             swipe_notifications.isRefreshing = false
             isLoading = false

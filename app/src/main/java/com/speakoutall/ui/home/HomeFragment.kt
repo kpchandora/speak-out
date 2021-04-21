@@ -117,6 +117,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        swipe_home.isRefreshing = true
 
         setUpWithAppBarConfiguration(view)?.let {
             it.toolbar_title.gone()
@@ -179,14 +180,14 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            swipe_home.isRefreshing = false
+            isLoading = false
+            key = it.key
             if (mHomeViewModel.mPostList.isEmpty()) {
                 view_empty_home_posts.visible()
             } else {
                 view_empty_home_posts.gone()
             }
-            swipe_home.isRefreshing = false
-            isLoading = false
-            key = it.key
             mPostsAdapter.notifyDataSetChanged()
         })
 

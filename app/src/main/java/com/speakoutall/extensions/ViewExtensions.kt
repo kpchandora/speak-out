@@ -1,5 +1,6 @@
 package com.speakoutall.extensions
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.InputFilter
@@ -141,4 +142,3 @@ fun EditText.setSmallCaseFilter() {
     }
     filters = arrayOf(filter)
 }
-

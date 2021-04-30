@@ -27,6 +27,7 @@ import com.speakoutall.common.Result
 import com.speakoutall.extensions.*
 import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
+import com.speakoutall.utils.AppUpdateManager
 import com.speakoutall.utils.FirebaseUtils
 import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
@@ -78,6 +79,7 @@ class SignInFragment : Fragment() {
 
         mUserViewModel.userDetails.observe(requireActivity(), Observer {
             if (it is Result.Success) {
+                AppUpdateManager(requireActivity()).checkAndUpdate()
                 it.data.apply {
                     sign_in_progress.gone()
                     mPreference.setLoggedIn()

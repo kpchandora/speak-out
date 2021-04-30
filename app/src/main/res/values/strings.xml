@@ -107,5 +107,7 @@
     <string name="app_version">Version: %s</string>
     <string name="made_in_india">Made in India\n❤️</string>
     <string name="about">About</string>
+    <string name="update_available">A new version is available.</string>
+    <string name="updating">Updating..</string>
 
 </resources>

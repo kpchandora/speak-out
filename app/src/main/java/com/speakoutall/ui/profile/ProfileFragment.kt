@@ -143,6 +143,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             findNavController().navigate(action)
         }
 
+        swipe_profile.isRefreshing = true
+
         swipe_profile.setOnRefreshListener {
             view_empty_profile_posts.gone()
             key = 0
@@ -177,21 +179,20 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         })
 
         profileViewModel.userDetails.observe(viewLifecycleOwner, Observer { result ->
-            swipe_profile.isRefreshing = false
             if (result is Result.Success) {
                 populateData(result.data)
             }
         })
 
         homeViewModel.posts.observe(viewLifecycleOwner, Observer {
+            swipe_profile.isRefreshing = false
+            isLoading = false
+            key = it.key
             if (homeViewModel.mPostList.isEmpty()) {
                 view_empty_profile_posts.visible()
             } else {
                 view_empty_profile_posts.gone()
             }
-            swipe_profile.isRefreshing = false
-            isLoading = false
-            key = it.key
             mPostsAdapter.notifyDataSetChanged()
         })
 

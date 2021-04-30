@@ -5,19 +5,12 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
-import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.install.InstallStateUpdatedListener
-import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.InstallStatus
-import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.database.DataSnapshot
@@ -25,12 +18,12 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.iid.FirebaseInstanceId
-import com.speakoutall.BuildConfig
 import com.speakoutall.MobileNavigationDirections
 import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
+import com.speakoutall.utils.AppUpdateManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlin.Exception
@@ -38,8 +31,8 @@ import kotlin.Exception
 class MainActivity : BaseActivity(), NavBadgeListener {
 
     companion object {
-        private const val DAYS_FOR_FLEXIBLE_UPDATE = 5
-        private const val APP_UPDATE_REQUEST_CODE = 10
+        const val DAYS_FOR_FLEXIBLE_UPDATE = 5
+        const val APP_UPDATE_REQUEST_CODE = 10
     }
 
     private lateinit var navController: NavController
@@ -107,23 +100,7 @@ class MainActivity : BaseActivity(), NavBadgeListener {
         }
 
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
-
-        FirebaseAuth.getInstance().currentUser?.let {
-            FirebaseDatabase.getInstance().getReference("app")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onCancelled(error: DatabaseError) {
-                        FirebaseCrashlytics.getInstance().recordException(error.toException())
-                    }
-
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        try {
-                            checkUpdate(snapshot.child("appVersion").value.toString().toInt())
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                })
-        }
+        AppUpdateManager(this).checkAndUpdate()
     }
 
     override fun updateBadgeVisibility(isVisible: Boolean) {
@@ -172,60 +149,6 @@ class MainActivity : BaseActivity(), NavBadgeListener {
         super.onDestroy()
     }
 
-    private fun checkUpdate(version: Int) {
-
-        if (version > BuildConfig.VERSION_CODE) {
-            val appUpdateManager = AppUpdateManagerFactory.create(this)
-            val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-            appUpdateInfoTask.addOnSuccessListener {
-
-                if (it.installStatus() == InstallStatus.DOWNLOADED) {
-                    appUpdateManager.completeUpdate()
-                    return@addOnSuccessListener
-                }
-
-                if (it.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
-                    && it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-                ) {
-                    appUpdateManager.startUpdateFlowForResult(
-                        it,
-                        this,
-                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-                        APP_UPDATE_REQUEST_CODE
-                    )
-                    return@addOnSuccessListener
-                }
-
-                //Check for flexible update and staleness
-
-                val listener = InstallStateUpdatedListener { installState ->
-                    if (installState.installStatus() == InstallStatus.DOWNLOADED) {
-                        appUpdateManager.completeUpdate()
-                    }
-                }
-                appUpdateManager.registerListener(listener)
-                appUpdateManager.startUpdateFlowForResult(
-                    it,
-                    this,
-                    AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build(),
-                    APP_UPDATE_REQUEST_CODE
-                )
-
-                //Check for immediate update
-//                if (it.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE) &&
-//                    it.updatePriority > 3
-//                ) {
-//                    appUpdateManager.startUpdateFlowForResult(
-//                        it,
-//                        this,
-//                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
-//                        APP_UPDATE_REQUEST_CODE
-//                    )
-//                    return@addOnSuccessListener
-//                }
-            }
-        }
-    }
 
     interface BottomIconDoubleClick {
         fun doubleClick()

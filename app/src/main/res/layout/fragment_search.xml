@@ -5,13 +5,13 @@
     android:id="@+id/fragment_search_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?colorSurface"
     android:orientation="vertical"
     tools:context=".ui.search.SearchFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?colorSurface">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search_view"

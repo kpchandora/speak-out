@@ -280,6 +280,8 @@
     <color name="grey_800">#424242</color>
     <color name="grey_900">#212121</color>
 
+    <color name="dark_grey">#121212</color>
+
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
@@ -300,5 +302,6 @@
     <color name="dark_bg_light_disabled_text">#80FFFFFF</color>
     <color name="dark_bg_light_hint_text">#80FFFFFF</color>
     <color name="app_black">#5a5a5a</color>
-
+    <color name="colorProfileSurface">@color/white</color>
+    <color name="colorProfileDivider">@color/grey_100</color>
 </resources>

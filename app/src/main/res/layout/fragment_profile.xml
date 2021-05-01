@@ -17,7 +17,7 @@
             android:id="@+id/fragment_profile_scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:background="@color/colorProfileSurface">
 
 
             <include layout="@layout/layout_profile" />

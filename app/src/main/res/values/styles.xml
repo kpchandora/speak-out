@@ -9,8 +9,6 @@
         <item name="android:navigationBarColor">@color/black</item>
     </style>
 
-    <!--    android:style/Theme.Dialog-->
-
     <style name="Theme.UserDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowIsFloating">true</item>
@@ -39,11 +37,5 @@
         <item name="android:windowIsFloating">false</item>
     </style>
 
-    <style name="SearchUserStyle" parent="Widget.AppCompat.SearchView">
-<!--        <item name="searchIcon">@drawable/ic_search_unselected</item>-->
-        <item name="queryBackground">@drawable/input_bg_dr</item>
-        <item name="android:background">@drawable/input_bg_dr</item>
-        <item name="queryHint">@string/search_here</item>
-    </style>
 
 </resources>

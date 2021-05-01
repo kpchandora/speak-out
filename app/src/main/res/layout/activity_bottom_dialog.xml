@@ -22,7 +22,7 @@
             android:layout_height="0dp"
             android:layout_margin="12dp"
             android:layout_weight="1"
-            android:background="@drawable/intput_bg_dr"
+            android:background="@drawable/input_bg_dr"
             android:minWidth="250dp">
 
             <com.google.android.material.textfield.TextInputEditText

@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_search_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/fragment_search_root"
     android:orientation="vertical"
     tools:context=".ui.search.SearchFragment">
 
@@ -18,11 +18,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:background="@drawable/intput_bg_dr"
+            android:background="@drawable/input_bg_dr"
             android:focusable="false"
             app:iconifiedByDefault="false"
-            app:queryBackground="@drawable/intput_bg_dr"
-            app:queryHint="Search here..." />
+            app:queryBackground="@drawable/input_bg_dr"
+            app:queryHint="@string/search_here" />
 
     </FrameLayout>
 

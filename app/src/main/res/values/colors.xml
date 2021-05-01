@@ -304,4 +304,6 @@
     <color name="app_black">#5a5a5a</color>
     <color name="colorProfileSurface">@color/white</color>
     <color name="colorProfileDivider">@color/grey_100</color>
+    <color name="colorProfileBottomSheetSurface">@color/white</color>
+    <color name="colorPostOptionsDialogSurface">@color/white</color>
 </resources>

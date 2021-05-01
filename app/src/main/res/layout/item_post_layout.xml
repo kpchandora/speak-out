@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="@color/black"
+                android:textColor="?colorOnSurface"
                 tools:text="@tools:sample/first_names" />
 
 
@@ -74,7 +74,7 @@
             android:gravity="center"
             android:paddingEnd="8dp"
             android:text="@string/vertical_ellipse"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSurface"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -159,7 +159,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="4dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSurface"
             tools:text="@tools:sample/us_zipcodes" />
 
         <View

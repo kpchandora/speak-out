@@ -47,7 +47,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSurface"
             android:textSize="16sp"
             tools:text="@tools:sample/first_names" />
 

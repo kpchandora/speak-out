@@ -33,6 +33,9 @@ import com.speakoutall.events.ProfileEvents
 import com.speakoutall.extensions.*
 import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
+import com.speakoutall.utils.ImageUtils
+import io.reactivex.Observable
+import io.reactivex.Single
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.io.File
@@ -202,12 +205,16 @@ class ProfileEditFragment : Fragment() {
             .flatMap {
                 RxImageConverters.uriToFile(requireContext(), it, createTempFile())
             }
+            .flatMap {
+                val path = ImageUtils.compressImage(it.path, requireContext()) ?: throw Exception()
+                Observable.just(path)
+            }
             .subscribe({
                 if (it != null) {
                     mDataBinding.profileEditPb.visible()
                     mDataBinding.profileEditUpdateBtn.disable()
                     isUploading = true
-                    profileViewModel.uploadProfilePicture(it)
+                    profileViewModel.uploadProfilePicture(File(it))
                 } else {
                     requireActivity().showShortToast("Failed to get image file")
                 }

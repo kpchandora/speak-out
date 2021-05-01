@@ -94,6 +94,12 @@ object ImageUtils {
         }
     }
 
+    fun saveImageToDevice(view: View, context: Context): Single<Boolean> {
+        return convertToBitmap(view).flatMap {
+            Single.just(saveImage(it, context))
+        }
+    }
+
     private fun saveImage(bitmap: Bitmap, context: Context): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             val folderPath = File(

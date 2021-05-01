@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import com.speakoutall.R
 import com.speakoutall.extensions.addViewObserver
@@ -18,6 +19,7 @@ class PostOptionsDialog(private val mContext: Context) : Dialog(mContext) {
 
     private var mListener: OnPostOptionsClickListener? = null
     private var mPost: PostData? = null
+    private var mPostView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,7 @@ class PostOptionsDialog(private val mContext: Context) : Dialog(mContext) {
 
         dialog_option_save.setOnClickListener {
             dismiss()
-            mListener?.onSave(mPost ?: PostData())
+            mListener?.onSave(mPost ?: PostData(), mPostView)
         }
 
         dialog_option_copy.setOnClickListener {
@@ -53,6 +55,10 @@ class PostOptionsDialog(private val mContext: Context) : Dialog(mContext) {
         } else {
             dialog_option_delete.gone()
         }
+    }
+
+    fun setPostView(view: View) {
+        mPostView = view
     }
 
     fun setListener(listener: OnPostOptionsClickListener) {

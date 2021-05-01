@@ -85,24 +85,45 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <View
+            android:id="@+id/post_bg"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:background="@color/black" />
+
         <ImageView
             android:id="@+id/item_post_image_iv"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             android:adjustViewBounds="true"
+            android:visibility="gone"
             tools:src="@drawable/post_image" />
 
-
         <TextView
-            android:id="@+id/item_post_load_fail_tv"
+            android:id="@+id/post_content_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:drawableStart="@drawable/ic_problem"
-            android:drawablePadding="12dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
             android:gravity="center"
-            android:text="@string/error_image_load_fail"
-            android:visibility="gone" />
+            android:maxLength="300"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/grey_600"
+            tools:text="@tools:sample/lorem/random" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/bahram"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/yellow_500" />
 
     </FrameLayout>
 

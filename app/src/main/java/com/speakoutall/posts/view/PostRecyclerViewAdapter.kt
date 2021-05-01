@@ -23,7 +23,7 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
         screenSize?.let {
-            holder.view.item_post_image_iv.layoutParams.height = it.widthPixels
+            holder.view.post_bg.layoutParams.height = it.widthPixels
         }
         return holder
     }

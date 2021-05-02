@@ -13,6 +13,7 @@
         <item name="toolbarColor">@color/blue_grey_900</item>
         <item name="colorSurface">@color/dark_grey</item>
         <item name="colorOnSurface">@color/white</item>
+        <item name="colorError">@color/colorError</item>
         <!--        <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>-->
     </style>
 

@@ -313,4 +313,5 @@
     <color name="colorFollowingBgText">@color/black</color>
     <color name="colorBookmarkPostSurface">@color/white</color>
     <color name="colorNewPostDialogSurface">@color/white</color>
+    <color name="colorError">#CF6679</color>
 </resources>

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@color/colorProfileSurface"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:orientation="vertical">
@@ -10,7 +11,7 @@
         android:id="@+id/dialog_unfollow_iv"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="12dp"
+        android:layout_margin="18dp"
         tools:src="@tools:sample/avatars" />
 
     <TextView
@@ -24,7 +25,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="18dp"
         android:background="@color/grey_300" />
 
     <TextView
@@ -34,7 +35,7 @@
         android:gravity="center_horizontal"
         android:padding="12dp"
         android:text="@string/un_follow"
-        android:textColor="@color/indigo_500"
+        android:textColor="?colorPrimary"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -50,7 +51,7 @@
         android:gravity="center_horizontal"
         android:padding="12dp"
         android:text="@string/cancel"
-        android:textColor="@color/black"
+        android:textColor="?colorOnSurface"
         android:textSize="16sp" />
 
 </LinearLayout>

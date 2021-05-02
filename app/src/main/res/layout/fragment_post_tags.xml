@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?colorSurface"
     android:clickable="true"
     tools:context=".posts.tags.TagsFragment">
 
@@ -67,12 +67,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/intput_bg_dr"
+        android:background="@drawable/input_bg_dr"
         app:iconifiedByDefault="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:queryBackground="@drawable/intput_bg_dr"
+        app:queryBackground="@drawable/input_bg_dr"
         app:queryHint="@string/hashtag_hint" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:src="@drawable/ic_done_white_24dp"
-        app:backgroundTint="@color/indigo_500"
+        app:backgroundTint="?colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/tag_search_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:tint="@color/white" />

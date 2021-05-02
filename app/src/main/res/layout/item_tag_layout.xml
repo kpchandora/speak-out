@@ -46,7 +46,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSurface"
             tools:text="@tools:sample/full_names" />
 
         <TextView
@@ -60,7 +60,7 @@
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textStyle="bold"
-            tools:text="@tools:sample/us_zipcodes" />
+            tools:text="2 posts" />
 
     </LinearLayout>
 
@@ -78,7 +78,7 @@
             android:text="@string/add"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/indigo_500"
+            android:textColor="?colorPrimary"
             android:textStyle="bold" />
 
         <ProgressBar

@@ -22,8 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/blue_100"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,8 +53,8 @@
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
         android:foreground="?attr/selectableItemBackground"
-        app:backgroundTint="@color/white"
-        app:itemBackground="@color/white"
+        app:backgroundTint="?toolbarColor"
+        app:itemBackground="?toolbarColor"
         app:itemIconTint="@drawable/selector_tab_tint"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />

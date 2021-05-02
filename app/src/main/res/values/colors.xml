@@ -280,6 +280,8 @@
     <color name="grey_800">#424242</color>
     <color name="grey_900">#212121</color>
 
+    <color name="dark_grey">#121212</color>
+
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 
@@ -288,6 +290,7 @@
     <color name="primary_dark">@color/indigo_700</color>
     <color name="accent">@color/pink_A200</color>
 
+    <color name="primaryPurple">#BB86FC</color>
     <!--Light Background Dark Text-->
     <color name="light_bg_dark_primary_text">#DE000000</color>
     <color name="light_bg_dark_secondary_text">#8A000000</color>
@@ -300,5 +303,15 @@
     <color name="dark_bg_light_disabled_text">#80FFFFFF</color>
     <color name="dark_bg_light_hint_text">#80FFFFFF</color>
     <color name="app_black">#5a5a5a</color>
-
+    <color name="colorProfileSurface">@color/white</color>
+    <color name="colorProfileDivider">@color/grey_100</color>
+    <color name="colorProfileBottomSheetSurface">@color/white</color>
+    <color name="colorPostOptionsDialogSurface">@color/white</color>
+    <color name="colorNewPostSurface">@color/indigo_50</color>
+    <color name="colorNotificationSurface">@color/white</color>
+    <color name="colorFollowBgText">@color/white</color>
+    <color name="colorFollowingBgText">@color/black</color>
+    <color name="colorBookmarkPostSurface">@color/white</color>
+    <color name="colorNewPostDialogSurface">@color/white</color>
+    <color name="colorError">#CF6679</color>
 </resources>

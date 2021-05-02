@@ -1,6 +1,5 @@
 package com.speakoutall.posts.view
 
-import android.annotation.SuppressLint
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
@@ -30,12 +29,9 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
             item_bookmark_cb.setOnClickListener {
                 val post = tag as PostData
                 if (item_bookmark_cb.isChecked) {
-                    lottie_bookmark.visible()
-                    lottie_bookmark.playAnimation()
                     post.isBookmarkedBySelf = true
                     mEventListener?.onBookmarkAdd(post)
                 } else {
-                    lottie_bookmark.gone()
                     post.isBookmarkedBySelf = false
                     mEventListener?.onBookmarkRemove(postId = post.postId)
                 }
@@ -43,13 +39,13 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
 
             item_post_layout_menu_tv.setOnClickListener {
                 val post = tag as PostData
-                mEventListener?.onMenuClick(post, adapterPosition)
+                mEventListener?.onMenuClick(post, post_container)
             }
 
-            item_post_load_fail_tv.setOnClickListener {
-                val post = tag as PostData
-                loadPost(post.postImageUrl)
-            }
+//            item_post_load_fail_tv.setOnClickListener {
+//                val post = tag as PostData
+//                loadPost(post.postImageUrl)
+//            }
 
             item_post_names_layout.setOnClickListener {
                 val post = tag as PostData
@@ -82,9 +78,11 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
 
             setLikes(post)
 
+            post_content_tv.text = post.content
+
             item_post_time_tv.text = post.timeStamp.toElapsedTime()
 
-            loadPost(post.postImageUrl)
+//            loadPost(post.postImageUrl)
 
             item_post_like_cb.isChecked = post.isLikedBySelf
             item_bookmark_cb.isChecked = post.isBookmarkedBySelf
@@ -100,16 +98,16 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
         }
     }
 
-    @SuppressLint("CheckResult")
-    private fun loadPost(url: String) {
-        view.item_post_image_iv.loadImageWithCallback(url,
-            onSuccess = {
-                view.item_post_load_fail_tv.gone()
-            },
-            onFailed = {
-                view.item_post_load_fail_tv.visible()
-            })
-    }
+//    @SuppressLint("CheckResult")
+//    private fun loadPost(url: String) {
+//        view.item_post_image_iv.loadImageWithCallback(url,
+//            onSuccess = {
+//                view.item_post_load_fail_tv.gone()
+//            },
+//            onFailed = {
+//                view.item_post_load_fail_tv.visible()
+//            })
+//    }
 
 
 }

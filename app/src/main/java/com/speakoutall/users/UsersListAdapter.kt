@@ -120,14 +120,14 @@ class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
             view.tv_follow.text = view.context.getString(R.string.follow)
             view.tv_follow.background =
                 ContextCompat.getDrawable(view.context, R.drawable.dr_follow_bg)
-            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.colorFollowBgText))
         }
 
         private fun showFollowing() {
             view.tv_follow.text = view.context.getString(R.string.following)
             view.tv_follow.background =
                 ContextCompat.getDrawable(view.context, R.drawable.dr_unfollow_bg)
-            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.black))
+            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.colorFollowingBgText))
         }
 
     }

@@ -286,10 +286,14 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             navigateToUsersList(postData)
         }
 
-        override fun onMenuClick(postData: PostData, position: Int) {
+        override fun onMenuClick(
+            postData: PostData,
+            view: View
+        ) {
             dialog.setListener(mPostsOptionsClickListener)
             dialog.show()
             dialog.setPost(postData)
+            dialog.setPostView(view)
         }
 
         override fun onBookmarkAdd(postData: PostData) {
@@ -314,19 +318,20 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         }
 
         @SuppressLint("CheckResult")
-        override fun onSave(post: PostData) {
-            ImageUtils.saveImageToDevice(post.postImageUrl, requireContext())
-                .withDefaultSchedulers()
-                .subscribe({
-                    Timber.d("Home Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
-                    if (it)
-                        showShortToast("Saved Successfully")
-                    else
-                        showShortToast("Failed to save image")
-                }, {
-                    showShortToast(it.message ?: "")
-                })
-
+        override fun onSave(post: PostData, view: View?) {
+            view?.let {
+                ImageUtils.saveImageToDevice(view, requireContext())
+                    .withDefaultSchedulers()
+                    .subscribe({
+                        Timber.d("Home Main Thread: ${Looper.getMainLooper() == Looper.myLooper()}")
+                        if (it)
+                            showShortToast("Saved Successfully")
+                        else
+                            showShortToast("Failed to save image")
+                    }, {
+                        showShortToast(it.message ?: "")
+                    })
+            }
         }
     }
 

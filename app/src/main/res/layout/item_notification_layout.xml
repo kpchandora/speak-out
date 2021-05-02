@@ -38,7 +38,7 @@
         android:layout_marginEnd="20dp"
         android:ellipsize="end"
         android:maxLines="2"
-        android:textColor="@color/black"
+        android:textColor="?colorOnSurface"
         app:layout_constraintEnd_toStartOf="@+id/cv_notification_post"
         app:layout_constraintStart_toEndOf="@+id/fl_notification_profile"
         app:layout_constraintTop_toTopOf="@+id/fl_notification_profile"

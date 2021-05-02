@@ -307,7 +307,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         follow_unfollow_progress.gone()
         layout_profile_follow_unfollow_frame.setBackgroundResource(R.drawable.dr_follow_bg)
         follow_unfollow_tv.text = getString(R.string.follow)
-        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.white))
+        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.colorFollowBgText))
     }
 
     private fun showFollowing() {
@@ -315,7 +315,7 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         layout_profile_follow_unfollow_frame.visible()
         layout_profile_follow_unfollow_frame.setBackgroundResource(R.drawable.dr_unfollow_bg)
         follow_unfollow_tv.text = getString(R.string.following)
-        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.black))
+        follow_unfollow_tv.setTextColor(ContextCompat.getColor(context!!, R.color.colorFollowingBgText))
     }
 
     private fun showEdit() {

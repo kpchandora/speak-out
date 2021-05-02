@@ -15,6 +15,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorNewPostSurface"
         android:orientation="vertical">
 
         <FrameLayout
@@ -45,7 +46,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:scrollHorizontally="false"
-                android:textColor="@color/black"
+                android:textColor="?colorOnSurface"
                 android:textCursorDrawable="@drawable/dr_et_cursor" />
         </FrameLayout>
 

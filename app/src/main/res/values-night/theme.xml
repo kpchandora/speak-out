@@ -3,9 +3,9 @@
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimary">@color/primaryPurple</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorSecondary">?attr/colorPrimary</item>
+        <item name="colorSecondary">@color/purple_500</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorAccent">@color/blue_300</item>
         <!--        <item name="colorControlLight">@color/color_control_light</item>-->

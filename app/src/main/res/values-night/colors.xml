@@ -4,4 +4,5 @@
     <color name="colorProfileDivider">@color/grey_800</color>
     <color name="colorProfileBottomSheetSurface">@color/grey_900</color>
     <color name="colorPostOptionsDialogSurface">@color/grey_900</color>
+    <color name="colorNewPostSurface">@color/grey_900</color>
 </resources>

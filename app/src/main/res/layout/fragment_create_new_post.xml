@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/indigo_50"
+    android:background="@color/colorNewPostSurface"
     android:orientation="vertical"
     tools:context=".posts.create.CreateNewPostFragment">
 
@@ -50,6 +50,7 @@
         android:id="@+id/create_post_next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_gravity="bottom|end"
         android:layout_margin="12dp"
         android:drawableEnd="@drawable/ic_keyboard_arrow_right_white_24dp"

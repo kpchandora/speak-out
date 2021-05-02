@@ -35,7 +35,6 @@ import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.ImageUtils
 import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.io.File
@@ -102,23 +101,21 @@ class ProfileEditFragment : Fragment() {
         }
 
         mDataBinding.profileEditFullNameEt.doAfterTextChanged { text: Editable? ->
-            val isValid =
-                mDataBinding.profileEditFullNameTil.checkAndShowError(
-                    text,
-                    getString(R.string.error_empty)
-                )
-            mDataBinding.profileEditUpdateBtn.isEnabled = isValid
+            mDataBinding.profileEditFullNameTil.checkAndShowError(
+                text,
+                getString(R.string.error_empty)
+            )
+            changeButtonState()
         }
 
         mDataBinding.profileEditMobileEt.doAfterTextChanged {
             it?.let {
                 if (it.toString().trim().isEmpty() || it.toString().trim().length == 10) {
                     mDataBinding.profileEditMobileTil.error = null
-                    mDataBinding.profileEditUpdateBtn.enable()
                 } else {
-                    mDataBinding.profileEditUpdateBtn.disable()
                     mDataBinding.profileEditMobileTil.error = getString(R.string.mobile_error)
                 }
+                changeButtonState()
             }
         }
 
@@ -159,12 +156,18 @@ class ProfileEditFragment : Fragment() {
         )
     }
 
+    private fun changeButtonState() {
+        val isNameValid = mDataBinding.profileEditFullNameTil.error == null
+        val isMobileNumberValid = mDataBinding.profileEditMobileTil.error == null
+        mDataBinding.profileEditUpdateBtn.isEnabled = isNameValid && isMobileNumberValid
+    }
+
     private fun observeViewModels() {
         profileViewModel.uploadProfilePicture.observe(requireActivity(), EventObserver {
             Timber.d("Picture Uploaded")
             isUploading = false
             mDataBinding.profileEditPb.gone()
-            mDataBinding.profileEditUpdateBtn.enable()
+            changeButtonState()
             if (it is Result.Success) {
                 mProfileUrl = it.data
                 updatePicture()

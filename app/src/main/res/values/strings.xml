@@ -109,5 +109,6 @@
     <string name="about">About</string>
     <string name="update_available">A new version is available.</string>
     <string name="updating">Updating..</string>
+    <string name="search_here">Search here...</string>
 
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorProfileSurface">@color/grey_900</color>
+    <color name="colorProfileDivider">@color/grey_800</color>
+    <color name="colorProfileBottomSheetSurface">@color/grey_900</color>
+    <color name="colorPostOptionsDialogSurface">@color/grey_900</color>
+    <color name="colorNewPostSurface">@color/grey_900</color>
+    <color name="colorNotificationSurface">@color/grey_900</color>
+    <color name="colorFollowBgText">@color/dark_grey</color>
+    <color name="colorFollowingBgText">@color/white</color>
+    <color name="colorBookmarkPostSurface">@color/grey_900</color>
+    <color name="colorNewPostDialogSurface">@color/grey_900</color>
+</resources>

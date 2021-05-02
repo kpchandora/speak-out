@@ -18,7 +18,7 @@
         app:chipCornerRadius="8dp"
         app:closeIconTint="@color/white"
         android:textColor="@color/white"
-        app:chipBackgroundColor="@color/indigo_500"
+        app:chipBackgroundColor="?colorPrimary"
         tools:text="@tools:sample/first_names" />
 
 </LinearLayout>

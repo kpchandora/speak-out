@@ -12,7 +12,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp">
+            android:background="@color/colorProfileSurface"
+            android:paddingTop="28dp">
 
             <ImageView
                 android:id="@+id/iv_profile"
@@ -47,7 +48,7 @@
                 android:paddingVertical="8dp"
                 android:text="@string/cancel"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="?colorOnSurface"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -63,7 +64,7 @@
                 android:paddingVertical="8dp"
                 android:text="@string/text_logout"
                 android:textAlignment="center"
-                android:textColor="@color/red_500"
+                android:textColor="?colorError"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@id/tv_cancel"

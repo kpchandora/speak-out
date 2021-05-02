@@ -77,7 +77,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/dr_unfollow_bg"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="?colorOnSurface"
             android:textSize="14sp"
             tools:text="Following" />
 

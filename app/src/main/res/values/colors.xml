@@ -308,4 +308,9 @@
     <color name="colorProfileBottomSheetSurface">@color/white</color>
     <color name="colorPostOptionsDialogSurface">@color/white</color>
     <color name="colorNewPostSurface">@color/indigo_50</color>
+    <color name="colorNotificationSurface">@color/white</color>
+    <color name="colorFollowBgText">@color/white</color>
+    <color name="colorFollowingBgText">@color/black</color>
+    <color name="colorBookmarkPostSurface">@color/white</color>
+    <color name="colorNewPostDialogSurface">@color/white</color>
 </resources>

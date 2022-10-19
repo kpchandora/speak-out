@@ -9,12 +9,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.speakoutall"
         minSdkVersion 24
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 7
         versionName "2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -23,6 +23,7 @@ android {
         debug {
             debuggable true
             minifyEnabled false
+//            buildConfigField 'String', 'BASE_URL', "\"https://staging-app-speakout.herokuapp.com/\""
         }
         release {
             debuggable false
@@ -45,8 +46,8 @@ android {
 
     applicationVariants.all { variant ->
         Properties properties = new Properties();
-        if (new File("app/config/${variant.name}.props").exists()){
-            properties.load(new FileInputStream("app/config/${variant.name}.props"))
+        if (new File("$project.rootDir/app/config/${variant.name}.props").exists()){
+            properties.load(new FileInputStream("$project.rootDir/app/config/${variant.name}.props"))
             properties.each { p ->
                 variant.buildConfigField 'String', p.key, p.value
             }

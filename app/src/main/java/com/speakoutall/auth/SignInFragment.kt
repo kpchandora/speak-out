@@ -91,8 +91,8 @@ class SignInFragment : Fragment() {
                     } else {
                         val action =
                             SignInFragmentDirections.actionSignInFragmentToUserNameFragment(
-                                Type.Create,
-                                null
+                                type = Type.Create,
+                                username = null
                             )
                         findNavController().navigate(action)
                     }

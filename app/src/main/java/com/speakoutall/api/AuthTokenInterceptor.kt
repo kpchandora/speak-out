@@ -24,7 +24,7 @@ class AuthTokenInterceptor : Interceptor {
             if (!pair.first) {
                 Timber.d("End")
                 val modifiedRequest = request.newBuilder()
-                    .addHeader("Authorization", pair.second)
+                    .addHeader("Authorization", "Bearer ${pair.second}")
                     .addHeader("version_name", BuildConfig.VERSION_NAME)
                     .addHeader("version_code", BuildConfig.VERSION_CODE.toString())
                     .build()
@@ -34,7 +34,9 @@ class AuthTokenInterceptor : Interceptor {
                 result?.token?.let { token ->
                     AppPreference.updateFirebaseToken(token)
                     val modifiedRequest = request.newBuilder()
-                        .addHeader("Authorization", token)
+                        .addHeader("Authorization", "Bearer $token")
+                        .addHeader("version_name", BuildConfig.VERSION_NAME)
+                        .addHeader("version_code", BuildConfig.VERSION_CODE.toString())
                         .build()
                     return chain.proceed(modifiedRequest)
                 } ?: kotlin.run {

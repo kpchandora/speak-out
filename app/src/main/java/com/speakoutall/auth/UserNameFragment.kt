@@ -15,12 +15,11 @@ import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.common.EventObserver
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.FragmentUserNameBinding
 import com.speakoutall.extensions.*
 import com.speakoutall.ui.MainActivity
 import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
-import kotlinx.android.synthetic.main.fragment_user_name.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 
@@ -32,13 +31,14 @@ class UserNameFragment : Fragment() {
     private var username = ""
     private val userNameRegex = "^[a-z0-9_]{1,25}\$".toRegex()
     private val safeArgs: UserNameFragmentArgs by navArgs()
+    private var binding: FragmentUserNameBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_name, container, false)
+        binding = FragmentUserNameBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,34 +46,38 @@ class UserNameFragment : Fragment() {
 
         username = safeArgs.username ?: ""
 
-        if (safeArgs.type == Type.Edit) {
-            setUpToolbar(view)?.toolbar_title?.text = "${safeArgs.type} Username"
-            fragment_username_et.setText(username)
-            fragment_username_et.setSelection(username.length)
-            fragment_username_et.setDrawableEnd(R.drawable.ic_check)
-            fragment_username_next_btn.text = getString(R.string.update)
-        } else {
-            setUpWithAppBarConfiguration(view, R.id.userNameFragment)?.toolbar_title?.text =
-                "${safeArgs.type} Username"
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        requireActivity().finish()
-                    }
+        binding?.run {
+            toolbarContainer.toolbarTitle.text = "${safeArgs.type} Username"
+            if (safeArgs.type == Type.Edit) {
+                setUpToolbar(view)
+                fragmentUsernameEt.setText(username)
+                fragmentUsernameEt.setSelection(username.length)
+                fragmentUsernameEt.setDrawableEnd(R.drawable.ic_check)
+                fragmentUsernameNextBtn.text = getString(R.string.update)
+            } else {
+                setUpWithAppBarConfiguration(view, R.id.userNameFragment)
+                requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+                    object : OnBackPressedCallback(true) {
+                        override fun handleOnBackPressed() {
+                            requireActivity().finish()
+                        }
 
-                })
+                    })
+            }
+
+            fragmentUsernameNextBtn.isEnabled = false
         }
-
-        fragment_username_next_btn.isEnabled = false
 
         mUserViewModel.username.observe(viewLifecycleOwner, Observer {
             if (it is Result.Success) {
-                if (it.data) {
-                    fragment_username_et.setDrawableEnd(R.drawable.ic_check)
-                    fragment_username_next_btn.isEnabled = true
-                    fragment_username_til.error = null
-                } else {
-                    fragment_username_til.error = "Username is already taken"
+                binding?.run {
+                    if (it.data) {
+                        fragmentUsernameEt.setDrawableEnd(R.drawable.ic_check)
+                        fragmentUsernameNextBtn.isEnabled = true
+                        fragmentUsernameTil.error = null
+                    } else {
+                        fragmentUsernameTil.error = "Username is already taken"
+                    }
                 }
             } else {
                 showShortToast(getString(R.string.error_something_went_wrong))
@@ -100,31 +104,31 @@ class UserNameFragment : Fragment() {
             }
         })
 
-        fragment_username_et.setSmallCaseFilter()
+        binding?.fragmentUsernameEt?.setSmallCaseFilter()
 
-        fragment_username_et.doOnTextChanged { text: CharSequence?, start: Int,
-                                               count: Int, after: Int ->
+        binding?.fragmentUsernameEt?.doOnTextChanged { text: CharSequence?, start: Int,
+                                                       count: Int, after: Int ->
 
-            fragment_username_et.removeDrawableEnd()
+            binding?.fragmentUsernameEt?.removeDrawableEnd()
 
             text?.let {
-                fragment_username_next_btn.disable()
+                binding?.fragmentUsernameNextBtn?.disable()
                 if (userNameRegex.matches(text)) {
                     if (text.length < 3) {
-                        fragment_username_til.error = "Username is too short"
+                        binding?.fragmentUsernameTil?.error = "Username is too short"
                     } else {
-                        fragment_username_til.error = null
+                        binding?.fragmentUsernameTil?.error = null
                         username = text.toString()
                         mUserViewModel.isUsernamePresent(username)
                     }
                 } else {
-                    fragment_username_til.error = "Please enter a valid username"
+                    binding?.fragmentUsernameTil?.error = "Please enter a valid username"
                 }
             }
 
         }
 
-        fragment_username_next_btn.setOnClickListener {
+        binding?.fragmentUsernameNextBtn?.setOnClickListener {
             (requireActivity() as MainActivity).showProgress()
             mUserViewModel.updateUserDetails(
                 UsersItem(

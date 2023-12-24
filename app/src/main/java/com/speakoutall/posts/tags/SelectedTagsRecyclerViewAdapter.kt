@@ -1,11 +1,9 @@
 package com.speakoutall.posts.tags
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.speakoutall.R
-import kotlinx.android.synthetic.main.item_selected_tags_layout.view.*
+import com.speakoutall.databinding.ItemSelectedTagsLayoutBinding
 import java.util.*
 
 class SelectedTagsRecyclerViewAdapter() :
@@ -15,10 +13,12 @@ class SelectedTagsRecyclerViewAdapter() :
     private var mListener: OnTagClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SelectedTagsHolder {
-        val view =
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_selected_tags_layout, parent, false)
-        return SelectedTagsHolder(view)
+        val binding = ItemSelectedTagsLayoutBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return SelectedTagsHolder(binding)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -32,7 +32,7 @@ class SelectedTagsRecyclerViewAdapter() :
     override fun onBindViewHolder(holder: SelectedTagsHolder, position: Int) {
         holder.apply {
             bind(selectedTagsList[adapterPosition])
-            view.item_selected_tag_chip.setOnCloseIconClickListener {
+            binding.itemSelectedTagChip.setOnCloseIconClickListener {
                 mListener?.onTagClick(selectedTagsList[adapterPosition])
                 selectedTagsList.remove(selectedTagsList[adapterPosition])
                 notifyItemRemoved(adapterPosition)
@@ -58,9 +58,10 @@ class SelectedTagsRecyclerViewAdapter() :
 //        notifyItemMoved(1, selectedTagsList.size - 1)
     }
 
-    inner class SelectedTagsHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class SelectedTagsHolder(val binding: ItemSelectedTagsLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         fun bind(tag: Tag) {
-            view.item_selected_tag_chip.text = tag.tag.toLowerCase(Locale.getDefault())
+            binding.itemSelectedTagChip.text = tag.tag.lowercase(Locale.getDefault())
         }
     }
 }

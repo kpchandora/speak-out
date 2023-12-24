@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_toolbar" />
+    <include
+        android:id="@+id/toolbarContainer"
+        layout="@layout/layout_toolbar" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_profile"
@@ -20,7 +22,9 @@
             android:background="@color/colorProfileSurface">
 
 
-            <include layout="@layout/layout_profile" />
+            <include
+                android:id="@+id/profileLayoutContainer"
+                layout="@layout/layout_profile" />
 
         </androidx.core.widget.NestedScrollView>
 

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
+import com.speakoutall.databinding.ItemNotificationLayoutBinding
 import com.speakoutall.notification.NotificationsItem
 
 class NotificationsAdapter(
@@ -13,9 +14,12 @@ class NotificationsAdapter(
     RecyclerView.Adapter<NotificationsViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotificationsViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_notification_layout, parent, false)
-        return NotificationsViewHolder(view, listener)
+        val binding = ItemNotificationLayoutBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return NotificationsViewHolder(binding, listener)
     }
 
     override fun onBindViewHolder(holder: NotificationsViewHolder, position: Int) {

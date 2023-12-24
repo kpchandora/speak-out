@@ -14,11 +14,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.common.EventObserver
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.FragmentPostViewBinding
 import com.speakoutall.events.*
 import com.speakoutall.extensions.*
 import com.speakoutall.posts.PostsRepository
@@ -32,8 +32,6 @@ import com.speakoutall.users.ActionType
 import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.ImageUtils
 import com.speakoutall.utils.Utils
-import kotlinx.android.synthetic.main.fragment_post_view.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 
@@ -57,6 +55,7 @@ class PostViewFragment : Fragment() {
     }
     private lateinit var mHomeViewModel: HomeViewModel
     private lateinit var dialog: PostOptionsDialog
+    private var _binding: FragmentPostViewBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,22 +72,24 @@ class PostViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_post_view, container, false)
+        _binding = FragmentPostViewBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)?.toolbar_title?.text = "Posts"
+        setUpToolbar(view)
+        _binding?.toolbarContainer?.toolbarTitle?.text = "Posts"
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
-        fragment_post_view_rv.apply {
+        _binding?.fragmentPostViewRv?.run {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = mPostsAdapter
         }
 
         mHomeViewModel.singlePost.observe(viewLifecycleOwner, EventObserver {
-            progressBar.gone()
+            _binding?.progressBar?.gone()
             if (it is Result.Success) {
                 mPostsAdapter.updatePosts(listOf(it.data))
             }
@@ -99,10 +100,10 @@ class PostViewFragment : Fragment() {
 
         if (!safeArgs.isFromNotification) {
             mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
-                progressBar.gone()
+                _binding?.progressBar?.gone()
                 mPostsAdapter.notifyDataSetChanged()
             })
-            fragment_post_view_rv.scrollToPosition(safeArgs.itemPosition)
+            _binding?.fragmentPostViewRv?.scrollToPosition(safeArgs.itemPosition)
         }
         observeViewModels()
     }

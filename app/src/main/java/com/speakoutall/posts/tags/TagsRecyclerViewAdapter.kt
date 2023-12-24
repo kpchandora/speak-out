@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
+import com.speakoutall.databinding.ItemTagLayoutBinding
 import com.speakoutall.extensions.gone
 import com.speakoutall.extensions.visible
-import kotlinx.android.synthetic.main.item_tag_layout.view.*
 import java.util.concurrent.atomic.AtomicBoolean
 
 class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.TagsHolder>() {
@@ -20,9 +20,9 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
     val isLoading = AtomicBoolean(false)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TagsHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_tag_layout, parent, false)
-        return TagsHolder(view)
+        val binding =
+            ItemTagLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TagsHolder(binding)
     }
 
     override fun getItemCount() = mTagsList.size
@@ -34,7 +34,7 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
     override fun onBindViewHolder(holder: TagsHolder, position: Int) {
         holder.apply {
             bind(mTagsList[position])
-            view.item_tags_main_layout.setOnClickListener {
+            binding.itemTagsMainLayout.setOnClickListener {
                 val item = mTagsList[adapterPosition]
                 if (item.used ?: -1 > -1) { //used is not null
                     toggleSelection(item.tag)
@@ -79,38 +79,41 @@ class TagsRecyclerViewAdapter : RecyclerView.Adapter<TagsRecyclerViewAdapter.Tag
         notifyDataSetChanged()
     }
 
-    inner class TagsHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class TagsHolder(val binding: ItemTagLayoutBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("SetTextI18n")
         fun bind(tag: Tag) {
-            view.item_tag_name_tv.text = tag.tag
+            binding.itemTagNameTv.text = tag.tag
 
             tag.used?.let {
-                view.item_tag_add_layout.gone()
+                binding.itemTagAddLayout.gone()
                 if (it > 0) {
-                    view.item_tag_posts_count_tv.visible()
-                    view.item_tag_posts_count_tv.text =
-                        "$it ${view.context.resources.getQuantityString(
-                            R.plurals.number_of_posts,
-                            it.toInt()
-                        ).toLowerCase()}"
+                    binding.itemTagPostsCountTv.visible()
+                    binding.itemTagPostsCountTv.text =
+                        "$it ${
+                            binding.root.context.resources.getQuantityString(
+                                R.plurals.number_of_posts,
+                                it.toInt()
+                            ).lowercase()
+                        }"
                 } else {
-                    view.item_tag_posts_count_tv.gone()
+                    binding.itemTagPostsCountTv.gone()
                 }
             } ?: kotlin.run {
-                view.item_tag_add_layout.visible()
-                view.item_tag_posts_count_tv.gone()
+                binding.itemTagAddLayout.visible()
+                binding.itemTagPostsCountTv.gone()
                 if (tag.uploading == true) {
-                    view.item_add_tag_progress.visible()
-                    view.item_add_tag_btn.gone()
+                    binding.itemAddTagProgress.visible()
+                    binding.itemAddTagBtn.gone()
                 } else {
-                    view.item_add_tag_progress.gone()
-                    view.item_add_tag_btn.visible()
+                    binding.itemAddTagProgress.gone()
+                    binding.itemAddTagBtn.visible()
                 }
             }
 
-            view.background = if (isSelected(tag.tag))
+            binding.root.background = if (isSelected(tag.tag))
                 ContextCompat.getDrawable(
-                    view.context,
+                    binding.root.context,
                     R.drawable.dr_round_bg_blue50_8dp
                 )
             else null

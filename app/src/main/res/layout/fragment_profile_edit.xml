@@ -9,7 +9,7 @@
         tools:context=".ui.profile.ProfileEditFragment">
 
         <include
-            android:id="@+id/include"
+            android:id="@+id/toolbarContainer"
             layout="@layout/layout_toolbar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

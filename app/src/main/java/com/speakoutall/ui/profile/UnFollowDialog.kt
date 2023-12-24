@@ -8,14 +8,15 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.fragment.app.DialogFragment
 import com.speakoutall.R
+import com.speakoutall.databinding.DialogUnfollowBinding
 import com.speakoutall.extensions.getScreenSize
 import com.speakoutall.extensions.loadImage
-import kotlinx.android.synthetic.main.dialog_unfollow.view.*
 
 class UnFollowDialog : AppCompatDialogFragment() {
 
     private lateinit var dialogModel: UnFollowDialogModel
     private var mListener: UnFollowDialogListener? = null
+    private var _binding: DialogUnfollowBinding? = null
 
     companion object {
         private const val ARG_MODEL = "ARG_MODEL"
@@ -40,21 +41,22 @@ class UnFollowDialog : AppCompatDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.dialog_unfollow, container, false)
+        _binding = DialogUnfollowBinding.inflate(inflater, container, false)
         isCancelable = false
-        view.dialog_unfollow_confirm.setOnClickListener {
+        _binding?.dialogUnfollowConfirm?.setOnClickListener {
             mListener?.onUnFollow(dialogModel.userId)
             dismiss()
         }
-        view.dialog_unfollow_cancel.setOnClickListener {
+        _binding?.dialogUnfollowCancel?.setOnClickListener {
             dismiss()
         }
 
-        view.dialog_unfollow_iv.loadImage(
+        _binding?.dialogUnfollowIv?.loadImage(
             dialogModel.profileUrl, makeRound = true,
             placeholder = R.drawable.ic_account_circle_grey
         )
-        view.dialog_unfollow_hint_tv.text = getString(R.string.hint_un_follow, dialogModel.username)
+        _binding?.dialogUnfollowHintTv?.text =
+            getString(R.string.hint_un_follow, dialogModel.username)
 
         return view
     }

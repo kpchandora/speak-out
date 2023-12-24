@@ -4,10 +4,9 @@ import android.app.Activity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.speakoutall.R
+import com.speakoutall.databinding.ItemPostLayoutBinding
 import com.speakoutall.extensions.getScreenSize
 import com.speakoutall.posts.create.PostData
-import kotlinx.android.synthetic.main.item_post_layout.view.*
 import timber.log.Timber
 import kotlin.collections.ArrayList
 
@@ -17,13 +16,13 @@ class PostRecyclerViewAdapter(private val mPostsList: ArrayList<PostData>) :
     var mEventListener: PostClickEventListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_post_layout, parent, false)
-        val holder = PostViewHolder(view, mEventListener)
+        val binding =
+            ItemPostLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val holder = PostViewHolder(binding, mEventListener)
 
         val screenSize = (parent.context as? Activity)?.getScreenSize()
         screenSize?.let {
-            holder.view.post_bg.layoutParams.height = it.widthPixels
+            binding.postBg.layoutParams.height = it.widthPixels
         }
         return holder
     }

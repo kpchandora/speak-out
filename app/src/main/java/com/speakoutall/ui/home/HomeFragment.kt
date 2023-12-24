@@ -16,11 +16,11 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.auth.Type
 import com.speakoutall.common.EventObserver
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.FragmentHomeBinding
 import com.speakoutall.events.PostEventTypes
 import com.speakoutall.events.PostEvents
 import com.speakoutall.extensions.*
@@ -37,8 +37,6 @@ import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.Constants
 import com.speakoutall.utils.ImageUtils
 import com.speakoutall.utils.Utils
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 
 class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
@@ -58,6 +56,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var postEvents: PostEvents? = null
     private var key: Long = 0L
     private var mBadgeListener: NavBadgeListener? = null
+    private var _binding: FragmentHomeBinding? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -80,6 +79,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                     mHomeViewModel.mPostList.clear()
                     mHomeViewModel.getFeed(key)
                 }
+
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
                 PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
                 PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
@@ -92,6 +92,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             !mPreference.isLoggedIn() -> {
                 findNavController().navigate(HomeFragmentDirections.actionNavigationHomeToSignInFragment())
             }
+
             !mPreference.isUsernameProcessComplete() -> {
                 findNavController().navigate(
                     HomeFragmentDirections.actionNavigationHomeToUserNameFragment(
@@ -100,6 +101,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
                     )
                 )
             }
+
             else -> {
                 mHomeViewModel.getFeed(key)
                 mHomeViewModel.getCount()
@@ -112,21 +114,24 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        swipe_home.isRefreshing = true
+        _binding?.swipeHome?.isRefreshing = true
 
-        setUpWithAppBarConfiguration(view)?.let {
-            it.toolbar_title.gone()
-            view.toolbar_title_home.visible()
+        _binding?.toolbarContainer?.run {
+            setUpWithAppBarConfiguration(view)?.let {
+                toolbarTitle.gone()
+                toolbarTitleHome.visible()
+            }
         }
 
         dialog = PostOptionsDialog(requireContext())
         mPostsAdapter.mEventListener = mPostEventsListener
-        fragment_home_rv.apply {
+        _binding?.fragmentHomeRv?.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
             adapter = mPostsAdapter
@@ -137,11 +142,11 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             }
         }
         postponeEnterTransition()
-        fragment_home_rv.doOnPreDraw {
+        _binding?.fragmentHomeRv?.doOnPreDraw {
             startPostponedEnterTransition()
         }
 
-        fragment_home_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        _binding?.fragmentHomeRv?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (isLoading || key == Constants.INVALID_KEY) return
                 if (dy > 0) {
@@ -160,7 +165,7 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         observeViewModels()
 
-        swipe_home.setOnRefreshListener {
+        _binding?.swipeHome?.setOnRefreshListener {
             key = 0
             mHomeViewModel.mPostList.clear()
             mPostsAdapter.notifyDataSetChanged()
@@ -180,20 +185,20 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     private fun observeViewModels() {
         mHomeViewModel.posts.observe(viewLifecycleOwner, Observer {
-            swipe_home.isRefreshing = false
+            _binding?.swipeHome?.isRefreshing = false
             isLoading = false
             key = it.key
             if (mHomeViewModel.mPostList.isEmpty()) {
-                view_empty_home_posts.visible()
+                _binding?.viewEmptyHomePosts?.visible()
             } else {
-                view_empty_home_posts.gone()
+                _binding?.viewEmptyHomePosts?.gone()
             }
             mPostsAdapter.notifyDataSetChanged()
         })
 
         mHomeViewModel.postsError.observe(viewLifecycleOwner, EventObserver {
             isLoading = false
-            swipe_home.isRefreshing = false
+            _binding?.swipeHome?.isRefreshing = false
             showShortToast(it)
         })
 
@@ -213,9 +218,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             if (it is Result.Success) {
                 mPostsAdapter.deletePost(it.data.postId)
                 if (mHomeViewModel.mPostList.isEmpty()) {
-                    view_empty_home_posts.visible()
+                    _binding?.viewEmptyHomePosts?.visible()
                 } else {
-                    view_empty_home_posts.gone()
+                    _binding?.viewEmptyHomePosts?.gone()
                 }
             }
 
@@ -336,7 +341,9 @@ class HomeFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     override fun doubleClick() {
-        fragment_home_rv.layoutManager?.smoothScrollToPosition(fragment_home_rv, null, 0)
+        _binding?.fragmentHomeRv?.run {
+            layoutManager?.smoothScrollToPosition(this, null, 0)
+        }
     }
 
 }

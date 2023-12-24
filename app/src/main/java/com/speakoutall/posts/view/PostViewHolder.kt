@@ -1,20 +1,22 @@
 package com.speakoutall.posts.view
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
+import com.speakoutall.databinding.ItemPostLayoutBinding
 import com.speakoutall.extensions.*
 import com.speakoutall.posts.create.PostData
-import kotlinx.android.synthetic.main.item_post_layout.view.*
 
-class PostViewHolder(val view: View, private val mEventListener: PostClickEventListener?) :
-    RecyclerView.ViewHolder(view) {
+class PostViewHolder(
+    val binding: ItemPostLayoutBinding,
+    private val mEventListener: PostClickEventListener?
+) :
+    RecyclerView.ViewHolder(binding.root) {
 
     init {
-        view.apply {
-            item_post_like_cb.setOnClickListener {
-                val post = tag as PostData
-                if (item_post_like_cb.isChecked) {
+        binding.run {
+            itemPostLikeCb.setOnClickListener {
+                val post = root.tag as PostData
+                if (itemPostLikeCb.isChecked) {
                     post.isLikedBySelf = true
                     post.likesCount++
                     mEventListener?.onLike(adapterPosition, post)
@@ -26,9 +28,9 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
                 setLikes(post)
             }
 
-            item_bookmark_cb.setOnClickListener {
-                val post = tag as PostData
-                if (item_bookmark_cb.isChecked) {
+            itemBookmarkCb.setOnClickListener {
+                val post = root.tag as PostData
+                if (itemBookmarkCb.isChecked) {
                     post.isBookmarkedBySelf = true
                     mEventListener?.onBookmarkAdd(post)
                 } else {
@@ -37,9 +39,9 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
                 }
             }
 
-            item_post_layout_menu_tv.setOnClickListener {
-                val post = tag as PostData
-                mEventListener?.onMenuClick(post, post_container)
+            itemPostLayoutMenuTv.setOnClickListener {
+                val post = root.tag as PostData
+                mEventListener?.onMenuClick(post, postContainer)
             }
 
 //            item_post_load_fail_tv.setOnClickListener {
@@ -47,54 +49,54 @@ class PostViewHolder(val view: View, private val mEventListener: PostClickEventL
 //                loadPost(post.postImageUrl)
 //            }
 
-            item_post_names_layout.setOnClickListener {
-                val post = tag as PostData
-                mEventListener?.onProfileClick(post, item_post_profile_iv)
+            itemPostNamesLayout.setOnClickListener {
+                val post = root.tag as PostData
+                mEventListener?.onProfileClick(post, itemPostProfileIv)
             }
 
-            item_post_profile_iv.setOnClickListener {
-                val post = tag as PostData
-                mEventListener?.onProfileClick(post, item_post_profile_iv)
+            itemPostProfileIv.setOnClickListener {
+                val post = root.tag as PostData
+                mEventListener?.onProfileClick(post, itemPostProfileIv)
             }
 
-            item_post_like_count_tv.setOnClickListener {
-                val post = tag as PostData
+            itemPostLikeCountTv.setOnClickListener {
+                val post = root.tag as PostData
                 mEventListener?.onLikedUsersClick(post)
             }
         }
     }
 
     fun bind(post: PostData) {
-        view.apply {
-            tag = post
-            item_post_profile_iv.transitionName = post.postId
+        binding.apply {
+            root.tag = post
+            itemPostProfileIv.transitionName = post.postId
 
-            item_post_profile_iv.loadImage(
+            itemPostProfileIv.loadImage(
                 url = post.photoUrl,
                 placeholder = R.drawable.ic_account_circle_grey,
                 makeRound = true
             )
-            item_post_name_tv.text = post.username
+            itemPostNameTv.text = post.username
 
             setLikes(post)
 
-            post_content_tv.text = post.content
+            postContentTv.text = post.content
 
-            item_post_time_tv.text = post.timeStamp.toElapsedTime()
+            itemPostTimeTv.text = post.timeStamp.toElapsedTime()
 
 //            loadPost(post.postImageUrl)
 
-            item_post_like_cb.isChecked = post.isLikedBySelf
-            item_bookmark_cb.isChecked = post.isBookmarkedBySelf
+            itemPostLikeCb.isChecked = post.isLikedBySelf
+            itemBookmarkCb.isChecked = post.isBookmarkedBySelf
         }
     }
 
     private fun setLikes(post: PostData) {
         if (post.likesCount < 1) {
-            view.item_post_like_count_tv.gone()
+            binding.itemPostLikeCountTv.gone()
         } else {
-            view.item_post_like_count_tv.visible()
-            view.item_post_like_count_tv.text = post.likesCount.toString()
+            binding.itemPostLikeCountTv.visible()
+            binding.itemPostLikeCountTv.text = post.likesCount.toString()
         }
     }
 

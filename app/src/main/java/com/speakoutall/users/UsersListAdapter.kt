@@ -1,17 +1,16 @@
 package com.speakoutall.users
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
 import com.speakoutall.auth.UsersItem
+import com.speakoutall.databinding.ItemUsersListBinding
 import com.speakoutall.extensions.gone
 import com.speakoutall.extensions.loadImage
 import com.speakoutall.extensions.visible
 import com.speakoutall.utils.AppPreference
-import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
     RecyclerView.Adapter<UsersListAdapter.UsersListViewHolder>() {
@@ -19,9 +18,9 @@ class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
     var mListener: OnUserClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersListViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_users_list, parent, false)
-        return UsersListViewHolder(view).also {
+        val binding =
+            ItemUsersListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return UsersListViewHolder(binding).also {
             it.mListener = mListener
         }
     }
@@ -65,12 +64,13 @@ class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
         }
     }
 
-    class UsersListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class UsersListViewHolder(val binding: ItemUsersListBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         var mListener: OnUserClickListener? = null
 
         init {
-            view.cv_follow.setOnClickListener {
-                val user = view.tag as UsersItem
+            binding.cvFollow.setOnClickListener {
+                val user = binding.root.tag as UsersItem
                 if (user.isFollowedBySelf!!) {
                     mListener?.onUnFollowClick(user)
                 } else {
@@ -79,34 +79,34 @@ class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
                     mListener?.onFollowClick(user)
                 }
             }
-            view.fl_profile.setOnClickListener {
-                val user = view.tag as UsersItem
-                mListener?.onUserClick(user, view.item_users_list_profile_iv)
+            binding.flProfile.setOnClickListener {
+                val user = binding.root.tag as UsersItem
+                mListener?.onUserClick(user, binding.itemUsersListProfileIv)
             }
 
-            view.ll_details.setOnClickListener {
-                val user = view.tag as UsersItem
-                mListener?.onUserClick(user, view.item_users_list_profile_iv)
+            binding.llDetails.setOnClickListener {
+                val user = binding.root.tag as UsersItem
+                mListener?.onUserClick(user, binding.itemUsersListProfileIv)
             }
 
         }
 
         fun bind(user: UsersItem) {
-            view.apply {
+            binding.root.apply {
                 tag = user
-                item_users_list_profile_iv.transitionName = user.userId
-                item_users_list_profile_iv.loadImage(
+                binding.itemUsersListProfileIv.transitionName = user.userId
+                binding.itemUsersListProfileIv.loadImage(
                     user.photoUrl,
                     placeholder = R.drawable.ic_account_circle_grey,
                     makeRound = true
                 )
-                item_users_list_username_tv.text = user.username
-                item_users_list_name_tv.text = user.name
+                binding.itemUsersListUsernameTv.text = user.username
+                binding.itemUsersListNameTv.text = user.name
 
                 if (user.isFollowedBySelf == null || user.userId == AppPreference.getUserId()) {
-                    cv_follow.gone()
+                    binding.cvFollow.gone()
                 } else {
-                    cv_follow.visible()
+                    binding.cvFollow.visible()
                     if (user.isFollowedBySelf!!) {
                         showFollowing()
                     } else {
@@ -117,17 +117,27 @@ class UsersListAdapter(private val usersList: ArrayList<UsersItem>) :
         }
 
         private fun showFollow() {
-            view.tv_follow.text = view.context.getString(R.string.follow)
-            view.tv_follow.background =
-                ContextCompat.getDrawable(view.context, R.drawable.dr_follow_bg)
-            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.colorFollowBgText))
+            binding.tvFollow.text = binding.root.context.getString(R.string.follow)
+            binding.tvFollow.background =
+                ContextCompat.getDrawable(binding.root.context, R.drawable.dr_follow_bg)
+            binding.tvFollow.setTextColor(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    R.color.colorFollowBgText
+                )
+            )
         }
 
         private fun showFollowing() {
-            view.tv_follow.text = view.context.getString(R.string.following)
-            view.tv_follow.background =
-                ContextCompat.getDrawable(view.context, R.drawable.dr_unfollow_bg)
-            view.tv_follow.setTextColor(ContextCompat.getColor(view.context, R.color.colorFollowingBgText))
+            binding.tvFollow.text = binding.root.context.getString(R.string.following)
+            binding.tvFollow.background =
+                ContextCompat.getDrawable(binding.root.context, R.drawable.dr_unfollow_bg)
+            binding.tvFollow.setTextColor(
+                ContextCompat.getColor(
+                    binding.root.context,
+                    R.color.colorFollowingBgText
+                )
+            )
         }
 
     }

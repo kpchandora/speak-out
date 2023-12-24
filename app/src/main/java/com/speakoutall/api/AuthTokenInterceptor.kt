@@ -22,7 +22,6 @@ class AuthTokenInterceptor : Interceptor {
 
             val pair = shouldFetchToken()
             if (!pair.first) {
-                Timber.d("End")
                 val modifiedRequest = request.newBuilder()
                     .addHeader("Authorization", "Bearer ${pair.second}")
                     .addHeader("version_name", BuildConfig.VERSION_NAME)

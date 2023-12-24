@@ -1,14 +1,13 @@
 package com.speakoutall.ui.search
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
 import com.speakoutall.auth.UsersItem
+import com.speakoutall.databinding.ItemUsersListBinding
 import com.speakoutall.extensions.gone
 import com.speakoutall.extensions.loadImage
-import kotlinx.android.synthetic.main.item_users_list.view.*
 
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
@@ -17,9 +16,9 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_users_list, parent, false)
-        return SearchViewHolder(view)
+        val binding =
+            ItemUsersListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return SearchViewHolder(binding)
     }
 
     override fun getItemCount() = usersList.size
@@ -37,31 +36,31 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
         notifyDataSetChanged()
     }
 
-    class SearchViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class SearchViewHolder(val binding: ItemUsersListBinding) : RecyclerView.ViewHolder(binding.root) {
         var mListener: OnSearchUserClickListener? = null
 
         init {
-            view.setOnClickListener {
+            binding.root.setOnClickListener {
                 mListener?.onUserClick(
-                    view.tag as UsersItem,
-                    view.item_users_list_profile_iv
+                    binding.root.tag as UsersItem,
+                    binding.itemUsersListProfileIv
                 )
             }
         }
 
         fun bind(user: UsersItem) {
-            view.apply {
+            binding.root.run {
                 tag = user
-                item_users_list_profile_iv.transitionName = user.userId
-                item_users_list_profile_iv.loadImage(
+                binding.itemUsersListProfileIv.transitionName = user.userId
+                binding.itemUsersListProfileIv.loadImage(
                     user.photoUrl,
                     placeholder = R.drawable.ic_account_circle_grey,
                     makeRound = true
                 )
 
-                cv_follow.gone()
-                item_users_list_username_tv.text = user.username
-                item_users_list_name_tv.text = user.name
+                binding.cvFollow.gone()
+                binding.itemUsersListUsernameTv.text = user.username
+                binding.itemUsersListNameTv.text = user.name
             }
         }
     }

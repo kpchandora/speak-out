@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.view.Gravity
 import androidx.core.widget.doOnTextChanged
 import com.speakoutall.R
+import com.speakoutall.databinding.ActivityBottomDialogBinding
 import com.speakoutall.extensions.addViewObserver
 import com.speakoutall.extensions.getScreenSize
 import com.speakoutall.extensions.hideKeyboard
 import com.speakoutall.extensions.showKeyboard
-import kotlinx.android.synthetic.main.activity_bottom_dialog.*
 
 class BottomDialogActivity : Activity() {
 
@@ -18,41 +18,44 @@ class BottomDialogActivity : Activity() {
         const val CONTENT = "content"
     }
 
+    private lateinit var _binding: ActivityBottomDialogBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.attributes.gravity = Gravity.BOTTOM
 //        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.attributes.verticalMargin = 0f
         window.attributes.dimAmount = .5f
-        setContentView(R.layout.activity_bottom_dialog)
+        _binding = ActivityBottomDialogBinding.inflate(layoutInflater)
+        setContentView(_binding.root)
         setFinishOnTouchOutside(false)
 
-        bottom_dialog_main_layout.addViewObserver {
+        _binding.bottomDialogMainLayout.addViewObserver {
             val screenSize = getScreenSize()
-            bottom_dialog_main_layout.layoutParams.height = screenSize.heightPixels / 3
-            bottom_dialog_main_layout.layoutParams.width = screenSize.widthPixels
-            bottom_dialog_done_btn.layoutParams.width = screenSize.widthPixels / 4
-            bottom_dialog_main_layout.requestLayout()
+            _binding.bottomDialogMainLayout.layoutParams.height = screenSize.heightPixels / 3
+            _binding.bottomDialogMainLayout.layoutParams.width = screenSize.widthPixels
+            _binding.bottomDialogDoneBtn.layoutParams.width = screenSize.widthPixels / 4
+            _binding.bottomDialogMainLayout.requestLayout()
         }
 
         intent.extras?.let {
             it.getString(CONTENT)?.let { content ->
-                bottom_dialog_et.setText(content)
-                bottom_dialog_et.setSelection(content.length)
-                bottom_dialog_done_btn.isEnabled = content.length > 10
+                _binding.bottomDialogEt.setText(content)
+                _binding.bottomDialogEt.setSelection(content.length)
+                _binding.bottomDialogDoneBtn.isEnabled = content.length > 10
             }
         }
 
-        bottom_dialog_et.doOnTextChanged { text, start, count, after ->
+        _binding.bottomDialogEt.doOnTextChanged { text, start, count, after ->
             text?.toString()?.trim()?.let {
-                bottom_dialog_done_btn.isEnabled = it.length > 10
+                _binding.bottomDialogDoneBtn.isEnabled = it.length > 10
             }
         }
 
-        bottom_dialog_et.requestFocus()
-        bottom_dialog_done_btn.setOnClickListener {
+        _binding.bottomDialogEt.requestFocus()
+        _binding.bottomDialogDoneBtn.setOnClickListener {
             hideKeyboard()
-            val text = bottom_dialog_et.text.toString().trim()
+            val text = _binding.bottomDialogEt.text.toString().trim()
             setResult(RESULT_OK, Intent().putExtra(CONTENT, text))
             finish()
         }

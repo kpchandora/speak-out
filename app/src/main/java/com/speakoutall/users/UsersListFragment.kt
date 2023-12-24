@@ -13,12 +13,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.auth.UsersItem
 import com.speakoutall.common.EventObserver
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.UsersListFragmentBinding
 import com.speakoutall.events.*
 import com.speakoutall.extensions.createFactory
 import com.speakoutall.extensions.setUpToolbar
@@ -28,8 +27,6 @@ import com.speakoutall.ui.profile.UnFollowDialog
 import com.speakoutall.ui.profile.UnFollowDialogModel
 import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.Constants
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
-import kotlinx.android.synthetic.main.users_list_fragment.*
 
 class UsersListFragment : Fragment() {
 
@@ -59,6 +56,7 @@ class UsersListFragment : Fragment() {
     private var mUserEvents: UserEvents? = null
     private var isLoading = false
     private var key: Long = 0L
+    private var binding: UsersListFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +68,7 @@ class UsersListFragment : Fragment() {
                 UserEventType.UN_FOLLOW -> {
                     mAdapter.showFollow(userId)
                 }
+
                 UserEventType.FOLLOW -> {
                     mAdapter.showFollowing(userId)
                 }
@@ -82,9 +81,11 @@ class UsersListFragment : Fragment() {
             ActionType.Likes -> {
                 usersListViewModel.getLikesList(safeArgs.id!!, key)
             }
+
             ActionType.Followers -> {
                 usersListViewModel.getFollowersList(safeArgs.id!!, key)
             }
+
             ActionType.Followings -> {
                 usersListViewModel.getFollowingsList(safeArgs.id!!, key)
             }
@@ -95,34 +96,38 @@ class UsersListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.users_list_fragment, container, false)
+        binding = UsersListFragmentBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)?.toolbar_title?.text = safeArgs.actionType.name
-        mAdapter.mListener = mUserClickListener
-        users_list_rv.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-            adapter = mAdapter
-        }
-        users_list_rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (isLoading || key == Constants.INVALID_KEY) return
-                if (dy > 0) {
-                    (recyclerView.layoutManager as LinearLayoutManager).let {
-                        val visibleItems = it.childCount
-                        val totalItemsCount = it.itemCount
-                        val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
-                        if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
-                            loadData()
-                            isLoading = true
+        setUpToolbar(view)
+        binding?.run {
+            toolbarContainer.toolbarTitle.text = safeArgs.actionType.name
+            usersListRv.apply {
+                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(context)
+                adapter = mAdapter
+            }
+            usersListRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (isLoading || key == Constants.INVALID_KEY) return
+                    if (dy > 0) {
+                        (recyclerView.layoutManager as LinearLayoutManager).let {
+                            val visibleItems = it.childCount
+                            val totalItemsCount = it.itemCount
+                            val firstVisibleItemPosition = it.findFirstVisibleItemPosition()
+                            if (visibleItems + firstVisibleItemPosition >= totalItemsCount) {
+                                loadData()
+                                isLoading = true
+                            }
                         }
                     }
                 }
-            }
-        })
+            })
+        }
+        mAdapter.mListener = mUserClickListener
         observeViewModels()
     }
 

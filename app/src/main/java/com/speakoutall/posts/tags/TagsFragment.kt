@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.speakoutall.R
 import com.speakoutall.common.EventObserver
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.FragmentPostTagsBinding
 import com.speakoutall.events.PostEventTypes
 import com.speakoutall.events.PostEvents
 import com.speakoutall.events.ProfileEventTypes
@@ -28,8 +29,6 @@ import com.speakoutall.posts.create.CreatePostViewModel
 import com.speakoutall.posts.create.PostData
 import com.speakoutall.ui.MainActivity
 import com.speakoutall.utils.AppPreference
-import kotlinx.android.synthetic.main.fragment_post_tags.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.util.*
 
@@ -43,38 +42,40 @@ class TagsFragment : Fragment() {
     private val tagRegex = "^([A-Za-z0-9]+\\b)(?!;)\$".toRegex()
     private val createPostData = PostData()
     private val safeArgs: TagsFragmentArgs by navArgs()
-
+    private var binding: FragmentPostTagsBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_post_tags, container, false)
+        binding = FragmentPostTagsBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)?.toolbar_title?.text = "Tags"
-        fragment_post_tags_progress.visible()
-        mAdapter.setHasStableIds(true)
+        setUpToolbar(view)
+        binding?.run {
+            toolbarContainer.toolbarTitle.text = "Tags"
+            fragmentPostTagsProgress.visible()
+            mAdapter.setHasStableIds(true)
+            mSelectedTagsAdapter.setHasStableIds(true)
+            tagsRv.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = mAdapter
+            }
+
+            selectedTagsRv.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                adapter = mSelectedTagsAdapter
+            }
+        }
         mAdapter.setListener(tagsListener)
-
-        mSelectedTagsAdapter.setHasStableIds(true)
         mSelectedTagsAdapter.setListener(selectedTagsListener)
-
-        tags_rv.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = mAdapter
-        }
-
-        selected_tags_rv.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            adapter = mSelectedTagsAdapter
-        }
 
         observeViewModels()
 
-        tag_done_fab.setOnClickListener {
+        binding?.tagDoneFab?.setOnClickListener {
             createPostData.tags = mSelectedTags.keys.map {
                 it.toString()
             }
@@ -87,10 +88,9 @@ class TagsFragment : Fragment() {
         }, 500)
 
         val searchEditText =
-            tag_search_view.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
+            binding?.tagSearchView?.findViewById(androidx.appcompat.R.id.search_src_text) as EditText
 
-
-        tag_search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding?.tagSearchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -172,7 +172,7 @@ class TagsFragment : Fragment() {
 
     private fun observeViewModels() {
         tagsViewModel.tags.observe(viewLifecycleOwner, Observer {
-            fragment_post_tags_progress.gone()
+            binding?.fragmentPostTagsProgress?.gone()
             mAdapter.setData(it)
             mAdapter.isLoading.set(false)
         })
@@ -197,10 +197,10 @@ class TagsFragment : Fragment() {
                 mSelectedTagsAdapter.addTag(tag)
             }
             if (mSelectedTags.isEmpty()) {
-                selected_tags_rv.gone()
+                binding?.selectedTagsRv?.gone()
             } else {
-                selected_tags_rv.visible()
-                selected_tags_rv.scrollToPosition(0)
+                binding?.selectedTagsRv?.visible()
+                binding?.selectedTagsRv?.scrollToPosition(0)
             }
         }
 
@@ -216,7 +216,7 @@ class TagsFragment : Fragment() {
         override fun onTagClick(tag: Tag) {
             mSelectedTags.remove(tag.id)
             if (mSelectedTags.isEmpty()) {
-                selected_tags_rv.gone()
+                binding?.selectedTagsRv?.gone()
             }
             mAdapter.removeTag(tag)
         }

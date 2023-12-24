@@ -24,13 +24,12 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.common.Result
+import com.speakoutall.databinding.FragmentSignInBinding
 import com.speakoutall.extensions.*
 import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.AppUpdateManager
 import com.speakoutall.utils.FirebaseUtils
-import kotlinx.android.synthetic.main.fragment_sign_in.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -49,23 +48,26 @@ class SignInFragment : Fragment() {
         UsersRepository(RetrofitBuilder.apiService, AppPreference)
     }
     private lateinit var mPreference: AppPreference
+    private var binding: FragmentSignInBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_sign_in, container, false)
+        binding = FragmentSignInBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpWithAppBarConfiguration(view, R.id.signInFragment)?.toolbar_title?.text = "SignIn"
+        setUpWithAppBarConfiguration(view, R.id.signInFragment)
+        binding?.toolbarContainer?.toolbarTitle?.text = "SignIn"
 
         mPreference = AppPreference
 
         mUserViewModel.saveUserDetails.observe(requireActivity(), Observer {
             if (it is Result.Success) {
-                sign_in_progress.gone()
+                binding?.signInProgress?.gone()
                 mPreference.setLoggedIn()
                 mPreference.saveUserDetails(it.data)
                 val action = SignInFragmentDirections.actionSignInFragmentToNavigationHome()
@@ -81,7 +83,7 @@ class SignInFragment : Fragment() {
             if (it is Result.Success) {
                 AppUpdateManager(requireActivity()).checkAndUpdate()
                 it.data.apply {
-                    sign_in_progress.gone()
+                    binding?.signInProgress?.gone()
                     mPreference.setLoggedIn()
                     mPreference.saveUserDetails(this)
                     if (username.isNotNullOrEmpty() && username?.equals(userId) != true) {
@@ -114,7 +116,7 @@ class SignInFragment : Fragment() {
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
         auth = FirebaseAuth.getInstance()
 
-        signInButton.setOnClickListener {
+        binding?.signInButton?.setOnClickListener {
             showProgress()
             startActivityForResult(
                 googleSignInClient.signInIntent,
@@ -124,13 +126,13 @@ class SignInFragment : Fragment() {
     }
 
     private fun showProgress() {
-        sign_in_progress.visible()
-        signInButton.gone()
+        binding?.signInProgress?.visible()
+        binding?.signInButton?.gone()
     }
 
     private fun hideProgress() {
-        sign_in_progress.gone()
-        signInButton.visible()
+        binding?.signInProgress?.gone()
+        binding?.signInButton?.visible()
     }
 
 

@@ -9,7 +9,9 @@
         android:background="?attr/colorSurface"
         android:orientation="vertical">
 
-        <include layout="@layout/layout_toolbar" />
+        <include
+            android:id="@+id/toolbarContainer"
+            layout="@layout/layout_toolbar" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_home"

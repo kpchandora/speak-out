@@ -9,7 +9,7 @@
     tools:context=".posts.tags.TagsFragment">
 
     <include
-        android:id="@+id/include2"
+        android:id="@+id/toolbarContainer"
         layout="@layout/layout_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

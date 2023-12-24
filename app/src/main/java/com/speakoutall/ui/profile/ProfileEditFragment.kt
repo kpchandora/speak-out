@@ -35,7 +35,6 @@ import com.speakoutall.users.UsersRepository
 import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.ImageUtils
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 import timber.log.Timber
 import java.io.File
 
@@ -77,7 +76,8 @@ class ProfileEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setUpToolbar(view)?.toolbar_title?.text = getString(R.string.edit)
+        setUpToolbar(view)
+        mDataBinding.toolbarContainer.toolbarTitle.text = getString(R.string.edit)
 
         populateDetails()
 

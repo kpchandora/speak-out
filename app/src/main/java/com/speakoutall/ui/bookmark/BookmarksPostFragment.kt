@@ -26,8 +26,6 @@ import com.speakoutall.ui.profile.ProfilePostClickListener
 import com.speakoutall.ui.profile.ProfilePostsAdapter
 import com.speakoutall.utils.AppPreference
 import com.speakoutall.utils.Constants
-import kotlinx.android.synthetic.main.fragment_bookmarks_post.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
@@ -57,6 +55,7 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             when (it.extras?.getInt(PostEvents.EVENT_TYPE)) {
                 PostEventTypes.DELETE,
                 PostEventTypes.REMOVE_BOOKMARK -> mPostsAdapter.deletePost(postId)
+
                 PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
                 PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
                 PostEventTypes.ADD_BOOKMARK -> {
@@ -78,7 +77,8 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpToolbar(view)?.toolbar_title?.text = getString(R.string.text_bookmarks)
+        setUpToolbar(view)
+        mBinding.toolbarContainer.toolbarTitle.text = getString(R.string.text_bookmarks)
 
         mBinding.rvBookmarks.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -105,9 +105,9 @@ class BookmarksPostFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
         mBookmarksViewModel.posts.observe(viewLifecycleOwner, Observer {
             if (mBookmarksViewModel.mPostList.isEmpty()) {
-                view_empty_bookmarks_posts.visible()
+                mBinding.viewEmptyBookmarksPosts.visible()
             } else {
-                view_empty_bookmarks_posts.gone()
+                mBinding.viewEmptyBookmarksPosts.gone()
             }
             mBinding.swipeBookmarks.isRefreshing = false
             isLoading = false

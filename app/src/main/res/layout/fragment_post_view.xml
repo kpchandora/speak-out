@@ -6,23 +6,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_toolbar" />
+    <include
+        android:id="@+id/toolbarContainer"
+        layout="@layout/layout_toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_post_view_rv"
-        android:layout_marginTop="?actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize"
         android:clipToPadding="false"
         android:paddingTop="8dp"
         tools:listitem="@layout/item_post_layout" />
 
     <ProgressBar
         android:id="@+id/progressBar"
-        android:visibility="gone"
-        tools:visibility="visible"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </FrameLayout>

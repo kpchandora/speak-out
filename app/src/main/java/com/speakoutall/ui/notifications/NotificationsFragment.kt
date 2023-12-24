@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.speakoutall.R
 import com.speakoutall.api.RetrofitBuilder
 import com.speakoutall.common.EventObserver
+import com.speakoutall.databinding.FragmentNotificationsBinding
 import com.speakoutall.events.NotificationEvents
 import com.speakoutall.extensions.*
 import com.speakoutall.notification.NotificationRepository
@@ -24,8 +25,6 @@ import com.speakoutall.notification.NotificationsItem
 import com.speakoutall.ui.MainActivity
 import com.speakoutall.ui.NavBadgeListener
 import com.speakoutall.utils.Constants
-import kotlinx.android.synthetic.main.fragment_notifications.*
-import kotlinx.android.synthetic.main.layout_toolbar.view.*
 
 class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
 
@@ -38,6 +37,7 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     private var key: Long = 0L
     private var isLoading = false
     private var mBadgeListener: NavBadgeListener? = null
+    private var _binding: FragmentNotificationsBinding? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -66,46 +66,50 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_notifications, container, false)
+        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        return _binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpWithAppBarConfiguration(view)?.toolbar_title?.text =
-            getString(R.string.title_notifications)
+        setUpWithAppBarConfiguration(view)
+        _binding?.toolbarContainer?.toolbarTitle?.text = getString(R.string.title_notifications)
         (requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancelAll()
-        rv_notification.setHasFixedSize(true)
-        rv_notification.layoutManager = LinearLayoutManager(requireContext())
-        rv_notification.adapter = adapter
 
-        swipe_notifications.setOnRefreshListener {
-            view_empty_notifications.gone()
-            adapter.notifyDataSetChanged()
-            refreshData()
+        _binding?.run {
+            rvNotification.setHasFixedSize(true)
+            rvNotification.layoutManager = LinearLayoutManager(requireContext())
+            rvNotification.adapter = adapter
+
+            swipeNotifications.setOnRefreshListener {
+                viewEmptyNotifications.gone()
+                adapter.notifyDataSetChanged()
+                refreshData()
+            }
+            swipeNotifications.isRefreshing = true
         }
 
-        swipe_notifications.isRefreshing = true
         notificationsViewModel.notifications.observe(viewLifecycleOwner, Observer {
-            swipe_notifications.isRefreshing = false
+            _binding?.swipeNotifications?.isRefreshing = false
             isLoading = false
             key = it.key
             adapter.notifyDataSetChanged()
             if (notificationsViewModel.mNotifications.isEmpty()) {
-                view_empty_notifications.visible()
+                _binding?.viewEmptyNotifications?.visible()
             } else {
-                view_empty_notifications.gone()
+                _binding?.viewEmptyNotifications?.gone()
             }
-            notifications_pb.gone()
+            _binding?.notificationsPb?.gone()
         })
 
         notificationsViewModel.error.observe(viewLifecycleOwner, EventObserver {
-            swipe_notifications.isRefreshing = false
+            _binding?.swipeNotifications?.isRefreshing = false
             isLoading = false
-            notifications_pb.gone()
+            _binding?.notificationsPb?.gone()
             showShortToast(it)
         })
 
-        rv_notification.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        _binding?.rvNotification?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (isLoading || key == Constants.INVALID_KEY) return
                 if (dy > 0) {
@@ -169,7 +173,9 @@ class NotificationsFragment : Fragment(), MainActivity.BottomIconDoubleClick {
     }
 
     override fun doubleClick() {
-        rv_notification.layoutManager?.smoothScrollToPosition(rv_notification, null, 0)
+        _binding?.rvNotification?.run {
+            layoutManager?.smoothScrollToPosition(this, null, 0)
+        }
     }
 
 }

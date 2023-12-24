@@ -24,7 +24,9 @@ class PostOptionsDialog(private val mContext: Context) : Dialog(mContext) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        binding = DialogPostOptionsBinding.inflate(layoutInflater)
+        binding = DialogPostOptionsBinding.inflate(layoutInflater).also {
+            setContentView(it.root)
+        }
         binding?.run {
             dialogPostContainer.addViewObserver {
                 (mContext as? Activity)?.getScreenSize()?.widthPixels?.let {

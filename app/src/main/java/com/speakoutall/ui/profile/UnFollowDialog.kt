@@ -58,7 +58,7 @@ class UnFollowDialog : AppCompatDialogFragment() {
         _binding?.dialogUnfollowHintTv?.text =
             getString(R.string.hint_un_follow, dialogModel.username)
 
-        return view
+        return _binding?.root
     }
 
     fun setListener(listener: UnFollowDialogListener) {

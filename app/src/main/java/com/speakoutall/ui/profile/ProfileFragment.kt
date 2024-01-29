@@ -98,8 +98,8 @@ class ProfileFragment : Fragment(), MainActivity.BottomIconDoubleClick {
             val postId: String = it.getStringExtra(PostEvents.POST_ID) ?: ""
             when (it.extras?.getInt(PostEvents.EVENT_TYPE)) {
                 PostEventTypes.DELETE -> mPostsAdapter.deletePost(postId)
-                PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
-                PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
+//                PostEventTypes.LIKE -> mPostsAdapter.addLike(postId)
+//                PostEventTypes.REMOVE_LIKE -> mPostsAdapter.removeLike(postId)
                 PostEventTypes.ADD_BOOKMARK -> mPostsAdapter.addBookmark(postId)
                 PostEventTypes.REMOVE_BOOKMARK -> mPostsAdapter.removeBookmark(postId)
             }

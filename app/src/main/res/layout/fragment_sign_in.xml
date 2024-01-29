@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,13 +8,15 @@
 
     <include
         android:id="@+id/toolbarContainer"
-        layout="@layout/layout_toolbar" />
-
+        layout="@layout/layout_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:visibility="gone">
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/signInButton"
@@ -26,13 +29,56 @@
             android:visibility="visible"
             tools:visibility="visible" />
 
-        <ProgressBar
-            android:id="@+id/sign_in_progress"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
     </FrameLayout>
-</FrameLayout>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginTop="54dp"
+        android:background="@drawable/dr_round_stroke_grey200_4dp"
+        android:hint="@string/phone_number"
+        android:imeOptions="actionDone"
+        android:inputType="number"
+        android:letterSpacing="0.1"
+        android:maxLength="10"
+        android:maxLines="1"
+        android:minWidth="250dp"
+        android:padding="8dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarContainer"
+        tools:text="9090909090" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/get_otp"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="@id/etNumber"
+        app:layout_constraintStart_toStartOf="@id/etNumber"
+        app:layout_constraintTop_toBottomOf="@id/etNumber" />
+
+    <FrameLayout
+        android:id="@+id/sign_in_progress"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        android:clickable="true"
+        android:elevation="4dp"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarContainer">
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="@id/toolbarContainer" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

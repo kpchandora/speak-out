@@ -37,7 +37,6 @@ class ProfileOptionsBottomSheetFragment : BottomSheetDialogFragment() {
             findNavController().navigate(action)
         }
         mBinding.tvLogout.setOnClickListener {
-            dismiss()
             val action =
                 ProfileOptionsBottomSheetFragmentDirections.actionProfileOptionsBottomSheetFragmentToLogoutDialog()
             findNavController().navigate(action)

@@ -47,10 +47,12 @@ class MainActivity : BaseActivity(), NavBadgeListener {
                 R.id.navigation_home -> {
                     navController.popBackStack(R.id.navigation_home, false)
                 }
+
                 R.id.navigation_new_post -> {
                     navController.navigate(R.id.create_post_navigation)
                     return@setOnNavigationItemSelectedListener false
                 }
+
                 R.id.navigation_profile -> {
                     navController.navigate(
                         MobileNavigationDirections.actionGlobalProfileFragment(
@@ -61,6 +63,7 @@ class MainActivity : BaseActivity(), NavBadgeListener {
                         )
                     )
                 }
+
                 else -> {
                     navController.navigate(it.itemId)
                 }
@@ -79,16 +82,6 @@ class MainActivity : BaseActivity(), NavBadgeListener {
                 val currentFragment = hostFragment.childFragmentManager.fragments.first()
                 if (currentFragment is BottomIconDoubleClick)
                     currentFragment.doubleClick()
-            }
-        }
-        if (AppPreference.isLoggedIn()) {
-            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
-                GlobalScope.launch {
-                    UsersRepository(
-                        RetrofitBuilder.apiService,
-                        AppPreference
-                    ).updateFcmToken(it.token)
-                }
             }
         }
 
@@ -110,6 +103,7 @@ class MainActivity : BaseActivity(), NavBadgeListener {
             R.id.signInFragment,
             R.id.createNewPostFragment,
             R.id.tagsFragment -> navAnimGone()
+
             else -> navAnimVisible()
         }
     }
@@ -147,4 +141,16 @@ class MainActivity : BaseActivity(), NavBadgeListener {
         fun doubleClick()
     }
 
+    fun updateToken() {
+        if (AppPreference.isLoggedIn()) {
+            FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener {
+                GlobalScope.launch {
+                    UsersRepository(
+                        RetrofitBuilder.apiService,
+                        AppPreference
+                    ).updateFcmToken(it.token)
+                }
+            }
+        }
+    }
 }

@@ -23,7 +23,7 @@
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarContainer"
             tools:src="@tools:sample/avatars" />
 
 
@@ -36,7 +36,7 @@
             app:layout_constraintDimensionRatio="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include"
+            app:layout_constraintTop_toBottomOf="@+id/toolbarContainer"
             tools:visibility="visible" />
 
         <ImageView
@@ -130,7 +130,7 @@
                 android:hint="@string/mobile_number"
                 android:imeOptions="actionDone"
                 android:inputType="phone"
-                android:maxLength="10"
+                android:enabled="false"
                 android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>

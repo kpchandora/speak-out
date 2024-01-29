@@ -19,10 +19,10 @@ class UsersRepository(
     private val apiService: ApiService,
     private val appPreference: AppPreference
 ) {
-    suspend fun createUser(userDetails: UserDetails): Result<UserDetails> =
+    suspend fun createUser(userDetails: UserDetails, isNewUser: Boolean): Result<UserDetails> =
         withContext(Dispatchers.IO) {
             try {
-                val result = apiService.createUser(userDetails)
+                val result = apiService.createUser(userDetails, isNewUser)
                 if (result.isSuccessful && result.body() != null) {
                     return@withContext Result.Success(result.body()!!)
                 }

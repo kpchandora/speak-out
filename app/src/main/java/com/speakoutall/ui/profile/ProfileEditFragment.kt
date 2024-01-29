@@ -108,16 +108,16 @@ class ProfileEditFragment : Fragment() {
             changeButtonState()
         }
 
-        mDataBinding.profileEditMobileEt.doAfterTextChanged {
-            it?.let {
-                if (it.toString().trim().isEmpty() || it.toString().trim().length == 10) {
-                    mDataBinding.profileEditMobileTil.error = null
-                } else {
-                    mDataBinding.profileEditMobileTil.error = getString(R.string.mobile_error)
-                }
-                changeButtonState()
-            }
-        }
+//        mDataBinding.profileEditMobileEt.doAfterTextChanged {
+//            it?.let {
+//                if (it.toString().trim().isEmpty() || it.toString().trim().length == 10) {
+//                    mDataBinding.profileEditMobileTil.error = null
+//                } else {
+//                    mDataBinding.profileEditMobileTil.error = getString(R.string.mobile_error)
+//                }
+//                changeButtonState()
+//            }
+//        }
 
         mDataBinding.profileEditUsernameEt.setOnClickListener {
             val action = ProfileEditFragmentDirections

@@ -109,6 +109,10 @@
     <string name="about">About</string>
     <string name="update_available">A new version is available.</string>
     <string name="updating">Updating..</string>
-    <string name="search_here">Search here...</string>
-
+    <string name="search_here">Search here…</string>
+    <string name="confirm">Confirm</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="sending_otp">Sending OTP</string>
+    <string name="otp">OTP</string>
 </resources>

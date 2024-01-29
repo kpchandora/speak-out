@@ -48,6 +48,8 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
         const val POST_ID = "postId"
         const val USERNAME = "username"
         const val POST_IMAGE_URL = "postImageUrl"
+        const val TITLE = "title"
+        const val DESCRIPTION = "description"
     }
 
     override fun onNewToken(token: String) {
@@ -69,12 +71,15 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
                     FOLLOW -> {
                         sendFollowNotification(it)
                     }
+
                     UNFOLLOW -> {
                         removeNotificationIfPresent(it)
                     }
+
                     LIKE -> {
                         sendLikeNotification(it)
                     }
+
                     OTHER -> {
                         //This is for other notifications such as some events
                     }
@@ -100,7 +105,13 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
 
         val notification =
             getNotificationBuilder(channelId = channelId, pendingIntent = pendingIntent)
-        notification.setContentTitle("${map["username"]} started following you.")
+        if (map[TITLE].isNotNullOrEmpty()) {
+            notification.setContentTitle(map[TITLE])
+        }
+
+        if (map[DESCRIPTION].isNotNullOrEmpty()) {
+            notification.setContentText(map[DESCRIPTION])
+        }
 
         getUserImageBitmap(map)?.let {
             notification.setLargeIcon(it)
@@ -126,19 +137,29 @@ class SpeakOutFirebaseMessagingService : FirebaseMessagingService() {
             .setDestination(R.id.notificationFragment)
             .setArguments(bundle)
             .createPendingIntent()
+
         val notification =
             getNotificationBuilder(channelId = channelId, pendingIntent = pendingIntent)
-        notification.setContentText("${map["username"]}(${map["name"]}) liked your post.")
 
-        getUserImageBitmap(map)?.let { userBitmap ->
-            notification.setLargeIcon(userBitmap)
-            getPostImageBitmap(map[POST_IMAGE_URL])?.let {
-                notification.setStyle(
-                    NotificationCompat.BigPictureStyle()
-                        .bigPicture(it)
-                        .bigLargeIcon(userBitmap)
-                )
-            }
+        if (map[TITLE].isNotNullOrEmpty()) {
+            notification.setContentTitle(map[TITLE])
+        }
+
+        if (map[DESCRIPTION].isNotNullOrEmpty()) {
+            notification.setContentText(map[DESCRIPTION])
+        }
+
+        val notificationStyle = NotificationCompat.BigPictureStyle()
+        val userImage = getUserImageBitmap(map)?.apply {
+            notification.setLargeIcon(this)
+            notificationStyle.bigLargeIcon(this)
+        }
+        val postImage = getPostImageBitmap(map[POST_IMAGE_URL])?.apply {
+            notificationStyle.bigPicture(this)
+        }
+
+        if (userImage != null || postImage != null) {
+            notification.setStyle(notificationStyle)
         }
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

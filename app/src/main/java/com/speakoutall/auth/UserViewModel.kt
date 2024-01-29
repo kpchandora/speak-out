@@ -13,14 +13,12 @@ class UserViewModel(private val mUsersRepository: UsersRepository) : ViewModel()
 
     private val _updateUserDetails = MutableLiveData<Event<Result<UserDetails>>>()
     val updateUserDetails: LiveData<Event<Result<UserDetails>>> = _updateUserDetails
-    private val _saveUserDetails = MutableLiveData<Result<UserDetails>>()
-    val saveUserDetails: LiveData<Result<UserDetails>> = _saveUserDetails
     private val _userDetails = MutableLiveData<Result<UserDetails>>()
     val userDetails: LiveData<Result<UserDetails>> = _userDetails
 
-    fun saveUserDetails(userDetails: UserDetails) {
+    fun saveUserDetails(userDetails: UserDetails, isNewUser: Boolean) {
         viewModelScope.launch {
-            _saveUserDetails.value = mUsersRepository.createUser(userDetails)
+            _userDetails.value = mUsersRepository.createUser(userDetails, isNewUser)
         }
     }
 
@@ -35,11 +33,4 @@ class UserViewModel(private val mUsersRepository: UsersRepository) : ViewModel()
             _username.value = mUsersRepository.checkUsername(username)
         }
     }
-
-    fun getUserData(uid: String) {
-        viewModelScope.launch {
-            _userDetails.value = mUsersRepository.getUser(uid)
-        }
-    }
-
 }

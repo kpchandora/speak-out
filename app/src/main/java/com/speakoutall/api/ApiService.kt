@@ -49,7 +49,10 @@ interface ApiService {
     suspend fun deletePost(@Path("postId") postId: String): Response<PostMiniDetails>
 
     @POST("users/create")
-    suspend fun createUser(@Body userDetails: UserDetails): Response<UserDetails>
+    suspend fun createUser(
+        @Body userDetails: UserDetails,
+        @Query("isNewUser") isNewUser: Boolean
+    ): Response<UserDetails>
 
     @GET("users/get/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<UserDetails>

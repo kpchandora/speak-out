@@ -9,8 +9,7 @@ import com.speakoutall.posts.create.PostData
 class PostViewHolder(
     val binding: ItemPostLayoutBinding,
     private val mEventListener: PostClickEventListener?
-) :
-    RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     init {
         binding.run {

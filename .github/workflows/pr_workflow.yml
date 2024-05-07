@@ -1,8 +1,14 @@
 name: pr-workflow
 on: create
 jobs:
+  print_branch_name:
+    name: Print branch name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print the branch name
+        run: echo "Branch name is ${{ github.ref }}"
   check_labels:
-    if: ${{ contains(github.ref, 'refs/heads/release**/') }}
+    if: ${{ contains(github.ref, 'release') }}
     name: Check labels
     runs-on: ubuntu-latest
     steps:

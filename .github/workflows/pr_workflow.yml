@@ -1,6 +1,9 @@
 name: pr-workflow
 on: create
 jobs:
-  job1:
-    if: ${{ contains(github.ref, 'refs/heads/releases**/') }}
-      echo "This is a release branch"
+  check_labels:
+    if: ${{ contains(github.ref, 'refs/heads/release**/') }}
+    name: Check labels
+    runs-on: ubuntu-latest
+    steps:
+      - echo "Checking labels"
